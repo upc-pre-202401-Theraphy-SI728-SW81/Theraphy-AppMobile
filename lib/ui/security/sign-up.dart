@@ -363,32 +363,37 @@ class _SignUpState extends State<SignUp> {
                 width: double.infinity,
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 child: ElevatedButton(
-                  onPressed: ()  {
-                    if (_acceptTerms) {
-                      if(_selectedRole == "Physiotherapist"){
-                        httpHelper?.register(
-                          0,
-                          firstName,
-                          lastName,
-                          username,
-                          password,
-                          _selectedRole
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PhysiotherapistRegister(),
-                          ));
-                      }else{
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PatientRegister(),
-                          ));
-                      }
+                  onPressed: () async {
+                    try {
+                      if (_acceptTerms) {
+                        if(_selectedRole == "Physiotherapist"){
+                          await httpHelper?.register(
+                            0,
+                            firstName,
+                            lastName,
+                            username,
+                            password,
+                            "PHYSIOTHERAPIST"
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PhysiotherapistRegister(),
+                            ));
+                        }else{
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PatientRegister(),
+                            ));
+                        }
                     } else {
                       print('Error de inicio de sesión');
                     }
+                  } catch (error) {
+                    // Maneja el error, por ejemplo, muestra un mensaje de error al usuario
+                    print('Error de registar: $error');
+                  }
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Colors.blue[700],

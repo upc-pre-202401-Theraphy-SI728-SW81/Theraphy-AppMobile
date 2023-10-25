@@ -9,14 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HttpHelper {
   final String urlBase = 'http://localhost:8080/api/v1';
 
-  void register(int id, String firstName, String lastName, String username, String password, String _selectedRole) async {
+  Future<void> register(int id, String firstName, String lastName, String username, String password, String _selectedRole) async {
     const endpoint = '/auth/registration';
-    final user = User(id: id, firstName: firstName, lastName: lastName, username: username, password: password, role: _selectedRole);
+    final user = User(id: id, firstname: firstName, lastname: lastName, username: username, password: password, role: _selectedRole);
     final String url = '$urlBase$endpoint';
     final response = await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(user.toJson()));
-
+    print(user.toJson());
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       if (jsonResponse.containsKey('access_Token')) {
