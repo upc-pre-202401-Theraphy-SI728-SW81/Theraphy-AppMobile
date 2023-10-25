@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_app_theraphy/ui/security/patient-register.dart';
+import 'package:mobile_app_theraphy/ui/security/physiotherapist-register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/model/patient.dart';
@@ -18,30 +20,17 @@ class _SignUpState extends State<SignUp> {
   String _selectedRole = 'Patient';
   bool _passwordVisible = false;
   bool _acceptTerms = false;
-  String email = "";
-  String fullName = "";
-  String password = "";
+  String firstName = "";
+  String lastName= "";
+  String username= "";
+  String password= "";
 
   TextEditingController? _fullnameController;
   TextEditingController? _usernameController;
   TextEditingController? _passwordController;
+  TextEditingController? _lastnameController; // Controlador para el campo de apellido
 
   HttpHelper? httpHelper;
-  List<Physiotherapist>? physioterapists = [];
-  List<Patient>? patients = [];
-  List<User>? users = [];
-
-  void saveData(String key, String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, value);
-    //print('Valor guardado en el almacenamiento local.');
-  }
-
-  void getData(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? value = prefs.getString(key);
-    print('Valor recuperado del almacenamiento local: $value');
-  }
 
   @override
   void initState() {
@@ -49,6 +38,7 @@ class _SignUpState extends State<SignUp> {
     _fullnameController = TextEditingController();
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
+    _lastnameController = TextEditingController(); // Inicializar el controlador para el apellido
 
     super.initState();
   }
@@ -58,17 +48,19 @@ class _SignUpState extends State<SignUp> {
     _usernameController?.dispose();
     _passwordController?.dispose();
     _fullnameController?.dispose();
+    _lastnameController?.dispose(); // Dispose del controlador para el apellido
 
     super.dispose();
   }
 
   navigateTo({required Widget widget}) {
     Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => widget,
-        ),
-        ((route) => false));
+      context,
+      MaterialPageRoute(
+        builder: (context) => widget,
+      ),
+      ((route) => false),
+    );
   }
 
   createUser() async {}
@@ -76,7 +68,6 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     var acceptTerms = _acceptTerms;
     return Scaffold(
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -84,15 +75,15 @@ class _SignUpState extends State<SignUp> {
         alignment: Alignment.topCenter,
         child: Container(
           margin: EdgeInsets.only(top: 80),
-          height: 200,
+          height: 150,
           child: Image.asset(
             'assets/background.png',
-            width: 450,
+            width: 350,
           ),
         ),
       ),
       Padding(
-        padding: EdgeInsets.only(left: 20, top: 40),
+        padding: EdgeInsets.only(left: 20, top: 20),
         child: Text(
           "Sign Up",
           style: TextStyle(
@@ -101,7 +92,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
       ),
-      SizedBox(height: 20),
+      SizedBox(height: 15),
       Row(
         children: [
           Expanded(
@@ -111,11 +102,11 @@ class _SignUpState extends State<SignUp> {
               child: TextField(
                 controller: _usernameController,
                 onChanged: (value) {
-                  email = value;
+                  firstName = value;
                   setState(() {});
                 },
                 decoration: InputDecoration(
-                  labelText: 'Email',
+                  labelText: 'FirstName',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
@@ -140,6 +131,43 @@ class _SignUpState extends State<SignUp> {
       ),
       SizedBox(height: 20),
       Row(
+          children: [
+            Expanded(
+              flex: 7,
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
+                  controller: _lastnameController,
+                  onChanged: (value) {
+                    lastName = value;
+                    setState(() {});
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Lastname',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Color(400),
+                        width: 2.0, // Grosor del borde
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Color(400),
+                        width: 2.0, // Grosor del borde
+                      ),
+                    ),
+                    contentPadding: EdgeInsets.all(20),
+                    isDense: true,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      SizedBox(height: 20),
+      Row(
         children: [
           Expanded(
             flex: 7,
@@ -148,11 +176,11 @@ class _SignUpState extends State<SignUp> {
               child: TextField(
                 controller: _fullnameController,
                 onChanged: (value) {
-                  fullName = value;
+                  username = value;
                   setState(() {});
                 },
                 decoration: InputDecoration(
-                  labelText: 'FullName',
+                  labelText: 'Username',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
@@ -331,7 +359,55 @@ class _SignUpState extends State<SignUp> {
                   margin: EdgeInsets.symmetric(horizontal: 0)
                 ),
               ),
-              SizedBox(height: 5),
+              Container(
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: ElevatedButton(
+                  onPressed: ()  {
+                    if (_acceptTerms) {
+                      if(_selectedRole == "Physiotherapist"){
+                        httpHelper?.register(
+                          0,
+                          firstName,
+                          lastName,
+                          username,
+                          password,
+                          _selectedRole
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PhysiotherapistRegister(),
+                          ));
+                      }else{
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PatientRegister(),
+                          ));
+                      }
+                    } else {
+                      print('Error de inicio de sesión');
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue[700],
+                    onPrimary: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    "Register",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 15),
               Align(
                 alignment: Alignment.center,
                 child: Row(
@@ -340,16 +416,13 @@ class _SignUpState extends State<SignUp> {
                     Text("Join Us Before?"),
                     GestureDetector(
                       onTap: () {
-                        getData("userId");
                         Navigator.pop(context);
-                        // Manejar el evento cuando se presiona "Log In"
-                        // Aquí puedes agregar la lógica para navegar a la pantalla de inicio de sesión
                       },
                       child: Text(
                         " Log In",
                         style: TextStyle(
                           fontWeight: FontWeight
-                              .bold, // Aplicar negrita al texto "Log In"
+                              .bold, 
                         ),
                       ),
                     ),
