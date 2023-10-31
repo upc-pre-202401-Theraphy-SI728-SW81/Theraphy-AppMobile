@@ -7,11 +7,18 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://localhost:8080/api/v1';
+  final String urlBase = 'http://192.168.43.158:8080/api/v1';
 
-  Future<void> register(int id, String firstName, String lastName, String username, String password, String _selectedRole) async {
+  Future<void> register(int id, String firstName, String lastName,
+      String username, String password, String _selectedRole) async {
     const endpoint = '/auth/registration';
-    final user = User(id: id, firstname: firstName, lastname: lastName, username: username, password: password, role: _selectedRole);
+    final user = User(
+        id: id,
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        password: password,
+        role: _selectedRole);
     final String url = '$urlBase$endpoint';
     final response = await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
@@ -30,7 +37,8 @@ class HttpHelper {
         throw Exception('Failed to register user');
       }
     } else {
-      throw Exception('Failed to register user. Status code: ${response.statusCode}');
+      throw Exception(
+          'Failed to register user. Status code: ${response.statusCode}');
     }
   }
 
@@ -61,7 +69,8 @@ class HttpHelper {
           throw Exception('Access token not found in the response.');
         }
       } else {
-        throw Exception('Failed to log in. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to log in. Status code: ${response.statusCode}');
       }
     } catch (exception) {
       print('Error: $exception');
@@ -97,13 +106,15 @@ class HttpHelper {
         final jsonResponse = json.decode(response.body);
         return Patient.fromJson(jsonResponse);
       } else {
-        throw Exception('Failed to create patient. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to create patient. Status code: ${response.statusCode}');
       }
     } catch (exception) {
       print('Error: $exception');
       throw Exception('Failed to create patient.');
     }
   }
+
 
   Future<Physiotherapist> createPhysiotherapist(Physiotherapist physiotherapist) async {
     const reference = '/physiotherapists';
@@ -141,4 +152,39 @@ class HttpHelper {
     }
   }
 
+  Future<int> getPhysiotherapistLogged() async {
+
+      const reference = '/physiotherapists';
+      const getPhysiotherapistLoggedEndpoint = '/profile';
+      final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
+
+     final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        return Physiotherapist.fromJson(jsonResponse).id;
+      } else {
+        throw Exception('Failed to get physiotherapist logged. Status code: ${response.statusCode}');
+      }
+    } catch (exception) {
+      print('Error: $exception');
+      throw Exception('Failed to get physiotherapist logged.');
+    }
+    }
 }
