@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
+import 'package:mobile_app_theraphy/ui/profile/physiotherapist_profile.dart';
 import 'package:mobile_app_theraphy/ui/security/patient-register.dart';
 import 'package:mobile_app_theraphy/ui/security/sign-up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -188,7 +189,7 @@ class _LoginState extends State<Login> {
                     Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const PatientRegister(),
+                      builder: (context) => const ProfilePage(),
                     ));
                 // Acción a realizar al presionar el botó
                   } catch (error) {

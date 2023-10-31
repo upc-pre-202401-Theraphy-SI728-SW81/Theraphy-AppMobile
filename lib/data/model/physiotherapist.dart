@@ -1,19 +1,21 @@
+import 'package:mobile_app_theraphy/data/model/user.dart';
+
 class Physiotherapist {
-  int id;
-  String dni;
-  String specialization;
-  int age;
-  String location;
-  String photoUrl;
-  String birthdayDate;
-  double rating;
-  int consultationsQuantity;
-  int patinentQuantity;
-  int yearsExperience;
-  int fees;
+  final int id;
+  final String dni;
+  final String specialization;
+  final int age;
+  final String location;
+  final String photoUrl;
+  final String birthdayDate;
+  final double rating;
+  final int consultationsQuantity;
+  final int patinentQuantity;
+  final int yearsExperience;
+  final double fees;
+  final User user;
 
-
-  Physiotherapist(
+  const Physiotherapist(
       {required this.id,
       required this.dni,
       required this.specialization,
@@ -23,10 +25,10 @@ class Physiotherapist {
       required this.birthdayDate,
       required this.rating,
       required this.consultationsQuantity,
-      required this.patinentQuantity,  
+      required this.patinentQuantity,
       required this.yearsExperience,
       required this.fees,
-      });
+      required this.user});
 
   Map<String, dynamic> toJson() {
     return {
@@ -47,18 +49,17 @@ class Physiotherapist {
 
   Physiotherapist.fromJson(Map<String, dynamic> json)
       : this(
-          id: json['id'],
-          dni: json['dni'],
-          specialization: json['specialization'],
-          age: json['age'],
-          location: json ['location'],
-          photoUrl: json['photoUrl'],     
-          birthdayDate: json['birthdayDate'],
-          rating: json['rating'],
-          consultationsQuantity: json['consultationsQuantity'],
-          patinentQuantity: json['patinentQuantity'],
-          yearsExperience: json['yearsExperience'],
-          fees: json['fees'],
-        );
-  
+            id: json['id'],
+            dni: json['dni'],
+            specialization: json['specialization'],
+            age: json['age'],
+            location: json['location'],
+            photoUrl: json['photoUrl'],
+            birthdayDate: json['birthdayDate'],
+            rating: json['rating'],
+            consultationsQuantity: json['consultationQuantity'],
+            patinentQuantity: json['patientQuantity'],
+            yearsExperience: json['yearsExperience'],
+            fees: json['fees'],
+            user: User.fromJson(json['user']));
 }
