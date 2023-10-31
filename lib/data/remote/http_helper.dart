@@ -7,18 +7,16 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = '';
+  final String urlBase = 'http://localhost:8080/api/v1';
 
-  //register User
-  Future<void> register(User user) async {
-    const endpoint = 'auth/registration';
+  Future<void> register(int id, String firstName, String lastName, String username, String password, String _selectedRole) async {
+    const endpoint = '/auth/registration';
+    final user = User(id: id, firstname: firstName, lastname: lastName, username: username, password: password, role: _selectedRole);
     final String url = '$urlBase$endpoint';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-type': 'application/json'},
-      body: jsonEncode(user.toJson()),
-    );
-
+    final response = await http.post(Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(user.toJson()));
+    print(user.toJson());
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       if (jsonResponse.containsKey('access_Token')) {
@@ -38,7 +36,7 @@ class HttpHelper {
 
   Future<void> login(String username, String password) async {
     final credentials = {'username': username, 'password': password};
-    const endpoint = 'auth/authentication';
+    const endpoint = '/auth/authentication';
     final String url = '$urlBase$endpoint';
 
     try {
