@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/security/patient-register.dart';
 import 'package:mobile_app_theraphy/ui/security/sign-up.dart';
-import 'package:mobile_app_theraphy/ui/therapy/therapy.dart';
+import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget { 
