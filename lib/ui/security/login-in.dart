@@ -189,7 +189,7 @@ class _LoginState extends State<Login> {
                     Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const Therapy(),
+                      builder: (context) => const MyTherapy(),
                     ));
                 // Acción a realizar al presionar el botó
                   } catch (error) {

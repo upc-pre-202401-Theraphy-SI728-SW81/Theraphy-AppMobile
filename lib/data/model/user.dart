@@ -22,8 +22,7 @@ class User {
       'firstname': firstname,
       'lastname': lastname,      
       'username': username,
-      'password': password,
-      'role': role,
+      'password': password
     };
   }
 

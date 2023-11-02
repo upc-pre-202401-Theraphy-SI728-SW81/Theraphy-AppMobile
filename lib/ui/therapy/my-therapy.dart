@@ -1,31 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:mobile_app_theraphy/data/model/patient.dart';
+import 'package:mobile_app_theraphy/data/model/therapy.dart';
+import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
+import 'package:intl/intl.dart';
 
 
-class Therapy extends StatefulWidget {
-  const Therapy({super.key});
+class MyTherapy extends StatefulWidget {
+  const MyTherapy({super.key});
 
   @override
-  State<Therapy> createState() => _TherapyState();
+  State<MyTherapy> createState() => _MyTherapyState();
 }
 
-class _TherapyState extends State<Therapy> {
+class _MyTherapyState extends State<MyTherapy> {
 
- final List<String> days = ["Día 1", "Día 2", "Día 3", "Día 4", "Dia 6", "Dia 7"];
+  HttpHelper? _httpHelper;
+  Therapy? therapies;
+
+  String therapyName = "";
+  String therapyDescription = "";
+
+  List<String> days = [];
   int _currentIndex = 0;
+  int patientId = 1;
+
+  final DateFormat format = DateFormat("yyyy-MM-dd");
+  late DateTime dateTime1;
+  late DateTime dateTime2;
+  int difference = 0;
+  String dateShowed = "";
 
   Future initialize() async {
+    int? id = await _httpHelper?.getPhysiotherapistLogged();
+  
+    therapies = null;
+    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(patientId, id!);
    
     setState(() {
-      
+      therapies = therapies;
+      print(therapies?.id);
+      therapyDescription = therapies!.description;
+      therapyName = therapies!.therapyName;
+
+      dateTime1 = format.parse(therapies!.startAt);
+      dateTime2= format.parse(therapies!.finishAt);
+
+      difference = dateTime2.difference(dateTime1).inDays;
+
+      days = List.generate(
+      difference + 1, (index) => "Día ${index + 1}", growable: false);
+      dateShowed = format.format(dateTime1);
     });
   }
 
   @override
   void initState() {
-   
+    _httpHelper = HttpHelper();
     initialize();
+    super.initState();
   }
 
   @override
@@ -64,9 +98,9 @@ class _TherapyState extends State<Therapy> {
           children: <Widget>[
             Container(
               padding: const EdgeInsets.all(16.0),
-              child: const Text(
-                "Therapy's Title",
-                style: TextStyle(
+              child:  Text(
+                therapyName,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -75,9 +109,9 @@ class _TherapyState extends State<Therapy> {
             Container(
               padding: const EdgeInsets.all(16.0),
               margin: const EdgeInsets.only(bottom: 16.0),
-              child: const Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget nibh odio. Proin et turpis hendrerit, ultrices nunc ac, gravida purus. Nulla dignissim, dui scelerisque.",
-                style: TextStyle(
+              child: Text(
+                therapyDescription,
+                style: const TextStyle(
                   fontSize: 16,
                 ),
                 textAlign: TextAlign.justify,
@@ -118,6 +152,7 @@ class _TherapyState extends State<Therapy> {
                           onTap: () {
                             setState(() {
                               _currentIndex = index;
+                              dateShowed = format.format(dateTime1.add(Duration(days: _currentIndex)));
                             });
                           },
                           child: Container(
@@ -150,7 +185,23 @@ class _TherapyState extends State<Therapy> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(
-                height: 50.0,
+                height: 30.0,
+              ),
+               Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Text(
+                  dateShowed,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF013D98),
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 10.0,
               ),
               // Línea que dice "Create a Therapy Video"
               const Padding(
