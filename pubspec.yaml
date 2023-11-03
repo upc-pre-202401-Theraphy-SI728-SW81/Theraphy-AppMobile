@@ -11,7 +11,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   http: ^1.0.0
-  image_picker: ^0.8.1
+  image_picker: ^0.8.0+6
+  video_player: ^2.3.7
   shared_preferences: ^2.1.2 
   carousel_slider: ^4.2.1
   intl: ^0.18.1

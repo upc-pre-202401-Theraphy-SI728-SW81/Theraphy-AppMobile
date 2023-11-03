@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 
 class Treatment {
