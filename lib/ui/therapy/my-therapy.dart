@@ -5,6 +5,7 @@ import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app_theraphy/ui/therapy/new-video.dart';
 
 
 class MyTherapy extends StatefulWidget {
@@ -222,6 +223,11 @@ class _MyTherapyState extends State<MyTherapy> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Lógica para el botón "Add video"
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewVideo(initialIndex: _currentIndex),
+                    ));
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF014DBF)),
