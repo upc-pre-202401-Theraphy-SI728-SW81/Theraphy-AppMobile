@@ -209,7 +209,7 @@ class _NewVideoState extends State<NewVideo> {
                 children: [
                   
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
                     child: Text(
                       dateShowed,
                       textAlign: TextAlign.center,
@@ -221,6 +221,9 @@ class _NewVideoState extends State<NewVideo> {
                     ),
                   ),
                   
+                  SingleChildScrollView (child:
+                  Column(
+                      children: [
                   // Título y campo de entrada para el título del video
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,60 +319,62 @@ class _NewVideoState extends State<NewVideo> {
                           title = titleController.text;
                           descripction = descripcionController.text;
                           video = "aea";
-                          _httpHelper?.addTreatment(therapies!.id, video, "30 min", title, descripction, dateShowed);
-                            Navigator.of(context).pop();
 
-                          // Muestra un diálogo emergente con el mensaje de éxito
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Center(
-                                child: SimpleDialog(
-                                  title: const Column(
-                                    children: [
-                            Icon(Icons.check, color: Colors.green, size: 80), // Icono de check más grande
-                            SizedBox(height: 10),
+                          if(title!= "" && descripction!="" && video != "") {
+                            _httpHelper?.addTreatment(therapies!.id, video, "30 min", title, descripction, dateShowed);
+                              Navigator.of(context).pop();
+
+                            // Muestra un diálogo emergente con el mensaje de éxito
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Center(
+                                  child: SimpleDialog(
+                                    title: const Column(
+                                      children: [
+                              Icon(Icons.check, color: Colors.green, size: 80), // Icono de check más grande
+                              SizedBox(height: 10),
+                              Center(
+                                child: Text(
+                                  "The new video has been uploaded successfully",
+                                  textAlign: TextAlign.center, // Alinea el texto al centro
+                                ),
+                              ),
+                            ],
+
+                          ),
+                          children: <Widget>[
                             Center(
-                              child: Text(
-                                "The new video has been uploaded successfully",
-                                textAlign: TextAlign.center, // Alinea el texto al centro
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Cierra el diálogo emergente
+                                      Navigator.of(context).pop();
+
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF014DBF)), // Color de fondo personalizado para el botón "Cerrar"
+                                    ),
+                                    child: const Text("Close"),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-
                         ),
-                        children: <Widget>[
-                          Center(
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 10),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Cierra el diálogo emergente
-                                    Navigator.of(context).pop();
-
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF014DBF)), // Color de fondo personalizado para el botón "Cerrar"
-                                  ),
-                                  child: const Text("Close"),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-
-                  }
-
-                  ,
-                );
+                      
+                      );
+                            
+                    },
+                            
+                  );
 
 
 
 
-
+                          }
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF014DBF)), // Color de fondo personalizado para el botón "Create Virtual Treatment"
@@ -382,10 +387,23 @@ class _NewVideoState extends State<NewVideo> {
                     ],
                     
                   ),
-                ],
+                ]),
+              )],
               ),
               
             ),
+
+
+
+
+
+
+
+
+
+
+
+
           )
 
 
