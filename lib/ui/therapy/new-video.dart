@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -22,6 +24,10 @@ class _NewVideoState extends State<NewVideo> {
   HttpHelper? _httpHelper;
   Therapy? therapies;
 
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descripcionController = TextEditingController();
+
+
   String therapyName = "";
   String therapyDescription = "";
 
@@ -37,6 +43,11 @@ class _NewVideoState extends State<NewVideo> {
   late DateTime dateTime2;
   int difference = 0;
   String dateShowed = "";
+
+  String title = "";
+  String descripction= "";
+  String video = "";
+
 
   _NewVideoState({required this.initialIndex});
 
@@ -223,20 +234,22 @@ class _NewVideoState extends State<NewVideo> {
                       const SizedBox(
                         height: 10.0,
                       ),
-                    TextFormField(
-                      style: TextStyle(color: Colors.black), // Cambia el color del texto
+                   TextFormField(
+                      controller: titleController, // Asigna el controlador
+                      style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
-                        labelText: "Write here", // Etiqueta (label) personalizada
+                        labelText: "Write here",
                         enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular( 1.0),
-                                      borderSide: const BorderSide(
-                                      color: Color(0xFF0166FE), // Color del borde
-                                        width: 1.5,
-                                      ),
-                                    ),
-                        floatingLabelBehavior: FloatingLabelBehavior.never, // No se desplaza hacia arriba
+                          borderRadius: BorderRadius.circular(1.0),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF0166FE),
+                            width: 1.5,
+                          ),
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                       ),
                     )
+
 
                     ],
                   ),
@@ -257,21 +270,23 @@ class _NewVideoState extends State<NewVideo> {
                         height: 10.0,
                       ),
                       TextField(
-                        style: const TextStyle(color: Colors.black), // Cambia el color del texto
+                        controller: descripcionController, // Asigna el controlador
+                        style: const TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular( 1.0),
-                                      borderSide: const BorderSide(
-                                      color: Color(0xFF0166FE), // Color del borde
-                                        width: 1.5,
-                                      ),
-                                    ),
-                          floatingLabelBehavior: FloatingLabelBehavior.never, // No se desplaza hacia arrib
-                          labelText: "Write here", // Etiqueta (label) personalizada
+                            borderRadius: BorderRadius.circular(1.0),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF0166FE),
+                              width: 1.5,
+                            ),
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          labelText: "Write here",
                         ),
-                        maxLines: 3, // Altura de 40 (dos líneas)
-                        inputFormatters: [LengthLimitingTextInputFormatter(250)], // Limitación de 250 palabras
+                        maxLines: 3,
+                        inputFormatters: [LengthLimitingTextInputFormatter(250)],
                       ),
+
                       const SizedBox(
                         height: 10.0,
                       ),
@@ -298,6 +313,11 @@ class _NewVideoState extends State<NewVideo> {
                         child: ElevatedButton(
                           onPressed: () {
                             // Agrega aquí la lógica para crear un tratamiento virtual
+                            title = titleController.text;
+                            descripction = descripcionController.text;
+                            video = "aea";
+                           _httpHelper?.addTreatment(therapies!.id, video, "30 min", title, descripction, dateShowed);
+
                           },
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF014DBF)), // Color de fondo personalizado

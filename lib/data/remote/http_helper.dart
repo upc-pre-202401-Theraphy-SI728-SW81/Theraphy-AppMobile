@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
+import 'package:mobile_app_theraphy/data/model/treatment.dart';
 import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -249,6 +250,49 @@ class HttpHelper {
     }
   }
       
+  Future<Treatment> addTreatment(int therapyId, String videoUrl, String duration,
+    String title, String description, String day) async {
+    const String endpoint = '/treatments';
+    final String url = '$urlBase$endpoint';
+
+    final Map<String, dynamic> requestBody = {
+      'therapyId': therapyId,
+      'videoUrl': videoUrl,
+      'duration': duration,
+      'title': title,
+      'description': description,
+      'day': day,
+      'viewed': false 
+    };
+
+    final encodedBody = json.encode(requestBody);
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: encodedBody,
+      headers: headers,
+    );
+
+    if (response.statusCode == 201) {
+        final jsonResponse = json.decode(response.body);
+        return Treatment.fromJson(jsonResponse);
+      } else {
+        throw Exception(
+            'Failed to create physiotherapist. Status code: ${response.statusCode}');
+      }
+}
 
 
 }
