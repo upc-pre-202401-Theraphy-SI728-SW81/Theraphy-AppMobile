@@ -148,21 +148,10 @@ class _NewVideoState extends State<NewVideo> {
               ),
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 5.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0), // Agrega un radio de 40 a los bordes izquierdo y derecho
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: const Color(0xFFB0D0FF).withOpacity(0.9),
-                          width: 20.0, // Ancho de la sombra izquierda
-                        ),
-                        right: BorderSide(
-                          color: const Color(0xFFB0D0FF).withOpacity(0.9),
-                          width: 20.0, // Ancho de la sombra derecha
-                        ),
-                      ),
-                    ),
+                child: Stack(
+              children: [
+              
+                Container(
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: days.asMap().entries.map((entry) {
@@ -196,7 +185,7 @@ class _NewVideoState extends State<NewVideo> {
                         );
                       }).toList(),
                     ),
-                  ),
+                  ),]
                 ),     
               ),
             ),
