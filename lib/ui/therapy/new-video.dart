@@ -100,6 +100,8 @@ class _NewVideoState extends State<NewVideo> {
               ),
               onPressed: () {
                 // Agrega lógica para retroceder
+                Navigator.of(context).pop();
+
               },
             ),
             const Text(
