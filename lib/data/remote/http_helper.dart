@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
@@ -159,13 +160,12 @@ class HttpHelper {
   }
 
   Future<int> getPhysiotherapistLogged() async {
+    const reference = '/physiotherapists';
+    const getPhysiotherapistLoggedEndpoint = '/profile';
+    final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
 
-      const reference = '/physiotherapists';
-      const getPhysiotherapistLoggedEndpoint = '/profile';
-      final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
-
-      final prefs = await SharedPreferences.getInstance();
-      final jwtToken = prefs.getString('accessToken');
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
 
     if (jwtToken == null) {
       throw Exception('JWT Token not found in SharedPreferences.');
@@ -191,17 +191,18 @@ class HttpHelper {
         print(Physiotherapist.fromJson(jsonResponse).id);
         return Physiotherapist.fromJson(jsonResponse).id;
       } else {
-                print("ELSEE");
+        print("ELSEE");
 
-        throw Exception('Failed to get physiotherapist logged. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to get physiotherapist logged. Status code: ${response.statusCode}');
       }
     } catch (exception) {
-              print("chuuu");
+      print("chuuu");
 
       print('Error: $exception');
       throw Exception('Failed to get physiotherapist logged.');
     }
-    }
+  }
 
   Future<List<Patient>?> getMyPatients(int physiotherapistId) async {
     const endpoint = '/therapies';
@@ -221,48 +222,54 @@ class HttpHelper {
             !therapy.finished;
       }).toList();
 
-       // Crear una lista de 'mypatients' a partir de las terapias filtradas
-    List<Patient> myPatients = [];
+      // Crear una lista de 'mypatients' a partir de las terapias filtradas
+      List<Patient> myPatients = [];
 
-    // Recorrer las terapias filtradas y extraer los atributos 'patient'
-    for (var therapy in filteredTherapies) {
-      myPatients.add(therapy.patient);
-    }
-    // Ahora 'myPatients' contendrá la lista de pacientes que cumplan con los requisitos
-    return myPatients;
-
+      // Recorrer las terapias filtradas y extraer los atributos 'patient'
+      for (var therapy in filteredTherapies) {
+        myPatients.add(therapy.patient);
+      }
+      // Ahora 'myPatients' contendrá la lista de pacientes que cumplan con los requisitos
+      return myPatients;
     } else {
       return null;
     }
   }
 
-  Future<Therapy?> getTherapyByPhysioAndPatient(int physiotherapistId, int patientId) async {
-    var endpoint = '/therapies/byPhysioAndPatient/$physiotherapistId/$patientId' ;
+  Future<Therapy?> getTherapyByPhysioAndPatient(
+      int physiotherapistId, int patientId) async {
+    var endpoint =
+        '/therapies/byPhysioAndPatient/$physiotherapistId/$patientId';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
-      
-        return Therapy.fromJson(jsonResponse);
+
+      return Therapy.fromJson(jsonResponse);
     } else {
-        return null;
+      return null;
     }
   }
-      
-  Future<Treatment> addTreatment(int therapyId, String videoUrl, String duration,
-    String title, String description, String day) async {
-    const String endpoint = '/treatments';
+
+  Future<Therapy> addTherapy(
+      String therapyName,
+      String description,
+      String appointmentQuantity,
+      String startAt,
+      String finishAt,
+      int patientId) async {
+    const String endpoint = '/therapies';
     final String url = '$urlBase$endpoint';
 
     final Map<String, dynamic> requestBody = {
-      'therapyId': therapyId,
-      'videoUrl': videoUrl,
-      'duration': duration,
-      'title': title,
+      'therapyName': therapyName,
       'description': description,
-      'day': day,
-      'viewed': false 
+      'appointmentQuantity': appointmentQuantity,
+      'startAt': startAt,
+      'finishAt': finishAt,
+      'finished': false,
+      'patientId': patientId
     };
 
     final encodedBody = json.encode(requestBody);
@@ -278,6 +285,48 @@ class HttpHelper {
       'Content-Type': 'application/json',
     };
 
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: encodedBody,
+      headers: headers,
+    );
+
+    if (response.statusCode == 201) {
+      final jsonResponse = json.decode(response.body);
+      return Therapy.fromJson(jsonResponse);
+    } else {
+      throw Exception(
+          'Failed to create physiotherapist. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<Appointment> addAppointment(String topic, String date, String hour,
+      String place, int therapyId) async {
+    const String endpoint = '/appointments';
+    final String url = '$urlBase$endpoint';
+
+    final Map<String, dynamic> requestBody = {
+      'done': false,
+      'topic': topic,
+      'diagnosis': "This appointment have not finished yet",
+      'date': date,
+      'hour': hour,
+      'place': place,
+      'therapyId': therapyId
+    };
+
+    final encodedBody = json.encode(requestBody);
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
 
     http.Response response = await http.post(
       Uri.parse(url),
@@ -286,13 +335,54 @@ class HttpHelper {
     );
 
     if (response.statusCode == 201) {
-        final jsonResponse = json.decode(response.body);
-        return Treatment.fromJson(jsonResponse);
-      } else {
-        throw Exception(
-            'Failed to create physiotherapist. Status code: ${response.statusCode}');
-      }
-}
+      final jsonResponse = json.decode(response.body);
+      return Appointment.fromJson(jsonResponse);
+    } else {
+      throw Exception(
+          'Failed to create physiotherapist. Status code: ${response.statusCode}');
+    }
+  }
 
+  Future<Treatment> addTreatment(int therapyId, String videoUrl,
+      String duration, String title, String description, String day) async {
+    const String endpoint = '/treatments';
+    final String url = '$urlBase$endpoint';
 
+    final Map<String, dynamic> requestBody = {
+      'therapyId': therapyId,
+      'videoUrl': videoUrl,
+      'duration': duration,
+      'title': title,
+      'description': description,
+      'day': day,
+      'viewed': false
+    };
+
+    final encodedBody = json.encode(requestBody);
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: encodedBody,
+      headers: headers,
+    );
+
+    if (response.statusCode == 201) {
+      final jsonResponse = json.decode(response.body);
+      return Treatment.fromJson(jsonResponse);
+    } else {
+      throw Exception(
+          'Failed to create physiotherapist. Status code: ${response.statusCode}');
+    }
+  }
 }
