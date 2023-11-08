@@ -5,8 +5,8 @@ import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app_theraphy/ui/therapy/new-appointment.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-video.dart';
-
 
 class MyTherapy extends StatefulWidget {
   const MyTherapy({super.key});
@@ -16,7 +16,6 @@ class MyTherapy extends StatefulWidget {
 }
 
 class _MyTherapyState extends State<MyTherapy> {
-
   HttpHelper? _httpHelper;
   Therapy? therapies;
 
@@ -35,10 +34,10 @@ class _MyTherapyState extends State<MyTherapy> {
 
   Future initialize() async {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
-  
+
     therapies = null;
     therapies = await _httpHelper?.getTherapyByPhysioAndPatient(patientId, id!);
-   
+
     setState(() {
       therapies = therapies;
       print(therapies?.id);
@@ -46,12 +45,12 @@ class _MyTherapyState extends State<MyTherapy> {
       therapyName = therapies!.therapyName;
 
       dateTime1 = format.parse(therapies!.startAt);
-      dateTime2= format.parse(therapies!.finishAt);
+      dateTime2 = format.parse(therapies!.finishAt);
 
       difference = dateTime2.difference(dateTime1).inDays;
 
-      days = List.generate(
-      difference + 1, (index) => "Día ${index + 1}", growable: false);
+      days = List.generate(difference + 1, (index) => "Día ${index + 1}",
+          growable: false);
       dateShowed = format.format(dateTime1);
     });
   }
@@ -66,7 +65,7 @@ class _MyTherapyState extends State<MyTherapy> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-     return Scaffold(
+    return Scaffold(
       backgroundColor: const Color(0xFFF5F5F8), // Fondo F5F5F8
       appBar: AppBar(
         backgroundColor: const Color(0xFFF5F5F8), // Fondo F5F5F8
@@ -99,7 +98,7 @@ class _MyTherapyState extends State<MyTherapy> {
           children: <Widget>[
             Container(
               padding: const EdgeInsets.all(16.0),
-              child:  Text(
+              child: Text(
                 therapyName,
                 style: const TextStyle(
                   fontSize: 20,
@@ -125,12 +124,14 @@ class _MyTherapyState extends State<MyTherapy> {
               height: 60, // Altura del contenedor grande
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(40.0), // Radio de borde para esquinas curvas
+                borderRadius: BorderRadius.circular(
+                    40.0), // Radio de borde para esquinas curvas
               ),
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 5.0),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0), // Agrega un radio de 40 a los bordes izquierdo y derecho
+                  borderRadius: BorderRadius.circular(
+                      20.0), // Agrega un radio de 40 a los bordes izquierdo y derecho
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border(
@@ -153,7 +154,8 @@ class _MyTherapyState extends State<MyTherapy> {
                           onTap: () {
                             setState(() {
                               _currentIndex = index;
-                              dateShowed = format.format(dateTime1.add(Duration(days: _currentIndex)));
+                              dateShowed = format.format(
+                                  dateTime1.add(Duration(days: _currentIndex)));
                             });
                           },
                           child: Container(
@@ -161,14 +163,18 @@ class _MyTherapyState extends State<MyTherapy> {
                             height: 40,
                             margin: const EdgeInsets.symmetric(horizontal: 5.0),
                             decoration: BoxDecoration(
-                              color: _currentIndex == index ? const Color(0xFF013D98) : const Color(0xFFB0D0FF),
+                              color: _currentIndex == index
+                                  ? const Color(0xFF013D98)
+                                  : const Color(0xFFB0D0FF),
                               borderRadius: BorderRadius.circular(50.0),
                             ),
                             child: Center(
                               child: Text(
                                 day,
                                 style: TextStyle(
-                                  color: _currentIndex == index ? Colors.white : const Color(0xFF013D98),
+                                  color: _currentIndex == index
+                                      ? Colors.white
+                                      : const Color(0xFF013D98),
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -179,116 +185,119 @@ class _MyTherapyState extends State<MyTherapy> {
                       }).toList(),
                     ),
                   ),
-                ),     
+                ),
               ),
             ),
-           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(
-                height: 30.0,
-              ),
-               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  dateShowed,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF013D98),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(
+                  height: 30.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: Text(
+                    dateShowed,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF013D98),
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(
-                height: 10.0,
-              ),
-              // Línea que dice "Create a Therapy Video"
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "Create a Therapy Video",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                const SizedBox(
+                  height: 10.0,
                 ),
-              ),
-
-              // Botón "Add video" con color de fondo personalizado y ancho del 80%
-              FractionallySizedBox(
-                widthFactor: 0.7, // Ancho del 80%
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Lógica para el botón "Add video"
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewVideo(initialIndex: _currentIndex),
-                    ));
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF014DBF)),
-                  ),
-                  child: const Text("Add Video",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                ),
-              ),
-              const SizedBox(
-                height: 50.0,
-              ),
-              // Texto que dice "Schedule an Appointment"
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "Schedule an Appointment",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              // Botón "Add appointment" con color de fondo personalizado
-              FractionallySizedBox(
-                widthFactor: 0.7, // Ancho del 80%
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Lógica para el botón "Add appointment"
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF014DBF)),
-                  ),
-                  child: const Text("Add Appointment", 
+                // Línea que dice "Create a Therapy Video"
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                  child: Text(
+                    "Create a Therapy Video",
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-            
 
+                // Botón "Add video" con color de fondo personalizado y ancho del 80%
+                FractionallySizedBox(
+                  widthFactor: 0.7, // Ancho del 80%
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Lógica para el botón "Add video"
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                NewVideo(initialIndex: _currentIndex),
+                          ));
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color(0xFF014DBF)),
+                    ),
+                    child: const Text(
+                      "Add Video",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 50.0,
+                ),
+                // Texto que dice "Schedule an Appointment"
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                  child: Text(
+                    "Schedule an Appointment",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                // Botón "Add appointment" con color de fondo personalizado
+                FractionallySizedBox(
+                  widthFactor: 0.7, // Ancho del 80%
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Lógica para el botón "Add video"
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                NewAppointment(initialIndex: _currentIndex),
+                          ));
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color(0xFF014DBF)),
+                    ),
+                    child: const Text(
+                      "Add Appointment",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
             // Aquí puedes agregar el contenido adicional de tu página
           ],
         ),
       ),
     );
-
-
-
-
-
-
   }
 }
