@@ -4,6 +4,8 @@ import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/profile/physiotherapist_profile.dart';
 import 'package:mobile_app_theraphy/ui/security/patient-register.dart';
 import 'package:mobile_app_theraphy/ui/security/sign-up.dart';
+import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
+import 'package:mobile_app_theraphy/ui/therapy/new-therapy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget { 
@@ -164,7 +166,7 @@ class _LoginState extends State<Login> {
               ),
             ],
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(top: 10, right: 20),
             child: Align(
               alignment: Alignment.centerRight,
@@ -189,7 +191,9 @@ class _LoginState extends State<Login> {
                     Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ProfilePage(),
+
+                      builder: (context) => const MyTherapy(),
+
                     ));
                 // Acción a realizar al presionar el botó
                   } catch (error) {

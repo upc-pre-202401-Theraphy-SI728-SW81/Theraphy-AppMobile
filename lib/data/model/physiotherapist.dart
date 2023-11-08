@@ -9,8 +9,8 @@ class Physiotherapist {
   final String photoUrl;
   final String birthdayDate;
   final double rating;
-  final int consultationsQuantity;
-  final int patinentQuantity;
+  final int consultationQuantity;
+  final int patientQuantity;
   final int yearsExperience;
   final double fees;
   final User user;
@@ -24,8 +24,8 @@ class Physiotherapist {
       required this.photoUrl,
       required this.birthdayDate,
       required this.rating,
-      required this.consultationsQuantity,
-      required this.patinentQuantity,
+      required this.consultationQuantity,
+      required this.patientQuantity,
       required this.yearsExperience,
       required this.fees,
       required this.user});
@@ -40,8 +40,8 @@ class Physiotherapist {
       'photoUrl': photoUrl,
       'birthdayDate': birthdayDate,
       'rating': rating,
-      'consultationsQuantity': consultationsQuantity,
-      'patinentQuantity': patinentQuantity,
+      'consultationQuantity': consultationQuantity,
+      'patientQuantity': patientQuantity,
       'yearsExperience': yearsExperience,
       'fees': fees,
     };
@@ -57,8 +57,8 @@ class Physiotherapist {
             photoUrl: json['photoUrl'],
             birthdayDate: json['birthdayDate'],
             rating: json['rating'],
-            consultationsQuantity: json['consultationQuantity'],
-            patinentQuantity: json['patientQuantity'],
+            consultationQuantity: json['consultationQuantity'],
+            patientQuantity: json['patientQuantity'],
             yearsExperience: json['yearsExperience'],
             fees: json['fees'],
             user: User.fromJson(json['user']));

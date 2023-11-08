@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "994229341685",
+    "project_id": "theraphy-71e99",
+    "storage_bucket": "theraphy-71e99.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994229341685:android:a0c6445ed4ce930614e4bc",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app_theraphy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnB5ALXeugA9h5W8LnoeWqbofJF9kewmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
