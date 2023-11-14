@@ -3,6 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:mobile_app_theraphy/data/model/consultation.dart';
+import 'package:mobile_app_theraphy/data/model/diagnosis.dart';
+import 'package:mobile_app_theraphy/data/model/medical_history.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
@@ -158,14 +161,13 @@ class HttpHelper {
   }
 
   Future<int> getPhysiotherapistLogged() async {
+    const reference = '/physiotherapists';
+    const getPhysiotherapistLoggedEndpoint = '/profile';
+    final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
 
-      const reference = '/physiotherapists';
-      const getPhysiotherapistLoggedEndpoint = '/profile';
-      final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
-
-     final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
-
+    print(jwtToken);
     if (jwtToken == null) {
       throw Exception('JWT Token not found in SharedPreferences.');
     }
@@ -183,19 +185,51 @@ class HttpHelper {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
+        print("llegueeeee adasdsa");
         print(response.body);
         return Physiotherapist.fromJson(jsonResponse).id;
       } else {
-        throw Exception('Failed to get physiotherapist logged. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to get physiotherapist logged. Status code: ${response.statusCode}');
       }
     } catch (exception) {
       print('Error: $exception');
       throw Exception('Failed to get physiotherapist logged.');
     }
-    }
+  }
 
   Future<List<Patient>?> getMyPatients(int physiotherapistId) async {
-    const endpoint = '/therapies';
+    String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> consultationsMap = jsonResponse['content'];
+      final List<Consultation> consultations =
+          consultationsMap.map((map) => Consultation.fromJson(map)).toList();
+
+      List<Patient> myPatients = [];
+      Set<String> patientDNIs = <String>{};
+
+      for (Consultation consultation in consultations) {
+        String patientDNI = consultation.patient.dni;
+        if (!patientDNIs.contains(patientDNI)) {
+          patientDNIs.add(patientDNI);
+          myPatients.add(consultation.patient);
+        }
+      }
+
+      return myPatients;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Patient>?> getMyPatientsWithTheraphy(
+      int physiotherapistId) async {
+    const String endpoint = '/therapies';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -212,16 +246,147 @@ class HttpHelper {
             !therapy.finished;
       }).toList();
 
-       // Crear una lista de 'mypatients' a partir de las terapias filtradas
-    List<Patient> myPatients = [];
+      // Crear una lista de 'mypatients' a partir de las terapias filtradas
+      List<Patient> myPatients = [];
 
-    // Recorrer las terapias filtradas y extraer los atributos 'patient'
-    for (var therapy in filteredTherapies) {
-      myPatients.add(therapy.patient);
+      // Recorrer las terapias filtradas y extraer los atributos 'patient'
+      for (var therapy in filteredTherapies) {
+        myPatients.add(therapy.patient);
+      }
+
+      return myPatients;
+    } else {
+      return null;
     }
-    // Ahora 'myPatients' contendrá la lista de pacientes que cumplan con los requisitos
-    return myPatients;
+  }
 
+  Future<List<Patient>?> getMyPatientsOnlyConsultation(
+      int physiotherapistId) async {
+    String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> consultationsMap = jsonResponse['content'];
+      final List<Consultation> consultations =
+          consultationsMap.map((map) => Consultation.fromJson(map)).toList();
+
+      List<Patient> myPatients = [];
+      Set<String> patientDNIs = <String>{};
+
+      for (Consultation consultation in consultations) {
+        String patientDNI = consultation.patient.dni;
+        if (!patientDNIs.contains(patientDNI)) {
+          patientDNIs.add(patientDNI);
+          myPatients.add(consultation.patient);
+        }
+      }
+
+      const String endpoint = '/therapies';
+      final String url = '$urlBase$endpoint';
+
+      http.Response response2 = await http.get(Uri.parse(url));
+
+      if (response2.statusCode == HttpStatus.ok) {
+        final jsonResponse = json.decode(response2.body);
+        final List<dynamic> therapiesMap = jsonResponse['content'];
+        final List<Therapy> therapies =
+            therapiesMap.map((map) => Therapy.fromJson(map)).toList();
+
+        // Filtrar las terapias que cumplan con las condiciones
+        final List<Therapy> filteredTherapies = therapies.where((therapy) {
+          return therapy.physiotherapist.id == physiotherapistId &&
+              !therapy.finished;
+        }).toList();
+
+        // Crear una lista de 'mypatients' a partir de las terapias filtradas
+        List<Patient> myPatientsWithTherapy = [];
+
+        // Recorrer las terapias filtradas y extraer los atributos 'patient'
+        for (var therapy in filteredTherapies) {
+          myPatientsWithTherapy.add(therapy.patient);
+        }
+
+        for (Patient patientWithTherapy in myPatientsWithTherapy) {
+          myPatients
+              .removeWhere((patient) => patient.dni == patientWithTherapy.dni);
+        }
+
+        return myPatients;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Diagnosis>?> getPatientDiagnoses(int patientId) async {
+    final endpoint = '/diagnoses/byPatientId/$patientId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> patientDiagnosesMap = jsonResponse['content'];
+      List<Diagnosis> patientDiagnoses =
+          patientDiagnosesMap.map((map) => Diagnosis.fromJson(map)).toList();
+
+      patientDiagnoses = patientDiagnoses.reversed.toList();
+
+      // Ahora 'myPatients' contendrá la lista de pacientes que cumplan con los requisitos
+      return patientDiagnoses;
+    }
+
+    return null;
+  }
+
+  Future<Therapy?> getPatientTherapy(int patientId) async {
+    final endpoint = '/therapies/byPatientId/$patientId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> patientTherapiesMap = jsonResponse['content'];
+      List<Therapy> patientTherapies =
+          patientTherapiesMap.map((map) => Therapy.fromJson(map)).toList();
+
+      Therapy? unfinishedPatientTherapy;
+
+      for (var therapy in patientTherapies) {
+        if (!therapy.finished) {
+          unfinishedPatientTherapy = therapy;
+          break; // Termina el bucle una vez que se encuentra el primer elemento no terminado
+        }
+      }
+      if (unfinishedPatientTherapy != null) {
+        // Has encontrado el primer elemento no terminado
+        return unfinishedPatientTherapy;
+      } else {
+        // No se encontraron elementos no terminados
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  Future<MedicalHistory?> getMedicalHistoryByPatientId(int patientId) async {
+    String endpoint = '/medical-histories/byPatientId/$patientId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final MedicalHistory medicalHistory = MedicalHistory.fromJson(jsonResponse);
+
+      return medicalHistory;
     } else {
       return null;
     }

@@ -11,6 +11,7 @@ class Therapy {
   bool finished;
   Patient patient;
   Physiotherapist physiotherapist;
+  int? patientId;
 
   Therapy(
       {required this.id,
@@ -21,8 +22,22 @@ class Therapy {
       required this.finishAt,
       required this.finished,
       required this.patient,
-      required this.physiotherapist
+      required this.physiotherapist,
+      this.patientId
       });
+
+    Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'therapyName': therapyName,
+      'description': description,      
+      'appointmentQuantity': appointmentQuantity,
+      'startAt': startAt,
+      'finishAt':finishAt,
+      'finished':finished,
+      'patientId':patientId
+    };
+  }
 
   Therapy.fromJson(Map<String, dynamic> json)
       : this(
