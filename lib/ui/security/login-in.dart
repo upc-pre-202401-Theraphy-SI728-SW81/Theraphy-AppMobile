@@ -8,7 +8,7 @@ import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-therapy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Login extends StatefulWidget { 
+class Login extends StatefulWidget {
   const Login({super.key});
 
   @override
@@ -185,21 +185,19 @@ class _LoginState extends State<Login> {
             margin: EdgeInsets.symmetric(horizontal: 20),
             child: ElevatedButton(
               onPressed: () async {
-                  try {
-                    await httpHelper?.login(email, password);
-                    // Por ejemplo: Navigator.pushNamed(context, '/dashboard');
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(
-
-                      builder: (context) => const MyTherapy(),
-
-                    ));
-                // Acción a realizar al presionar el botó
-                  } catch (error) {
-                    // Maneja el error, por ejemplo, muestra un mensaje de error al usuario
-                    print('Error de inicio de sesión: $error');
-                  }
+                try {
+                  await httpHelper?.login(email, password);
+                  // Por ejemplo: Navigator.pushNamed(context, '/dashboard');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfilePage(),
+                      ));
+                  // Acción a realizar al presionar el botó
+                } catch (error) {
+                  // Maneja el error, por ejemplo, muestra un mensaje de error al usuario
+                  print('Error de inicio de sesión: $error');
+                }
               },
               style: ElevatedButton.styleFrom(
                 primary: Colors.blue[700], // Color de fondo

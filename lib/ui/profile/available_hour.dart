@@ -4,7 +4,8 @@ import 'package:mobile_app_theraphy/data/remote/services/availableHour/available
 import 'package:mobile_app_theraphy/ui/profile/physiotherapist_profile.dart';
 
 class AvailabilityPage extends StatefulWidget {
-  const AvailabilityPage({super.key});
+  const AvailabilityPage({super.key, required this.id});
+  final int id;
   //final void Function() initialize;
   @override
   State<AvailabilityPage> createState() => _AvailabilityPageState();
@@ -13,7 +14,7 @@ class AvailabilityPage extends StatefulWidget {
 class _AvailabilityPageState extends State<AvailabilityPage> {
   AvailableHourService? _availableHourService;
   List<AvailableHour>? _availableHours;
-
+  
   Future initialize() async {
     _availableHours = List.empty();
     _availableHours = await _availableHourService?.getAll();
@@ -143,7 +144,8 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
                     // setState(() {
 
                     // });
-                    _availableHourService?.createAvailableHour(0, hour, day, 1);
+                    _availableHourService?.createAvailableHour(
+                        0, hour, day, widget.id);
                     setState(() {
                       daysOfWeek.remove(selectedDay);
                       selectedDay =

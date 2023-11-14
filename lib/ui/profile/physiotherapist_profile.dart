@@ -20,12 +20,14 @@ class _ProfilePageState extends State<ProfilePage> {
   PhysiotherapistService? _physiotherapistService;
   Physiotherapist? _physiotherapist;
   HttpHelper? _httpHelper;
-
+ int? id;
   Future initialize() async {
     _availableHours = List.empty();
-    _availableHours = await _availableHourService?.getAll();
-    int? id = await _httpHelper?.getPhysiotherapistLogged();
-    _physiotherapist = await _physiotherapistService?.getPhysiotherapistById(id!);
+    id = await _httpHelper?.getPhysiotherapistLogged();
+    _availableHours = await _availableHourService?.getByPhysiotherapistId(id!);
+    
+    _physiotherapist =
+        await _physiotherapistService?.getPhysiotherapistById(id!);
     setState(() {
       _availableHours = _availableHours;
     });
@@ -73,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    _physiotherapist?.user.firstName ?? "",
+                    _physiotherapist?.user.firstname ?? "",
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
@@ -224,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const AvailabilityPage(),
+                                builder: (context) => AvailabilityPage(id: id!),
                               ),
                             ).then((value) => initialize());
                           }

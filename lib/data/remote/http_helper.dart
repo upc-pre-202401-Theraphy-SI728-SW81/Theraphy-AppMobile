@@ -12,7 +12,7 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://localhost:8080/api/v1';
+  final String urlBase = 'http://192.168.18.7:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -51,7 +51,8 @@ class HttpHelper {
     final credentials = {'username': username, 'password': password};
     const endpoint = '/auth/authentication';
     final String url = '$urlBase$endpoint';
-
+    print(username);
+    print(password);
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -70,6 +71,8 @@ class HttpHelper {
           // Guardar el accessToken en el almacenamiento local
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('accessToken', accessToken);
+
+          print(accessToken);
         } else {
           throw Exception('Access token not found in the response.');
         }
@@ -175,7 +178,7 @@ class HttpHelper {
       'Authorization': 'Bearer $jwtToken',
       'Content-Type': 'application/json',
     };
-
+    print(jwtToken);
     try {
       final response = await http.get(
         Uri.parse(url),
