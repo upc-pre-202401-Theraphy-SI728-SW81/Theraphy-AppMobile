@@ -5,8 +5,10 @@ import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 
 class NewAppointment extends StatefulWidget {
   final int initialIndex;
+  final int patientId;
 
-  const NewAppointment({Key? key, required this.initialIndex})
+
+  const NewAppointment({Key? key, required this.initialIndex, required this.patientId})
       : super(key: key);
 
   @override
@@ -33,7 +35,6 @@ class _NewAppointmentState extends State<NewAppointment> {
 
   List<String> days = [];
   int _currentIndex = 0;
-  int patientId = 1;
 
   final DateFormat format = DateFormat("yyyy-MM-dd");
   late DateTime dateTime1;
@@ -47,7 +48,7 @@ class _NewAppointmentState extends State<NewAppointment> {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
     _currentIndex = initialIndex;
     therapies = null;
-    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(patientId, id!);
+    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(id!, widget.patientId);
 
     setState(() {
       therapies = therapies;

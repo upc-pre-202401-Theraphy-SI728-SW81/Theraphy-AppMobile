@@ -11,8 +11,9 @@ import 'package:intl/intl.dart';
 
 class NewVideo extends StatefulWidget {
   final int initialIndex;
+  final int patientId;
 
-  const NewVideo({Key? key, required this.initialIndex}) : super(key: key);
+  const NewVideo({Key? key, required this.initialIndex, required this.patientId}) : super(key: key);
 
   @override
   State<NewVideo> createState() => _NewVideoState(initialIndex: initialIndex);
@@ -30,7 +31,6 @@ class _NewVideoState extends State<NewVideo> {
 
   List<String> days = [];
   int _currentIndex = 0;
-  int patientId = 2;
 
   final int initialIndex;
 
@@ -50,7 +50,7 @@ class _NewVideoState extends State<NewVideo> {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
     _currentIndex = initialIndex;
     therapies = null;
-    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(id!, patientId);
+    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(id!, widget.patientId);
 
     setState(() {
       therapies = therapies;

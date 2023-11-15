@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
+import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
 
 class NewTherapy extends StatefulWidget {
-  const NewTherapy({super.key});
+  final int patientId;
+
+  const NewTherapy({Key? key, required this.patientId}) : super(key: key);
 
   @override
   State<NewTherapy> createState() => _NewTherapyState();
@@ -26,7 +29,6 @@ class _NewTherapyState extends State<NewTherapy> {
   int duration = 0;
   String startAt = "";
   String finishAt = "";
-  int patientId = 2;
 
   Future initialize() async {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
@@ -98,7 +100,7 @@ class _NewTherapyState extends State<NewTherapy> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Video's Title",
+                          "Therapy's Title",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -167,6 +169,10 @@ class _NewTherapyState extends State<NewTherapy> {
                           style: const TextStyle(color: Colors.black),
                           keyboardType: TextInputType
                               .number, // Especifica el teclado numérico
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly // Permite solo la entrada de dígitos
+                          ],
                           decoration: InputDecoration(
                             labelText: "Write here", // Etiqueta para el campo
                             enabledBorder: OutlineInputBorder(
@@ -208,7 +214,7 @@ class _NewTherapyState extends State<NewTherapy> {
                                       "0",
                                       startAt,
                                       finishAt,
-                                      patientId,
+                                      widget.patientId,
                                     );
 
                                     Navigator.of(context).pop();
@@ -243,8 +249,17 @@ class _NewTherapyState extends State<NewTherapy> {
                                                     ElevatedButton(
                                                       onPressed: () {
                                                         // Cierra el diálogo emergente
-                                                        Navigator.of(context)
-                                                            .pop();
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    MyTherapy(
+                                                              patientId: widget
+                                                                  .patientId,
+                                                            ),
+                                                          ),
+                                                        );
                                                       },
                                                       style: ButtonStyle(
                                                         backgroundColor:
@@ -254,8 +269,12 @@ class _NewTherapyState extends State<NewTherapy> {
                                                               0xFF014DBF),
                                                         ),
                                                       ),
-                                                      child:
-                                                          const Text("Close"),
+                                                      child: const Text(
+                                                        "Close",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -274,7 +293,12 @@ class _NewTherapyState extends State<NewTherapy> {
                                   const Color(
                                       0xFF014DBF)), // Color de fondo personalizado para el botón "Create Virtual Treatment"
                             ),
-                            child: const Text("Create New Therapy"),
+                            child: const Text(
+                              "Create New Therapy",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         )
                       ],

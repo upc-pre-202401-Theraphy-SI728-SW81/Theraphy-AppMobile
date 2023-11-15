@@ -13,7 +13,9 @@ import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 
 class MyTherapy extends StatefulWidget {
-  const MyTherapy({super.key});
+  final int patientId;
+
+  const MyTherapy({Key? key, required this.patientId}) : super(key: key);
 
   @override
   State<MyTherapy> createState() => _MyTherapyState();
@@ -30,7 +32,6 @@ class _MyTherapyState extends State<MyTherapy> {
 
   List<String> days = [];
   int _currentIndex = 0;
-  int patientId = 2;
 
   final DateFormat format = DateFormat("yyyy-MM-dd");
   late DateTime dateTime1;
@@ -44,7 +45,8 @@ class _MyTherapyState extends State<MyTherapy> {
   Future initialize() async {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
 
-    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(id!, patientId);
+    therapies =
+        await _httpHelper?.getTherapyByPhysioAndPatient(id!, widget.patientId);
 
     setState(() {
       therapies = therapies;
@@ -293,8 +295,10 @@ class _MyTherapyState extends State<MyTherapy> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      NewVideo(initialIndex: _currentIndex),
+                                  builder: (context) => NewVideo(
+                                    initialIndex: _currentIndex,
+                                    patientId: widget.patientId,
+                                  ),
                                 ));
                           },
                           style: ButtonStyle(
@@ -324,7 +328,6 @@ class _MyTherapyState extends State<MyTherapy> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            
                           ),
                         ),
                       ),
@@ -339,7 +342,8 @@ class _MyTherapyState extends State<MyTherapy> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => NewAppointment(
-                                      initialIndex: _currentIndex),
+                                      initialIndex: _currentIndex,
+                                      patientId: widget.patientId,),
                                 ));
                           },
                           style: ButtonStyle(
@@ -351,8 +355,7 @@ class _MyTherapyState extends State<MyTherapy> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Colors
-                                  .white,
+                              color: Colors.white,
                             ),
                           ),
                         ),

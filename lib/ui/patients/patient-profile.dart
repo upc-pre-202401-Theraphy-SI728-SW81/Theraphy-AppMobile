@@ -694,7 +694,7 @@ class _PatientProfileState extends State<PatientProfile> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => NewTherapy(
-                           
+                              patientId: widget.patient.id,
                             ),
                           ),
                         );
@@ -732,7 +732,7 @@ class _PatientProfileState extends State<PatientProfile> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => MyTherapy(
-                           
+                              patientId: patientTherapy!.patient.id,
                             ),
                           ),
                         );
