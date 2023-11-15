@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/available_hour.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/data/remote/services/availableHour/available_hour_service.dart';
 import 'package:mobile_app_theraphy/data/remote/services/physiotherapist/physiotherapist_service.dart';
+import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 import 'package:mobile_app_theraphy/ui/profile/available_hour.dart';
 import 'package:mobile_app_theraphy/ui/profile/edit_profile.dart';
 
@@ -15,12 +17,26 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  int selectedIndex = 4;
   AvailableHourService? _availableHourService;
   List<AvailableHour>? _availableHours;
   PhysiotherapistService? _physiotherapistService;
   Physiotherapist? _physiotherapist;
   HttpHelper? _httpHelper;
  int? id;
+
+ List<Widget> pages = const [
+    PatientsList(),
+    ProfilePage(),
+    ProfilePage(),
+    ProfilePage(),
+    ProfilePage(),
+    //HomePhysiotherapist(),
+    
+    //ListAppointments(),
+    //ListTreatments(),
+    
+  ];
   Future initialize() async {
     _availableHours = List.empty();
     id = await _httpHelper?.getPhysiotherapistLogged();
@@ -56,10 +72,24 @@ class _ProfilePageState extends State<ProfilePage> {
         return false; //no estoy seguro si poner eso ..pongo eso y pongo un boton para retroceder a la pagina anterior o de inicio
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("Fisioterapeuta Profile"),
-          backgroundColor: Colors.blue,
+        title: Padding(
+          padding: const EdgeInsets.only(
+              top: 20), // Ajusta la cantidad de espacio según tus necesidades
+          child: Text(
+            "My Profile",
+            style: TextStyle(
+              color: AppConfig.primaryColor,
+              fontSize: 24,
+            ),
+          ),
         ),
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+        automaticallyImplyLeading: false,
+        elevation: 0,
+      ),
         body: SingleChildScrollView(
           child: Center(
             child: Container(
@@ -238,6 +268,74 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
+        bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(10.0),
+          ),
+          border: Border.all(
+            color: Colors.black,
+            width: 1.0,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(10.0),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: selectedIndex,
+            onTap: (int index) {
+              setState(() {
+                selectedIndex = index;
+              });
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => pages[index]),
+              );
+            },
+            unselectedItemColor: const Color.fromARGB(255, 104, 104, 104),
+            selectedItemColor: Colors.black,
+            items: [
+              BottomNavigationBarItem(
+                icon: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: const Icon(Icons.home),
+                ),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: const Icon(Icons.people),
+                ),
+                label: 'Patients',
+              ),
+              BottomNavigationBarItem(
+                icon: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: const Icon(Icons.calendar_month),
+                ),
+                label: 'Appointments',
+              ),
+              BottomNavigationBarItem(
+                icon: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: const Icon(Icons.video_collection),
+                ),
+                label: 'Treatments',
+              ),
+              BottomNavigationBarItem(
+                icon: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: const Icon(Icons.person),
+                ),
+                label: 'Profile',
+              ),
+            ],
+          ),
+        ),
+      ),
       ),
     );
   }

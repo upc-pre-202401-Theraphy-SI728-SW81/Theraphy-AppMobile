@@ -7,6 +7,8 @@ import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 import 'package:mobile_app_theraphy/ui/patients/register-medical-history.dart';
+import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
+import 'package:mobile_app_theraphy/ui/therapy/new-therapy.dart';
 
 class PatientProfile extends StatefulWidget {
   const PatientProfile({Key? key, required this.patient}) : super(key: key);
@@ -688,7 +690,14 @@ class _PatientProfileState extends State<PatientProfile> {
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
                 onPressed: () {
-                  // Coloca aquí la acción que deseas realizar al hacer clic en el botón.
+                 Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewTherapy(
+                           
+                            ),
+                          ),
+                        );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: AppConfig.primaryColor, // Color de fondo azul
@@ -719,7 +728,14 @@ class _PatientProfileState extends State<PatientProfile> {
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
                 onPressed: () {
-                  // Coloca aquí la acción que deseas realizar al hacer clic en el botón.
+                  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyTherapy(
+                           
+                            ),
+                          ),
+                        );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppConfig.primaryColor, // Color de fondo azul

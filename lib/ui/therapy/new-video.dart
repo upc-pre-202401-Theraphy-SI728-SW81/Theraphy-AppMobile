@@ -30,7 +30,7 @@ class _NewVideoState extends State<NewVideo> {
 
   List<String> days = [];
   int _currentIndex = 0;
-  int patientId = 1;
+  int patientId = 2;
 
   final int initialIndex;
 
@@ -50,7 +50,7 @@ class _NewVideoState extends State<NewVideo> {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
     _currentIndex = initialIndex;
     therapies = null;
-    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(patientId, id!);
+    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(id!, patientId);
 
     setState(() {
       therapies = therapies;

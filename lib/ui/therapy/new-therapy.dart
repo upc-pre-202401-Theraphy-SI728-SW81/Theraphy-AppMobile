@@ -185,78 +185,88 @@ class _NewTherapyState extends State<NewTherapy> {
                         Center(
                           child: ElevatedButton(
                             onPressed: () async {
-                              // Agrega aquí la lógica para crear un tratamiento virtual
                               title = titleController.text;
                               descripction = descripcionController.text;
                               if (durationController.text.isNotEmpty) {
-                                duration = int.tryParse(
-                                        durationController.text) ??
-                                    0; // Usamos ?? 0 para asignar 0 en caso de que la conversión falle
-                                print(duration);
+                                duration =
+                                    int.tryParse(durationController.text) ?? 0;
                                 finishAt = format.format(
                                     dateTime1.add(Duration(days: duration)));
-                                print(finishAt);
                               } else {
-                                duration =
-                                    0; // Asignamos 0 si el campo de entrada está vacío
+                                duration = 0;
                               }
+
                               if (title != "" &&
                                   descripction != "" &&
                                   duration != 0) {
-                                _httpHelper?.addTherapy(title, descripction,
-                                    "0", startAt, finishAt, patientId);
+                                // Verificar si el widget está montado antes de llamar a setState
+                                if (mounted) {
+                                  setState(() {
+                                    _httpHelper?.addTherapy(
+                                      title,
+                                      descripction,
+                                      "0",
+                                      startAt,
+                                      finishAt,
+                                      patientId,
+                                    );
 
-                                Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
 
-                                // Muestra un diálogo emergente con el mensaje de éxito
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Center(
-                                      child: SimpleDialog(
-                                        title: const Column(
-                                          children: [
-                                            Icon(Icons.check,
-                                                color: Colors.green,
-                                                size:
-                                                    80), // Icono de check más grande
-                                            SizedBox(height: 10),
-                                            Center(
-                                              child: Text(
-                                                "The new Therapy has been creted successfully",
-                                                textAlign: TextAlign
-                                                    .center, // Alinea el texto al centro
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        children: <Widget>[
-                                          Center(
-                                            child: Column(
+                                    // Muestra un diálogo emergente con el mensaje de éxito
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Center(
+                                          child: SimpleDialog(
+                                            title: const Column(
                                               children: [
-                                                const SizedBox(height: 10),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    // Cierra el diálogo emergente
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty.all<
-                                                                Color>(
-                                                            const Color(
-                                                                0xFF014DBF)), // Color de fondo personalizado para el botón "Cerrar"
+                                                Icon(
+                                                  Icons.check,
+                                                  color: Colors.green,
+                                                  size: 80,
+                                                ),
+                                                SizedBox(height: 10),
+                                                Center(
+                                                  child: Text(
+                                                    "The new Therapy has been created successfully",
+                                                    textAlign: TextAlign.center,
                                                   ),
-                                                  child: const Text("Close"),
                                                 ),
                                               ],
                                             ),
+                                            children: <Widget>[
+                                              Center(
+                                                child: Column(
+                                                  children: [
+                                                    const SizedBox(height: 10),
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        // Cierra el diálogo emergente
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                          const Color(
+                                                              0xFF014DBF),
+                                                        ),
+                                                      ),
+                                                      child:
+                                                          const Text("Close"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
+                                        );
+                                      },
                                     );
-                                  },
-                                );
+                                  });
+                                }
                               }
                             },
                             style: ButtonStyle(

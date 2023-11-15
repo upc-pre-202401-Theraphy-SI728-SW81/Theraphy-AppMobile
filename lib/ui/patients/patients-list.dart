@@ -4,6 +4,7 @@ import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/patients/patient-profile.dart';
 import 'package:mobile_app_theraphy/ui/patients/prueba.dart';
+import 'package:mobile_app_theraphy/ui/profile/physiotherapist_profile.dart';
 
 class PatientsList extends StatefulWidget {
   const PatientsList({super.key});
@@ -22,11 +23,16 @@ class _PatientsListState extends State<PatientsList> {
   bool _onlyConsultation = false;
 
   List<Widget> pages = const [
-    //HomePhysiotherapist(),
     PatientsList(),
+    ProfilePage(),
+    ProfilePage(),
+    ProfilePage(),
+    ProfilePage(),
+    //HomePhysiotherapist(),
+    
     //ListAppointments(),
     //ListTreatments(),
-    //PhysiotherapistProfile(),
+    
   ];
 
   Future initialize() async {

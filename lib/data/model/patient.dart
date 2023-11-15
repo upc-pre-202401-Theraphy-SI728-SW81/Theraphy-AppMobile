@@ -7,8 +7,8 @@ class Patient{
     String photoUrl;
     String birthdayDate;
     int appointmentQuantity;
-    String location;
-    User user;    
+    String location; 
+    User user;   
     
   Patient({
     required this.id,
