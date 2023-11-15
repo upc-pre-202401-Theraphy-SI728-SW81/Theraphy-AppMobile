@@ -125,8 +125,8 @@ class HttpHelper {
     }
   }
 
-  Future<Physiotherapist> createPhysiotherapist(
-      Physiotherapist physiotherapist) async {
+  Future<CPhysiotherapist> createPhysiotherapist(
+      CPhysiotherapist physiotherapist) async {
     const reference = '/physiotherapists';
     const createPhysiotherapistEndpoint = '/registration-physiotherapist';
     final String createPhysiotherapistUrl =
@@ -153,7 +153,7 @@ class HttpHelper {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        return Physiotherapist.fromJson(jsonResponse);
+        return CPhysiotherapist.fromJson(jsonResponse);
       } else {
         throw Exception(
             'Failed to create physiotherapist. Status code: ${response.statusCode}');
