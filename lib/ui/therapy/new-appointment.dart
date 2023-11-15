@@ -111,7 +111,7 @@ class _NewAppointmentState extends State<NewAppointment> {
         ),
         body: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * 0.05,
+              horizontal: MediaQuery.of(context).size.width * 0.00,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,8 +127,8 @@ class _NewAppointmentState extends State<NewAppointment> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16.0),
-                    margin: const EdgeInsets.only(bottom: 16.0),
+                    //padding: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.all(16.0),
                     child: Text(
                       therapyDescription,
                       style: const TextStyle(
@@ -139,8 +139,8 @@ class _NewAppointmentState extends State<NewAppointment> {
                   ),
                   // Carrusel de días
                   Container(
-                    margin: const EdgeInsets.only(left: 16.0, right: 16.0),
-                    padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                    //margin: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    //padding: const EdgeInsets.only(left: 4.0, right: 4.0),
                     height: 60, // Altura del contenedor grande
                     decoration: BoxDecoration(
                       color: const Color(0xFFF5F5F8),
@@ -320,7 +320,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                                         ),
                                       ),
                                       const SizedBox(
-                                        height: 20.0,
+                                        height: 30.0,
                                       ),
                                       Center(
                                         child: ElevatedButton(
@@ -330,7 +330,12 @@ class _NewAppointmentState extends State<NewAppointment> {
 
                                             if (title != "") {
                                               Navigator.of(context).pop();
-                                              _httpHelper?.addAppointment(title, dateShowed, selectedHour, therapies!.patient.location,therapies!.id);
+                                              _httpHelper?.addAppointment(
+                                                  title,
+                                                  dateShowed,
+                                                  selectedHour,
+                                                  therapies!.patient.location,
+                                                  therapies!.id);
                                               // Muestra un diálogo emergente con el mensaje de éxito
                                               showDialog(
                                                 context: context,
@@ -396,11 +401,17 @@ class _NewAppointmentState extends State<NewAppointment> {
                                           ),
                                           child: Container(
                                             height:
-                                                50.0, // Establece el alto deseado para el botón
+                                                60.0, // Establece el alto deseado para el botón
                                             child: const Center(
                                               child: Text(
                                                 "Schedule appointment",
                                                 textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors
+                                                      .white, // Agrega esta línea para establecer el color del texto a negro
+                                                ),
                                               ),
                                             ),
                                           ),

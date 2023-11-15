@@ -23,7 +23,7 @@ class _MyTherapyState extends State<MyTherapy> {
   HttpHelper? _httpHelper;
   Therapy? therapies;
 
-  bool isTreatment = true;
+  bool isTreatment = false;
 
   String therapyName = "";
   String therapyDescription = "";
@@ -120,7 +120,7 @@ class _MyTherapyState extends State<MyTherapy> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.05,
+          horizontal: MediaQuery.of(context).size.width * 0.0,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,8 +136,8 @@ class _MyTherapyState extends State<MyTherapy> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(16.0),
-              margin: const EdgeInsets.only(bottom: 16.0),
+              //padding: const EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
               child: Text(
                 therapyDescription,
                 style: const TextStyle(
@@ -148,8 +148,8 @@ class _MyTherapyState extends State<MyTherapy> {
             ),
             // Carrusel de días
             Container(
-              margin: const EdgeInsets.only(left: 16.0, right: 16.0),
-              padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+              // margin: const EdgeInsets.only(left: 16.0, right: 16.0),
+              //padding: const EdgeInsets.only(left: 4.0, right: 4.0),
               height: 60, // Altura del contenedor grande
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -159,21 +159,21 @@ class _MyTherapyState extends State<MyTherapy> {
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 5.0),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                      20.0), // Agrega un radio de 40 a los bordes izquierdo y derecho
+                  // borderRadius: BorderRadius.circular(
+                  //     20.0), // Agrega un radio de 40 a los bordes izquierdo y derecho
                   child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: const Color(0xFF014DBF).withOpacity(0.9),
-                          width: 20.0, // Ancho de la sombra izquierda
-                        ),
-                        right: BorderSide(
-                          color: const Color(0xFF014DBF).withOpacity(0.9),
-                          width: 20.0, // Ancho de la sombra derecha
-                        ),
-                      ),
-                    ),
+                    // decoration: BoxDecoration(
+                    //   border: Border(
+                    //     left: BorderSide(
+                    //       color: const Color(0xFF014DBF).withOpacity(0.9),
+                    //       width: 20.0, // Ancho de la sombra izquierda
+                    //     ),
+                    //     right: BorderSide(
+                    //       color: const Color(0xFF014DBF).withOpacity(0.9),
+                    //       width: 20.0, // Ancho de la sombra derecha
+                    //     ),
+                    //   ),
+                    // ),
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: days.asMap().entries.map((entry) {
@@ -273,7 +273,7 @@ class _MyTherapyState extends State<MyTherapy> {
                       ),
                       // Línea que dice "Create a Therapy Video"
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20.0),
+                        padding: EdgeInsets.symmetric(vertical: 10.0),
                         child: Text(
                           "Create a Therapy Video",
                           textAlign: TextAlign.center,
@@ -306,22 +306,25 @@ class _MyTherapyState extends State<MyTherapy> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
+                              color: Colors
+                                  .white, // Agrega esta línea para establecer el color del texto a negro
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(
-                        height: 50.0,
+                        height: 40.0,
                       ),
                       // Texto que dice "Schedule an Appointment"
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20.0),
+                        padding: EdgeInsets.symmetric(vertical: 10.0),
                         child: Text(
                           "Schedule an Appointment",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            
                           ),
                         ),
                       ),
@@ -348,6 +351,8 @@ class _MyTherapyState extends State<MyTherapy> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
+                              color: Colors
+                                  .white,
                             ),
                           ),
                         ),
