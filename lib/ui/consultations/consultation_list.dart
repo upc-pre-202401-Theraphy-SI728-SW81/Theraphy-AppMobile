@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
@@ -301,8 +302,10 @@ class _ConsultationsListState extends State<ConsultationsList> {
             ),
           ],
         ),
-      ),);
- 
+      ),
+       bottomNavigationBar: NavBar(currentIndex: 3)
+      );
+       
   }
 }
 

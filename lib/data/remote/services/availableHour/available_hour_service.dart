@@ -6,7 +6,7 @@ import 'package:mobile_app_theraphy/data/model/available_hour.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AvailableHourService {
-  final String baseUrl = 'http://10.11.128.23:8080/api/v1/available-hours';
+  final String baseUrl = 'https://api-iotheraphy-production.up.railway.app/api/v1/available-hours';
 
   Future<List<AvailableHour>?> getAll() async {
     final http.Response response = await http.get(Uri.parse(baseUrl));

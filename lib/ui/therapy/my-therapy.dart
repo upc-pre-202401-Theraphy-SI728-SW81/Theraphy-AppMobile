@@ -532,7 +532,7 @@ class _MyTherapyState extends State<MyTherapy> {
           ],
         ),
       ),
-      //bottomNavigationBar: NavBar(),
+      
     );
   }
 }

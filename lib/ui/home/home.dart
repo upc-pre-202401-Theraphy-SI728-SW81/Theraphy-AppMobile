@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
@@ -67,6 +68,7 @@ class _HomePhysiotherapistState extends State<HomePhysiotherapist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           "Hello, ${physiotherapistLogged?.user.firstname}",
@@ -288,6 +290,9 @@ class _HomePhysiotherapistState extends State<HomePhysiotherapist> {
           ),
         ],
       ),
+    
+      bottomNavigationBar: NavBar(currentIndex: 0)
+
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
+import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/patients/patient-profile.dart';
@@ -293,74 +294,7 @@ class _PatientsListState extends State<PatientsList> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(10.0),
-          ),
-          border: Border.all(
-            color: Colors.black,
-            width: 1.0,
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(10.0),
-          ),
-          child: BottomNavigationBar(
-            currentIndex: selectedIndex,
-            onTap: (int index) {
-              setState(() {
-                selectedIndex = index;
-              });
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => pages[index]),
-              );
-            },
-            unselectedItemColor: const Color.fromARGB(255, 104, 104, 104),
-            selectedItemColor: Colors.black,
-            items: [
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.home),
-                ),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.people),
-                ),
-                label: 'Patients',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.calendar_month),
-                ),
-                label: 'Appointments',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.video_collection),
-                ),
-                label: 'Treatments',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.person),
-                ),
-                label: 'Profile',
-              ),
-            ],
-          ),
-        ),
-      ),
+      bottomNavigationBar:NavBar(currentIndex: 1)
     );
   }
 }
