@@ -20,6 +20,8 @@ import 'package:mobile_app_theraphy/ui/therapy/new-video.dart';
 import 'package:chewie/chewie.dart';
 import 'package:mobile_app_theraphy/ui/therapy/video-player.dart';
 import 'package:video_player/video_player.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class MyTherapy extends StatefulWidget {
   final int patientId;
@@ -50,6 +52,8 @@ class _MyTherapyState extends State<MyTherapy> {
   int difference = 0;
   String dateShowed = "";
   String pastDateShowed = "";
+  final String _cellNumber = "955110309";
+
   Future initialize() async {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
     _currentIndex = widget.indexx;
@@ -336,19 +340,35 @@ class _MyTherapyState extends State<MyTherapy> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       const SizedBox(height: 12.0),
-                                      Center(
-                                        child: Text(
-                                          "You have scheduled an Appointment Today:  ",
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppConfig.primaryColor,
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 250,
+                                            child: Text(
+                                              "You have scheduled an Appointment Today:  ",
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppConfig.primaryColor,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          IconButton(
+                                            onPressed: () {
+                                              _makePhoneCall();
+
+                                              // Lógica para el icono de teléfono
+                                              // Agrega aquí el código que se ejecutará al presionar el icono de teléfono
+                                            },
+                                            icon: const Icon(
+                                              Icons.phone,
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(height: 12.0),
                                       Wrap(
-                                        // Puedes ajustar el espacio entre los elementos aquí
                                         spacing: 16.0,
                                         children: [
                                           Center(
@@ -433,10 +453,43 @@ class _MyTherapyState extends State<MyTherapy> {
                                         ],
                                       ),
                                       const SizedBox(height: 25.0),
+                                      Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                // Lógica para "See Diagnosis"
+                                                // Agrega aquí el código que se ejecutará al presionar el botón "See Diagnosis"
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: AppConfig.primaryColor,
+                                                onPrimary: Colors.white,
+                                              ),
+                                              child:
+                                                  const Text("See Diagnosis"),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                // Lógica para "Go to Map"
+                                                // Agrega aquí el código que se ejecutará al presionar el botón "Go to Map"
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: AppConfig.primaryColor,
+                                                onPrimary: Colors.white,
+                                              ),
+                                              child: const Text("Go to Map"),
+                                            ),
+                                            const SizedBox(height: 10),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                         )
@@ -550,4 +603,14 @@ class _MyTherapyState extends State<MyTherapy> {
       ),
     );
   }
+
+  void _makePhoneCall() async {
+  final String phoneUrl = 'tel:$_cellNumber';
+
+  if (await canLaunch(phoneUrl)) {
+    await launch(phoneUrl);
+  } else {
+    throw 'Could not launch $phoneUrl';
+  }
+}
 }

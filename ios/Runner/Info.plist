@@ -46,6 +46,10 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+  		<string>tel</string>
+	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
