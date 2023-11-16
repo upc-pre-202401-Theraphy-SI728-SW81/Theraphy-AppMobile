@@ -1,8 +1,8 @@
 class User {
   final int id;
-  final String firstname;
+  String firstname;
   final String lastname;
-  final String username;
+  String username;
   final String password;
   final String role;
   User(
@@ -11,16 +11,13 @@ class User {
       required this.lastname,
       required this.username,
       required this.password,
-      required this.role
-      }
-  );
-     
+      required this.role});
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'firstname': firstname,
-      'lastname': lastname,      
+      'lastname': lastname,
       'username': username,
       'password': password
     };
@@ -30,7 +27,7 @@ class User {
       : this(
           id: json['id'],
           firstname: json['firstname'],
-          lastname: json['lastname'],          
+          lastname: json['lastname'],
           username: json['username'],
           password: json['password'],
           role: json['role'],

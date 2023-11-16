@@ -29,10 +29,9 @@ class _PatientsListState extends State<PatientsList> {
     ProfilePage(),
     ProfilePage(),
     //HomePhysiotherapist(),
-    
+
     //ListAppointments(),
     //ListTreatments(),
-    
   ];
 
   Future initialize() async {
@@ -113,16 +112,14 @@ class _PatientsListState extends State<PatientsList> {
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: AppConfig.primaryColor,
-                        width: 2
-                      ),
+                      borderSide:
+                          BorderSide(color: AppConfig.primaryColor, width: 2),
                       borderRadius:
                           const BorderRadius.all(Radius.circular(10.0)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: AppConfig.primaryColor, width:  2.2),
+                          BorderSide(color: AppConfig.primaryColor, width: 2.2),
                       borderRadius:
                           const BorderRadius.all(Radius.circular(10.0)),
                     ),

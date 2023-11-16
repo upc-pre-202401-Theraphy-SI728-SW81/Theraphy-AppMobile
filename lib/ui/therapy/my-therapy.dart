@@ -30,7 +30,7 @@ class _MyTherapyState extends State<MyTherapy> {
 
   List<String> days = [];
   int _currentIndex = 0;
-  int patientId = 2;
+  int patientId = 1;
 
   final DateFormat format = DateFormat("yyyy-MM-dd");
   late DateTime dateTime1;

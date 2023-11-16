@@ -26,7 +26,7 @@ class _NewTherapyState extends State<NewTherapy> {
   int duration = 0;
   String startAt = "";
   String finishAt = "";
-  int patientId = 2;
+  int patientId = 1;
 
   Future initialize() async {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
