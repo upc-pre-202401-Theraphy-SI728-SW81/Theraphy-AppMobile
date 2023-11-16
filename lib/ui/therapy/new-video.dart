@@ -106,7 +106,7 @@ class _NewVideoState extends State<NewVideo> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.05,
+          horizontal: MediaQuery.of(context).size.width * 0.00,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,7 +123,7 @@ class _NewVideoState extends State<NewVideo> {
             ),
             Container(
               padding: const EdgeInsets.all(16.0),
-              margin: const EdgeInsets.only(bottom: 16.0),
+              // margin: const EdgeInsets.only(bottom: 16.0),
               child: Text(
                 therapyDescription,
                 style: const TextStyle(
@@ -134,8 +134,8 @@ class _NewVideoState extends State<NewVideo> {
             ),
             // Carrusel de días
             Container(
-              margin: const EdgeInsets.only(left: 16.0, right: 16.0),
-              padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+              //margin: const EdgeInsets.all(16.0),
+              //padding: const EdgeInsets.only(left: 4.0, right: 4.0),
               height: 60, // Altura del contenedor grande
               decoration: BoxDecoration(
                 color: const Color(0xFFF5F5F8),
@@ -276,7 +276,7 @@ class _NewVideoState extends State<NewVideo> {
                               ],
                             ),
                             const SizedBox(
-                              height: 10.0,
+                              height: 20.0,
                             ),
                             Row(
                               children: [
@@ -291,13 +291,17 @@ class _NewVideoState extends State<NewVideo> {
                                     // Agrega aquí la lógica para adjuntar videos
                                   },
                                   style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(Color(
+                                    backgroundColor: MaterialStateProperty
+                                        .all<Color>(const Color(
                                             0xFF014DBF)), // Color de fondo personalizado
                                   ),
-                                  child: const Text("Upload"),
+                                  child: const Text("Upload",
+                                      style: TextStyle(color: Colors.white)),
                                 ),
                               ],
+                            ),
+                            const SizedBox(
+                              height: 10,
                             ),
                             Center(
                               child: ElevatedButton(
@@ -355,8 +359,9 @@ class _NewVideoState extends State<NewVideo> {
                                                       style: ButtonStyle(
                                                         backgroundColor:
                                                             MaterialStateProperty
-                                                                .all<Color>(Color(
-                                                                    0xFF014DBF)), // Color de fondo personalizado para el botón "Cerrar"
+                                                                .all<Color>(
+                                                                    const Color(
+                                                                        0xFF014DBF)), // Color de fondo personalizado para el botón "Cerrar"
                                                       ),
                                                       child:
                                                           const Text("Close"),
@@ -376,7 +381,12 @@ class _NewVideoState extends State<NewVideo> {
                                       .all<Color>(const Color(
                                           0xFF014DBF)), // Color de fondo personalizado para el botón "Create Virtual Treatment"
                                 ),
-                                child: const Text("Create Virtual Treatment"),
+                                child: const Text(
+                                  "Create Virtual Treatment",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             )
                           ],
