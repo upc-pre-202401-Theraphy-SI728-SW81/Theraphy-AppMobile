@@ -1,31 +1,37 @@
-import 'package:mobile_app_theraphy/data/model/patient.dart';
-import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
+
 
 class IotResult {
   int id;
-  String? temperature;
-  String? distance;
-  String? pulse;
+  String? iotDeviceId;
   String? humidity;
-  int? therapyId;
+  String? temperature;
+  String? pulse;
+  String? mapAmplitude;
+  String? mapFrequency;
+  String? mapDuration;
   String? date;
 
   IotResult(
       {required this.id,
-      this.temperature,
-      this.distance,
-      this.pulse,
+      this.iotDeviceId,
       this.humidity,
-      this.therapyId,
-      this.date});
+      this.temperature,
+      this.pulse,
+      this.mapAmplitude,
+      this.mapFrequency,
+      this.mapDuration,
+      this.date
+      });
 
   IotResult.fromJson(Map<String, dynamic> json)
       : this(
             id: json['id'],
-            temperature: json['temperature'],
-            distance: json['distance'],
-            pulse: json['pulse'],
+            iotDeviceId: json['iotDeviceId'],
             humidity: json['humidity'],
-            therapyId: json['therapyId'],
+            temperature: json['temperature'],
+            pulse: json['pulse'],
+            mapAmplitude: json['mapAmplitude'],
+            mapFrequency: json['mapFrequency'],
+            mapDuration: json['mapDuration'],
             date: json['date']);
 }

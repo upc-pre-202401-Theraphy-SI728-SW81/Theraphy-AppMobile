@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
+import 'package:mobile_app_theraphy/ui/home/home.dart';
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 import 'package:mobile_app_theraphy/ui/security/sign-up.dart';
 import 'dart:convert';
@@ -188,7 +189,7 @@ class _LoginState extends State<Login> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PatientsList(),
+                        builder: (context) => const HomePhysiotherapist(),
                       ));
                   } catch (error) {
                     print('Error de inicio de sesión: $error');

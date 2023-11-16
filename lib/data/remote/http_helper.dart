@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-
 import 'package:http/http.dart' as http;
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
@@ -16,7 +15,8 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://localhost:8080/api/v1';
+
+  final String urlBase = 'https://api-iotheraphy-production.up.railway.app/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -65,10 +65,8 @@ class HttpHelper {
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
 
-
         if (jsonResponse.containsKey('access_Token')) {
           final accessToken = jsonResponse['access_Token'];
-          
 
           // Guardar el accessToken en el almacenamiento local
           final prefs = await SharedPreferences.getInstance();
@@ -171,7 +169,7 @@ class HttpHelper {
 
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
-    
+
     if (jwtToken == null) {
       throw Exception('JWT Token not found in SharedPreferences.');
     }
@@ -180,7 +178,7 @@ class HttpHelper {
       'Authorization': 'Bearer $jwtToken',
       'Content-Type': 'application/json',
     };
-print(jwtToken);
+    print(jwtToken);
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -188,22 +186,59 @@ print(jwtToken);
       );
 
       if (response.statusCode == 200) {
-print("XDD");
+        print("XDD");
 
         final jsonResponse = json.decode(response.body);
-                print(response.body);
-print("12313421321");
+        print(response.body);
+        print("12313421321");
         print(Physiotherapist.fromJson(jsonResponse).id);
         return Physiotherapist.fromJson(jsonResponse).id;
       } else {
-print("ELSEE");
+        print("ELSEE");
 
         throw Exception(
             'Failed to get physiotherapist logged. Status code: ${response.statusCode}');
       }
     } catch (exception) {
-print("chuuu");
+      print("chuuu");
 
+      print('Error: $exception');
+      throw Exception('Failed to get physiotherapist logged.');
+    }
+  }
+
+  Future<Physiotherapist> getPhysiotherapist() async {
+    const reference = '/physiotherapists';
+    const getPhysiotherapistLoggedEndpoint = '/profile';
+    final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+            if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        print(response.body);
+        return Physiotherapist.fromJson(jsonResponse);
+      } else {
+        throw Exception(
+            'Failed to get physiotherapist logged. Status code: ${response.statusCode}');
+      }
+    } catch (exception) {
       print('Error: $exception');
       throw Exception('Failed to get physiotherapist logged.');
     }
@@ -233,6 +268,66 @@ print("chuuu");
       }
 
       return myPatients;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Consultation>?> getMyConsultations(int physiotherapistId) async {
+    String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> consultationsMap = jsonResponse['content'];
+       List<Consultation> consultations =
+          consultationsMap.map((map) => Consultation.fromJson(map)).toList();
+          consultations = consultations.reversed.toList();
+      return consultations;
+    } else {
+      return null;
+    }
+  }
+
+   Future<List<Consultation>?> getMyConsultationsDone(int physiotherapistId) async {
+    String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> consultationsMap = jsonResponse['content'];
+       List<Consultation> consultations =
+          consultationsMap.map((map) => Consultation.fromJson(map)).toList();
+          consultations = consultations.reversed.toList();
+      List<Consultation> myConsultationsDone =   consultations
+        .where((consultation) => consultation.done == true)
+        .toList();
+      return myConsultationsDone;
+    } else {
+      return null;
+    }
+  }
+
+    Future<List<Consultation>?> getMyConsultationsNoDone(int physiotherapistId) async {
+    String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> consultationsMap = jsonResponse['content'];
+       List<Consultation> consultations =
+          consultationsMap.map((map) => Consultation.fromJson(map)).toList();
+          consultations = consultations.reversed.toList();
+      List<Consultation> myConsultationsNoDone =   consultations
+        .where((consultation) => consultation.done == false)
+        .toList();
+      return myConsultationsNoDone;
     } else {
       return null;
     }
@@ -287,7 +382,7 @@ print("chuuu");
     }
   }
 
-Future<Therapy> addTherapy(
+  Future<Therapy> addTherapy(
       String therapyName,
       String description,
       String appointmentQuantity,
@@ -378,6 +473,21 @@ Future<Therapy> addTherapy(
     }
   }
 
+  Future<Appointment?> getApppointmentByTherapyAndDate(
+      int theraphyId, String date) async {
+    var endpoint = '/appointments/byDate/$date/TherapyId/$theraphyId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+
+      return Appointment.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
+  }
+
   Future<Treatment> addTreatment(int therapyId, String videoUrl,
       String duration, String title, String description, String day) async {
     const String endpoint = '/treatments';
@@ -420,7 +530,25 @@ Future<Therapy> addTherapy(
           'Failed to create physiotherapist. Status code: ${response.statusCode}');
     }
   }
-  
+
+
+  Future<Treatment?> getTreatmentByTherapyAndDate(
+      int theraphyId, String date) async {
+    var endpoint = '/treatments/byDate/$date/TherapyId/$theraphyId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+    print(response);
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+
+      return Treatment.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
+  }
+
+
   Future<List<Patient>?> getMyPatientsOnlyConsultation(
       int physiotherapistId) async {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
@@ -537,7 +665,6 @@ Future<Therapy> addTherapy(
     return null;
   }
 
-
   Future<MedicalHistory?> getMedicalHistoryByPatientId(int patientId) async {
     String endpoint = '/medical-histories/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
@@ -546,7 +673,8 @@ Future<Therapy> addTherapy(
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
-      final MedicalHistory medicalHistory = MedicalHistory.fromJson(jsonResponse);
+      final MedicalHistory medicalHistory =
+          MedicalHistory.fromJson(jsonResponse);
 
       return medicalHistory;
     } else {
@@ -554,8 +682,9 @@ Future<Therapy> addTherapy(
     }
   }
 
-  Future<List<IotResult>?> getIotResultsByTherapyIdandDate(int therapyId, String date) async {
-    final endpoint = '/iotDevice/byTherapyId/$therapyId/Date/$date';
+  Future<List<IotResult>?> getIotResultsByTherapyIdandDate(
+      int therapyId, String date) async {
+    final endpoint = '/iotResults/byTherapyId/$therapyId/Date/$date';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -572,6 +701,122 @@ Future<Therapy> addTherapy(
     return null;
   }
 
- 
+   Future<MedicalHistory> createMedicalHistory(
+      String gender,
+      double size,
+      double weight,
+      String birthplace,
+      String hereditaryHistory,
+      String nonPathologicalHistory,
+      String pathologicalHistory,
+      int patientId) async {
+    const String endpoint = '/medical-histories';
+    final String url = '$urlBase$endpoint';
+
+    final Map<String, dynamic> requestBody = {
+      "gender": gender,
+      "size": size,
+      "weight": weight,
+      "birthplace": birthplace,
+      "hereditaryHistory": hereditaryHistory,
+      "nonPathologicalHistory": nonPathologicalHistory,
+      "pathologicalHistory": pathologicalHistory,
+      "patientId": patientId
+    };
+
+    final encodedBody = json.encode(requestBody);
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: encodedBody,
+      headers: headers,
+    );
+
+    if (response.statusCode == 201) {
+      final jsonResponse = json.decode(response.body);
+      return MedicalHistory.fromJson(jsonResponse);
+    } else {
+      throw Exception(
+          'Failed to create medical history. Status code: ${response.statusCode}');
+    }
+  }
+
+   Future<List<Appointment>?> getMyAppointments(int physiotherapistId) async {
+    String endpoint = '/appointments/appointment/therapy-physiotherapist/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> appointmentsMap = jsonResponse['content'];
+      List<Appointment> appointments =
+          appointmentsMap.map((map) => Appointment.fromJson(map)).toList();
+          appointments = appointments.reversed.toList();
+      return appointments;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Appointment>?> getAllAppointmentsByPhysiotherapistId(int physiotherapistId) async {
+    String endpoint = '/appointments';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> appointmentsMap = jsonResponse['content'];
+      List<Appointment> appointments =
+          appointmentsMap.map((map) => Appointment.fromJson(map)).toList();
+          appointments = appointments.reversed.toList();
+
+      List<Appointment> myAppointments =   appointments
+        .where((appointment) => appointment.therapy.physiotherapist.id == physiotherapistId)
+        .toList();
+      return myAppointments;
+    } else {
+      return null;
+    }
+  }
+
+    Future<List<Appointment>?> getAllAppointmentsByPhysiotherapistIdNoDone(int physiotherapistId) async {
+    String endpoint = '/appointments';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> appointmentsMap = jsonResponse['content'];
+      List<Appointment> appointments =
+          appointmentsMap.map((map) => Appointment.fromJson(map)).toList();
+          appointments = appointments.reversed.toList();
+
+      List<Appointment> myAppointments =   appointments
+        .where((appointment) => appointment.therapy.physiotherapist.id== physiotherapistId)
+        .toList();
+      List<Appointment> myAppointmentsNoDone =   appointments
+        .where((appointment) => appointment.done == false)
+        .toList();
+      return myAppointmentsNoDone;
+      
+    } else {
+      return null;
+    }
+  }
+
 
 }

@@ -41,11 +41,24 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>I need acces for search in my files</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>I need upload photos and videos</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>I need upload media</string>
+	<key></key>
+	<string></string>
 </dict>
 </plist>

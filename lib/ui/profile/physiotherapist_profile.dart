@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/available_hour.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
@@ -23,25 +24,21 @@ class _ProfilePageState extends State<ProfilePage> {
   PhysiotherapistService? _physiotherapistService;
   Physiotherapist? _physiotherapist;
   HttpHelper? _httpHelper;
- int? id;
+  int? id;
 
- List<Widget> pages = const [
+  List<Widget> pages = const [
     PatientsList(),
     ProfilePage(),
     ProfilePage(),
     ProfilePage(),
     ProfilePage(),
-    //HomePhysiotherapist(),
-    
-    //ListAppointments(),
-    //ListTreatments(),
-    
   ];
+
   Future initialize() async {
     _availableHours = List.empty();
     id = await _httpHelper?.getPhysiotherapistLogged();
     _availableHours = await _availableHourService?.getByPhysiotherapistId(id!);
-    
+
     _physiotherapist =
         await _physiotherapistService?.getPhysiotherapistById(id!);
     setState(() {
@@ -62,34 +59,48 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController dayController = TextEditingController();
   final TextEditingController hourController = TextEditingController();
   int maxElementCount = 6;
-  //isButtonEnabled = (_availableHours?.length ?? 0) < maxElementCount;
+
+  List<Color> cardColors = [
+    Colors.blue,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.red,
+    Colors.teal,
+  ];
+
+  bool isValidHourFormat(String hour) {
+    // Verificar si la hora tiene uno de los formatos válidos usando una expresión regular
+    RegExp regex = RegExp(
+        r'^\d{1,2}:\d{2}-\d{1,2}:\d{2}$|^\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}$');
+    return regex.hasMatch(hour);
+  }
 
   @override
   Widget build(BuildContext context) {
     isButtonEnabled = (_availableHours?.length ?? 0) < maxElementCount;
     return WillPopScope(
       onWillPop: () async {
-        return false; //no estoy seguro si poner eso ..pongo eso y pongo un boton para retroceder a la pagina anterior o de inicio
+        return false;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(
-              top: 20), // Ajusta la cantidad de espacio según tus necesidades
-          child: Text(
-            "My Profile",
-            style: TextStyle(
-              color: AppConfig.primaryColor,
-              fontSize: 24,
+          title: Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: Text(
+              "My Profile",
+              style: TextStyle(
+                color: AppConfig.primaryColor,
+                fontSize: 24,
+              ),
             ),
           ),
+          backgroundColor: Colors.white,
+          iconTheme: const IconThemeData(color: Colors.black),
+          automaticallyImplyLeading: false,
+          elevation: 0,
         ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        automaticallyImplyLeading: false,
-        elevation: 0,
-      ),
         body: SingleChildScrollView(
           child: Center(
             child: Container(
@@ -97,11 +108,26 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const CircleAvatar(
-                    radius: 60, // Tamaño del avatar
-                    backgroundImage: NetworkImage(
-                        "https://superdoc.mx/wp-content/uploads/2023/05/doctora-1.png"),
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                        NetworkImage(_physiotherapist?.photoUrl ?? ""),
                     backgroundColor: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 2.5,
+                        ),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(_createRoute(_physiotherapist!.photoUrl));
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -122,52 +148,48 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: const TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Your available schedules: ",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Visibility(
+                    visible: _availableHours?.isNotEmpty == true,
+                    child: const Text(
+                      "Your available schedules: ",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const SizedBox(height: 20),
-                  // Coloca la lista dentro de un SingleChildScrollView
                   Visibility(
-                    visible: _availableHours?.isNotEmpty ==
-                        true, // Muestra solo si hay datos
+                    visible: _availableHours?.isNotEmpty == true,
                     child: SizedBox(
-                      height:
-                          190, // Establece una altura fija o usa otro valor adecuado
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, // Ancho máximo de los elementos
-                          crossAxisSpacing: 8.0,
-                          mainAxisSpacing: 8.0,
-                          mainAxisExtent: 55,
-                        ),
+                      height: 80,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
                         itemCount: _availableHours?.length ?? 0,
                         itemBuilder: (context, index) {
+                          Color cardColor =
+                              cardColors[index % cardColors.length];
                           return InkWell(
                             onTap: () {
                               dayController.text =
                                   _availableHours?[index].day ?? '';
                               hourController.text =
                                   _availableHours?[index].hours ?? '';
-                              print("Hola perro");
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: const Text("Edit availability"),
+                                    title: const Text("Edit availability hour"),
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         TextFormField(
                                           controller: dayController,
                                           decoration: const InputDecoration(
-                                              labelText: "Día"),
+                                              labelText: "Day"),
                                         ),
                                         TextFormField(
                                           controller: hourController,
                                           decoration: const InputDecoration(
-                                              labelText: "Hora"),
+                                              labelText: "Hour"),
                                         ),
                                       ],
                                     ),
@@ -177,58 +199,80 @@ class _ProfilePageState extends State<ProfilePage> {
                                           Navigator.of(context)
                                               .pop(); // Cierra el diálogo
                                         },
-                                        child: const Text("Cancelar"),
+                                        child: const Text("Cancel"),
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
-                                          // Envía un PUT request con los nuevos valores
                                           final String updatedDay =
-                                              dayController.text;
+                                              dayController.text.isNotEmpty
+                                                  ? dayController.text
+                                                  : _availableHours![index].day;
+
                                           final String updatedHour =
-                                              hourController.text;
-                                          // Realiza la lógica para enviar la solicitud PUT
-                                          // Puedes llamar a una función que maneje la solicitud PUT
-                                          // y actualice el valor en la lista _availableHours.
-                                          _availableHourService
-                                              ?.updateAvailableHour(
-                                                  _availableHours![index].id,
-                                                  updatedDay,
-                                                  updatedHour)
-                                              .then((value) => initialize());
-                                          Navigator.of(context)
-                                              .pop(); // Cierra el diálogo
+                                              hourController.text.isNotEmpty
+                                                  ? hourController.text
+                                                  : _availableHours![index]
+                                                      .hours;
+
+                                          if (isValidHourFormat(updatedHour)) {
+                                            _availableHourService
+                                                ?.updateAvailableHour(
+                                                    _availableHours![index].id,
+                                                    updatedDay,
+                                                    updatedHour)
+                                                .then((value) {
+                                              initialize();
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Updated data successfully',
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 2,
+                                                backgroundColor: Colors.green,
+                                                textColor: Colors.white,
+                                              );
+                                              Navigator.of(context).pop();
+                                            });
+                                          } else {
+                                            Fluttertoast.showToast(
+                                              msg:
+                                                  'Invalid hour format. Please use "hr:00-hr:00" or "hr:00 - hr:00" format.',
+                                              gravity: ToastGravity.BOTTOM,
+                                              timeInSecForIosWeb: 2,
+                                              backgroundColor: Colors.red,
+                                              textColor: Colors.white,
+                                            );
+                                          }
                                         },
-                                        child: const Text("Guardar"),
+                                        child: const Text("Save"),
                                       ),
                                     ],
                                   );
                                 },
                               );
                             },
-                            child: Card(
-                              elevation: 2,
-                              color: const Color.fromARGB(255, 27, 139, 214),
-                              shape: RoundedRectangleBorder(
-                                  side: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(
-                                      BouncingScrollSimulation
-                                          .maxSpringTransferVelocity)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "${_availableHours?[index].day}",
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    Text(
-                                      "${_availableHours?[index].hours}",
-                                      style: const TextStyle(
-                                          fontSize:
-                                              14), // Reduce el tamaño de fuente
-                                    ),
-                                  ],
-                                ),
+                            child: Container(
+                              width: 80,
+                              height: 80,
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: cardColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "${_availableHours?[index].day}",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "${_availableHours?[index].hours}",
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ],
                               ),
                             ),
                           );
@@ -236,23 +280,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // Agrega la lógica para editar el perfil del fisioterapeuta.
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const EditProfilePage()),
                       );
                     },
-                    child: const Text("Editar Perfil"),
+                    child: const Text("Edit Profile"),
                   ),
                   ElevatedButton(
                     onPressed: isButtonEnabled
                         ? () {
-                            // Agrega la lógica para editar el perfil del fisioterapeuta.
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -261,7 +302,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ).then((value) => initialize());
                           }
                         : null,
-                    child: const Text("Ingresa tus horarios"),
+                    child: const Text("Enter your schedules"),
                   ),
                 ],
               ),
@@ -269,73 +310,117 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(10.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(10.0),
+            ),
+            border: Border.all(
+              color: Colors.black,
+              width: 1.0,
+            ),
           ),
-          border: Border.all(
-            color: Colors.black,
-            width: 1.0,
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(10.0),
-          ),
-          child: BottomNavigationBar(
-            currentIndex: selectedIndex,
-            onTap: (int index) {
-              setState(() {
-                selectedIndex = index;
-              });
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => pages[index]),
-              );
-            },
-            unselectedItemColor: const Color.fromARGB(255, 104, 104, 104),
-            selectedItemColor: Colors.black,
-            items: [
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.home),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(10.0),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: selectedIndex,
+              onTap: (int index) {
+                setState(() {
+                  selectedIndex = index;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => pages[index]),
+                );
+              },
+              unselectedItemColor: const Color.fromARGB(255, 104, 104, 104),
+              selectedItemColor: Colors.black,
+              items: [
+                BottomNavigationBarItem(
+                  icon: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: const Icon(Icons.home),
+                  ),
+                  label: 'Home',
                 ),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.people),
+                BottomNavigationBarItem(
+                  icon: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: const Icon(Icons.people),
+                  ),
+                  label: 'Patients',
                 ),
-                label: 'Patients',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.calendar_month),
+                BottomNavigationBarItem(
+                  icon: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: const Icon(Icons.calendar_month),
+                  ),
+                  label: 'Appointments',
                 ),
-                label: 'Appointments',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.video_collection),
+                BottomNavigationBarItem(
+                  icon: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: const Icon(Icons.video_collection),
+                  ),
+                  label: 'Treatments',
                 ),
-                label: 'Treatments',
-              ),
-              BottomNavigationBarItem(
-                icon: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: const Icon(Icons.person),
+                BottomNavigationBarItem(
+                  icon: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: const Icon(Icons.person),
+                  ),
+                  label: 'Profile',
                 ),
-                label: 'Profile',
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  PageRouteBuilder _createRoute(String imageUrl) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return FullScreenImage(imageUrl: imageUrl);
+      },
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = 0.0;
+        const end = 1.0;
+        const curve = Curves.easeInOut;
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var fadeAnimation = animation.drive(tween);
+        return FadeTransition(
+          opacity: fadeAnimation,
+          child: child,
+        );
+      },
+    );
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final String imageUrl;
+
+  FullScreenImage({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black.withOpacity(0.8),
+      body: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+        child: Center(
+          child: Hero(
+            tag: 'imageHero',
+            child: Image.network(imageUrl),
+          ),
+        ),
       ),
     );
   }
