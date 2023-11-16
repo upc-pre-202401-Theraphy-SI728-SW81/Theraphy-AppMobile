@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
@@ -8,8 +7,6 @@ import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/diagnosis.dart';
 import 'package:mobile_app_theraphy/data/model/iot_Result.dart';
 import 'package:mobile_app_theraphy/data/model/medical_history.dart';
-import 'package:mobile_app_theraphy/data/model/appointment.dart';
-import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
@@ -18,7 +15,7 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://10.11.128.23:8080/api/v1';
+  final String urlBase = 'http://192.168.141.103:8080/api/v1';
   
 
   Future<void> register(int id, String firstName, String lastName,
@@ -573,42 +570,8 @@ class HttpHelper {
 
     return null;
   }
-  Future<int> getPhysiotherapistLogged() async {
-    const reference = '/physiotherapists';
-    const getPhysiotherapistLoggedEndpoint = '/profile';
-    final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
+  
 
-    final prefs = await SharedPreferences.getInstance();
-    final jwtToken = prefs.getString('accessToken');
-
-    if (jwtToken == null) {
-      throw Exception('JWT Token not found in SharedPreferences.');
-    }
-
-    final headers = {
-      'Authorization': 'Bearer $jwtToken',
-      'Content-Type': 'application/json',
-    };
-
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: headers,
-      );
-
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        print(response.body);
-        return Physiotherapist.fromJson(jsonResponse).id;
-      } else {
-        throw Exception(
-            'Failed to get physiotherapist logged. Status code: ${response.statusCode}');
-      }
-    } catch (exception) {
-      print('Error: $exception');
-      throw Exception('Failed to get physiotherapist logged.');
-    }
-  }
 
   Future<Physiotherapist> getPhysiotherapist() async {
     const reference = '/physiotherapists';
@@ -644,35 +607,6 @@ class HttpHelper {
     } catch (exception) {
       print('Error: $exception');
       throw Exception('Failed to get physiotherapist logged.');
-    }
-  }
-
-  Future<List<Patient>?> getMyPatients(int physiotherapistId) async {
-    String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
-    final String url = '$urlBase$endpoint';
-
-    http.Response response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
-      final List<dynamic> consultationsMap = jsonResponse['content'];
-      final List<Consultation> consultations =
-          consultationsMap.map((map) => Consultation.fromJson(map)).toList();
-
-      List<Patient> myPatients = [];
-      Set<String> patientDNIs = <String>{};
-
-      for (Consultation consultation in consultations) {
-        String patientDNI = consultation.patient.dni;
-        if (!patientDNIs.contains(patientDNI)) {
-          patientDNIs.add(patientDNI);
-          myPatients.add(consultation.patient);
-        }
-      }
-
-      return myPatients;
-    } else {
-      return null;
     }
   }
 
