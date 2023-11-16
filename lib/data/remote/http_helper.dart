@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/diagnosis.dart';
-import 'package:mobile_app_theraphy/data/model/iot_Result.dart';
+import 'package:mobile_app_theraphy/data/model/iot_result.dart';
+
 import 'package:mobile_app_theraphy/data/model/medical_history.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
@@ -16,10 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
 
-  final String urlBase = 'http://192.168.1.34:8080/api/v1';
+  final String urlBase = 'http://192.168.1.38:8080/api/v1';
 
-
-  
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -455,6 +454,7 @@ class HttpHelper {
   }
 
 
+
   Future<List<Patient>?> getMyPatientsOnlyConsultation(
       int physiotherapistId) async {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
@@ -590,7 +590,9 @@ class HttpHelper {
 
   Future<List<IotResult>?> getIotResultsByTherapyIdandDate(
       int therapyId, String date) async {
-    final endpoint = '/iotDevice/byTherapyId/$therapyId/Date/$date';
+
+    final endpoint = '/iotResults/byTherapyId/$therapyId/Date/$date';
+
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -607,6 +609,31 @@ class HttpHelper {
     return null;
   }
 
+  Future<MedicalHistory> createMedicalHistory(
+      String gender,
+      double size,
+      double weight,
+      String birthplace,
+      String hereditaryHistory,
+      String nonPathologicalHistory,
+      String pathologicalHistory,
+      int patientId) async {
+    const String endpoint = '/medical-histories';
+    final String url = '$urlBase$endpoint';
+
+    final Map<String, dynamic> requestBody = {
+      "gender": gender,
+      "size": size,
+      "weight": weight,
+      "birthplace": birthplace,
+      "hereditaryHistory": hereditaryHistory,
+      "nonPathologicalHistory": nonPathologicalHistory,
+      "pathologicalHistory": pathologicalHistory,
+      "patientId": patientId
+    };
+
+    final encodedBody = json.encode(requestBody);
+
   
 
 
@@ -614,6 +641,7 @@ class HttpHelper {
     const reference = '/physiotherapists';
     const getPhysiotherapistLoggedEndpoint = '/profile';
     final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
+
 
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
@@ -626,6 +654,13 @@ class HttpHelper {
       'Authorization': 'Bearer $jwtToken',
       'Content-Type': 'application/json',
     };
+
+
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: encodedBody,
+      headers: headers,
+    );
 
     try {
       final response = await http.get(
@@ -774,4 +809,13 @@ class HttpHelper {
   }
 
 
+
+    if (response.statusCode == 201) {
+      final jsonResponse = json.decode(response.body);
+      return MedicalHistory.fromJson(jsonResponse);
+    } else {
+      throw Exception(
+          'Failed to create medical history. Status code: ${response.statusCode}');
+    }
+  }
 }

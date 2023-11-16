@@ -480,6 +480,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  percent_indicator:
+    dependency: "direct main"
+    description:
+      name: percent_indicator
+      sha256: "0c9824a4e10f19bb56bac9b0998765fdd665199a8b1eb5859854a26e8ef71fd7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
   petitparser:
     dependency: transitive
     description:
@@ -605,6 +613,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      sha256: "300afb7ffb157207d88c489728bb043e3de2e3a399a34835babacf7841cab897"
+      url: "https://pub.dev"
+    source: hosted
+    version: "23.1.44"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "6f3056c548f4e039a8994904836881753c4c7643cd2142d3c226fcb45ec200fe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "23.1.44"
   term_glyph:
     dependency: transitive
     description:

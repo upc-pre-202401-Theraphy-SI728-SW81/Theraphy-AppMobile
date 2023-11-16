@@ -89,7 +89,14 @@ class _PatientProfileState extends State<PatientProfile> {
               icon: const Icon(Icons.arrow_back_ios),
               color: AppConfig.primaryColor,
               onPressed: () {
-                Navigator.of(context).pop();
+                 Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PatientsList(
+                            
+                            ),
+                          ),
+                        );
               },
             ),
           ),
@@ -457,7 +464,7 @@ class _PatientProfileState extends State<PatientProfile> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
-                                      "Non-pathological History",
+                                      "Non Pathological History",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 20,
