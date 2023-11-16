@@ -37,6 +37,7 @@ class _MyTherapyState extends State<MyTherapy> {
   String therapyDescription = "";
   List<String> days = [];
   int _currentIndex = 0;
+
   final DateFormat format = DateFormat("yyyy-MM-dd");
   late DateTime dateTime1;
   late DateTime dateTime2;
