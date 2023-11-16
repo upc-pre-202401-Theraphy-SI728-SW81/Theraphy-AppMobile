@@ -21,6 +21,7 @@ dependencies:
   firebase_storage: ^11.2.3
   flutter_ffmpeg: ^0.4.2
   chewie: ^1.7.1
+  curved_navigation_bar: ^1.0.3
 
 dev_dependencies:
   flutter_test:

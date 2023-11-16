@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
+import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
@@ -364,6 +365,7 @@ class _MyTherapyState extends State<MyTherapy> {
           ],
         ),
       ),
+      //bottomNavigationBar: NavBar(),
     );
   }
 }
