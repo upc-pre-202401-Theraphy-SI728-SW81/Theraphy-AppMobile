@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
+import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
 
 class NewAppointment extends StatefulWidget {
   final int initialIndex;
   final int patientId;
 
-
-  const NewAppointment({Key? key, required this.initialIndex, required this.patientId})
+  const NewAppointment(
+      {Key? key, required this.initialIndex, required this.patientId})
       : super(key: key);
 
   @override
@@ -48,7 +49,8 @@ class _NewAppointmentState extends State<NewAppointment> {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
     _currentIndex = initialIndex;
     therapies = null;
-    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(id!, widget.patientId);
+    therapies =
+        await _httpHelper?.getTherapyByPhysioAndPatient(id!, widget.patientId);
 
     setState(() {
       therapies = therapies;
@@ -330,7 +332,16 @@ class _NewAppointmentState extends State<NewAppointment> {
                                             title = titleController.text;
 
                                             if (title != "") {
-                                              Navigator.of(context).pop();
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MyTherapy(
+                                                          patientId:
+                                                              widget.patientId,
+                                                         ),
+                                                ),
+                                              );
                                               _httpHelper?.addAppointment(
                                                   title,
                                                   dateShowed,
@@ -383,7 +394,11 @@ class _NewAppointmentState extends State<NewAppointment> {
                                                                 ),
                                                                 child:
                                                                     const Text(
-                                                                        "Close"),
+                                                                  "Close",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
                                                               ),
                                                             ],
                                                           ),

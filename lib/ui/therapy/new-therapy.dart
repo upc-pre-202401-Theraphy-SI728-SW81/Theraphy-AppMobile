@@ -73,7 +73,7 @@ class _NewTherapyState extends State<NewTherapy> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
+        body: Container(
           child: Column(
               crossAxisAlignment: CrossAxisAlignment
                   .start, // Alinea los elementos a la izquierda
