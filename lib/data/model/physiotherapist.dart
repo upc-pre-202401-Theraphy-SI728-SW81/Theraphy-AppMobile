@@ -92,7 +92,7 @@ class CPhysiotherapist {
       required this.yearsExperience,
       required this.fees});
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toCJson() {
     return {
       'id': id,
       'dni': dni,
@@ -109,7 +109,7 @@ class CPhysiotherapist {
     };
   }
 
-  CPhysiotherapist.fromJson(Map<String, dynamic> json)
+  CPhysiotherapist.fromCJson(Map<String, dynamic> json)
       : this(
             id: json['id'],
             dni: json['dni'],

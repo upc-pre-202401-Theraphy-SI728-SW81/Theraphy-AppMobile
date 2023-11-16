@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
-import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
+import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 
 class PhysiotherapistRegister extends StatefulWidget {
   const PhysiotherapistRegister({super.key});
@@ -58,7 +57,8 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SafeArea(
+        body: SafeArea(
+      child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
@@ -83,10 +83,9 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                 "Welcome, you are registering as a physiotherapist",
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold, // Add this line for bold text
+                  fontWeight: FontWeight.bold,
                 ),
-                textAlign:
-                    TextAlign.center, // Add this line for center alignment
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 30),
               Text(
@@ -113,7 +112,6 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                               return null;
                             },
                             onSaved: (value) => dni = value,
-                            // Add your controller and other properties
                             decoration: InputDecoration(
                               labelText: 'DNI',
                               border: OutlineInputBorder(
@@ -148,7 +146,6 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                               return null;
                             },
                             onSaved: (value) => age = value,
-                            // Add your controller and other properties
                             decoration: InputDecoration(
                               labelText: 'Age',
                               border: OutlineInputBorder(
@@ -181,7 +178,6 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                         return null;
                       },
                       onSaved: (value) => specialization = value,
-                      // Add your controller and other properties
                       decoration: InputDecoration(
                         labelText: 'Specialization',
                         border: OutlineInputBorder(
@@ -207,8 +203,7 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                       padding: const EdgeInsets.symmetric(vertical: 0),
                       child: TextFormField(
                         readOnly: true,
-                        onTap: () =>
-                            _selectDate(context), // Open date picker on tap
+                        onTap: () => _selectDate(context),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please select your birthdate';
@@ -237,8 +232,7 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                           suffixIcon: IconButton(
                             icon: Icon(
                               Icons.calendar_today,
-                              color: Colors
-                                  .black, // Change the color to a darker shade
+                              color: Colors.black,
                             ),
                             onPressed: () => _selectDate(context),
                           ),
@@ -261,7 +255,6 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                           return null;
                         },
                         onSaved: (value) => location = value,
-                        // Add your controller and other properties
                         decoration: InputDecoration(
                           labelText: 'Location',
                           border: OutlineInputBorder(
@@ -295,7 +288,6 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                               return null;
                             },
                             onSaved: (value) => fees = value,
-                            // Add your controller and other properties
                             decoration: InputDecoration(
                               labelText: 'Fees',
                               border: OutlineInputBorder(
@@ -327,7 +319,6 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                               return null;
                             },
                             onSaved: (value) => experience = value,
-                            // Add your controller and other properties
                             decoration: InputDecoration(
                               labelText: 'Experience',
                               border: OutlineInputBorder(
@@ -360,8 +351,8 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                 width: 365,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue[700], // Color de fondo
-                    onPrimary: Colors.white, // Color del texto
+                    primary: Colors.blue[700],
+                    onPrimary: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -378,26 +369,15 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                       print(fees);
                       print(experience);
                       try {
-                        final physiotherapist = CPhysiotherapist(
-                            id: 0,
-                            dni: dni ?? "",
-                            specialization: specialization ?? "",
-                            age: age != null ? int.parse(age.toString()) : 0,
-                            location: location ?? "",
-                            photoUrl: "",
-                            birthdayDate: selectedDateAsString ?? "",
-                            rating: 0,
-                            consultationQuantity: 0,
-                            patientQuantity: 0,
-                            yearsExperience: experience != null
-                                ? int.parse(experience.toString())
-                                : 0,
-                            fees: fees != null
-                                ? double.parse(fees.toString())
-                                : 0);
-                        //await httpHelper?.createPhysiotherapist(dni,age,specialization,selectedDateAsString,location,fees,experience);
-                        await httpHelper
-                            ?.createPhysiotherapist(physiotherapist);
+                        await httpHelper?.createPhysiotherapist(
+                          dni,
+                          age,
+                          specialization,
+                          selectedDateAsString,
+                          location,
+                          fees,
+                          experience,
+                        );
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -416,6 +396,6 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

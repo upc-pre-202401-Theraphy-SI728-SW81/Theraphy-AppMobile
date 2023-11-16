@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-
 import 'package:http/http.dart' as http;
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
@@ -16,7 +15,8 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://192.168.1.38:8080/api/v1';
+  final String urlBase =
+      'https://api-iotheraphy-production-909e.up.railway.app/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -65,10 +65,8 @@ class HttpHelper {
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
 
-
         if (jsonResponse.containsKey('access_Token')) {
           final accessToken = jsonResponse['access_Token'];
-          
 
           // Guardar el accessToken en el almacenamiento local
           final prefs = await SharedPreferences.getInstance();
@@ -88,11 +86,19 @@ class HttpHelper {
     }
   }
 
-  Future<Patient> createPatient(Patient patient) async {
+  Future<CPatient> createPatient(dni,age,selectedDateAsString,location) async {
     const reference = '/patient';
     const createPatientEndpoint = '/registration-patient';
     final String createPatientUrl = '$urlBase$reference$createPatientEndpoint';
-
+    final patient = CPatient(
+      id: 0, 
+      dni: dni, 
+      age: age, 
+      photoUrl: "", 
+      birthdayDate: selectedDateAsString, 
+      appointmentQuantity: 0, 
+      location: location 
+      );
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
 
@@ -109,12 +115,12 @@ class HttpHelper {
       final response = await http.post(
         Uri.parse(createPatientUrl),
         headers: headers,
-        body: jsonEncode(patient.toJson()),
+        body: jsonEncode(patient.toCJson()),
       );
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        return Patient.fromJson(jsonResponse);
+        return CPatient.fromCJson(jsonResponse);
       } else {
         throw Exception(
             'Failed to create patient. Status code: ${response.statusCode}');
@@ -126,15 +132,35 @@ class HttpHelper {
   }
 
   Future<CPhysiotherapist> createPhysiotherapist(
-      CPhysiotherapist physiotherapist) async {
+      dni,age,specialization,selectedDateAsString,location,fees,experience) async {
     const reference = '/physiotherapists';
+    final physiotherapist = CPhysiotherapist(
+        id: 0,
+        dni: dni ?? "",
+        specialization: specialization ?? "",
+        age: age != null ? int.parse(age.toString()) : 0,
+        location: location ?? "",
+        photoUrl: "",
+        birthdayDate: selectedDateAsString ?? "",
+        rating: 0,
+        consultationQuantity: 0,
+        patientQuantity: 0,
+        yearsExperience:
+            experience != null ? int.parse(experience.toString()) : 0,
+        fees: fees != null ? double.parse(fees.toString()) : 0);
     const createPhysiotherapistEndpoint = '/registration-physiotherapist';
     final String createPhysiotherapistUrl =
         '$urlBase$reference$createPhysiotherapistEndpoint';
-
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
-
+    print(jwtToken);
+    print(createPhysiotherapistUrl);
+    print(physiotherapist.age);
+    print(physiotherapist.dni);
+    print(physiotherapist.specialization);
+    print(physiotherapist.location);
+    print(physiotherapist.photoUrl);
+    print(physiotherapist.birthdayDate);
     if (jwtToken == null) {
       throw Exception('JWT Token not found in SharedPreferences.');
     }
@@ -148,12 +174,12 @@ class HttpHelper {
       final response = await http.post(
         Uri.parse(createPhysiotherapistUrl),
         headers: headers,
-        body: jsonEncode(physiotherapist.toJson()),
+        body: jsonEncode(physiotherapist.toCJson()),
       );
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        return CPhysiotherapist.fromJson(jsonResponse);
+        return CPhysiotherapist.fromCJson(jsonResponse);
       } else {
         throw Exception(
             'Failed to create physiotherapist. Status code: ${response.statusCode}');
@@ -171,7 +197,7 @@ class HttpHelper {
 
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
-    
+
     if (jwtToken == null) {
       throw Exception('JWT Token not found in SharedPreferences.');
     }
@@ -180,7 +206,7 @@ class HttpHelper {
       'Authorization': 'Bearer $jwtToken',
       'Content-Type': 'application/json',
     };
-print(jwtToken);
+    print(jwtToken);
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -188,21 +214,21 @@ print(jwtToken);
       );
 
       if (response.statusCode == 200) {
-print("XDD");
+        print("XDD");
 
         final jsonResponse = json.decode(response.body);
-                print(response.body);
-print("12313421321");
+        print(response.body);
+        print("12313421321");
         print(Physiotherapist.fromJson(jsonResponse).id);
         return Physiotherapist.fromJson(jsonResponse).id;
       } else {
-print("ELSEE");
+        print("ELSEE");
 
         throw Exception(
             'Failed to get physiotherapist logged. Status code: ${response.statusCode}');
       }
     } catch (exception) {
-print("chuuu");
+      print("chuuu");
 
       print('Error: $exception');
       throw Exception('Failed to get physiotherapist logged.');
@@ -287,7 +313,7 @@ print("chuuu");
     }
   }
 
-Future<Therapy> addTherapy(
+  Future<Therapy> addTherapy(
       String therapyName,
       String description,
       String appointmentQuantity,
@@ -420,7 +446,7 @@ Future<Therapy> addTherapy(
           'Failed to create physiotherapist. Status code: ${response.statusCode}');
     }
   }
-  
+
   Future<List<Patient>?> getMyPatientsOnlyConsultation(
       int physiotherapistId) async {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
@@ -537,7 +563,6 @@ Future<Therapy> addTherapy(
     return null;
   }
 
-
   Future<MedicalHistory?> getMedicalHistoryByPatientId(int patientId) async {
     String endpoint = '/medical-histories/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
@@ -546,7 +571,8 @@ Future<Therapy> addTherapy(
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
-      final MedicalHistory medicalHistory = MedicalHistory.fromJson(jsonResponse);
+      final MedicalHistory medicalHistory =
+          MedicalHistory.fromJson(jsonResponse);
 
       return medicalHistory;
     } else {
@@ -554,7 +580,8 @@ Future<Therapy> addTherapy(
     }
   }
 
-  Future<List<IotResult>?> getIotResultsByTherapyIdandDate(int therapyId, String date) async {
+  Future<List<IotResult>?> getIotResultsByTherapyIdandDate(
+      int therapyId, String date) async {
     final endpoint = '/iotDevice/byTherapyId/$therapyId/Date/$date';
     final String url = '$urlBase$endpoint';
 
@@ -571,7 +598,4 @@ Future<Therapy> addTherapy(
 
     return null;
   }
-
- 
-
 }

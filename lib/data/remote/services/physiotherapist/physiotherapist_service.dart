@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 
 class PhysiotherapistService {
-  final String baseUrl = 'http://192.168.226.60:8080/api/v1/physiotherapists';
+  final String baseUrl = 'http://192.168.18.164:8080/api/v1/physiotherapists';
 
   Future<List<Physiotherapist>?> getAll() async {
     final http.Response response = await http.get(Uri.parse(baseUrl));
