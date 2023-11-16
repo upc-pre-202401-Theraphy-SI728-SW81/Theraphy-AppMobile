@@ -21,7 +21,9 @@ dependencies:
   firebase_storage: ^11.2.3
   flutter_ffmpeg: ^0.4.2
   chewie: ^1.7.1
-
+  syncfusion_flutter_charts: ^23.1.44
+  percent_indicator: ^3.0.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
