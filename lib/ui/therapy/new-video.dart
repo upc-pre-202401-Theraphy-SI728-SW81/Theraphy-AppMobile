@@ -324,12 +324,7 @@ class _NewVideoState extends State<NewVideo> {
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
-                            if (_videoController != null)
-                              AspectRatio(
-                                aspectRatio:
-                                    _videoController!.value.aspectRatio,
-                                child: VideoPlayer(_videoController!),
-                              ),
+                           
                             if (_videoUrl != null)
                               Text(
                                   'URL del Video en Firebase Storage: $_videoUrl'),

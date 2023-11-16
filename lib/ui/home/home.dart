@@ -4,6 +4,7 @@ import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
+import 'package:mobile_app_theraphy/ui/patients/patient-profile.dart';
 import 'package:mobile_app_theraphy/ui/security/patient-register.dart';
 
 class HomePhysiotherapist extends StatefulWidget {
@@ -677,7 +678,7 @@ class ImageCarousel extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            PatientRegister(), //PatientProfileView(patient: patient),
+                            PatientProfile(patient: patient,), //PatientProfileView(patient: patient),
                       ),
                     );
                   },

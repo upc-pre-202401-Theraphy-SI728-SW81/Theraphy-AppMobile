@@ -684,7 +684,7 @@ class HttpHelper {
 
   Future<List<IotResult>?> getIotResultsByTherapyIdandDate(
       int therapyId, String date) async {
-    final endpoint = '/iotDevice/byTherapyId/$therapyId/Date/$date';
+    final endpoint = '/iotResults/byTherapyId/$therapyId/Date/$date';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));

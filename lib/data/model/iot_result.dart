@@ -1,5 +1,4 @@
-import 'package:mobile_app_theraphy/data/model/patient.dart';
-import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
+
 
 class IotResult {
   int id;

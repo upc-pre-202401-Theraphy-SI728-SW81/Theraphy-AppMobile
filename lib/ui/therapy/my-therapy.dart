@@ -253,7 +253,7 @@ class _MyTherapyState extends State<MyTherapy> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AspectRatio(
-                                aspectRatio: 16 / 9,
+                                aspectRatio: 4 / 3,
                                 child: VideoPlayerWidget(
                                     key: videoPlayerKey, // Pass the key here
 

@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app_theraphy/firebase_options.dart';
 import 'package:mobile_app_theraphy/ui/security/login-in.dart';
 
-import 'package:mobile_app_theraphy/ui/therapy/iot-results.dart';
-import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
-import 'package:mobile_app_theraphy/ui/therapy/new-therapy.dart';
-import 'package:mobile_app_theraphy/ui/updaload_examples.dart';
 
 
 
