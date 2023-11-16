@@ -15,7 +15,10 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://192.168.141.103:8080/api/v1';
+
+  final String urlBase = 'http://192.168.1.34:8080/api/v1';
+
+
   
 
   Future<void> register(int id, String firstName, String lastName,
@@ -376,6 +379,21 @@ class HttpHelper {
     }
   }
 
+  Future<Appointment?> getApppointmentByTherapyAndDate(
+      int theraphyId, String date) async {
+    var endpoint = '/appointments/byDate/$date/TherapyId/$theraphyId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+
+      return Appointment.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
+  }
+
   Future<Treatment> addTreatment(int therapyId, String videoUrl,
       String duration, String title, String description, String day) async {
     const String endpoint = '/treatments';
@@ -418,6 +436,24 @@ class HttpHelper {
           'Failed to create physiotherapist. Status code: ${response.statusCode}');
     }
   }
+
+
+  Future<Treatment?> getTreatmentByTherapyAndDate(
+      int theraphyId, String date) async {
+    var endpoint = '/treatments/byDate/$date/TherapyId/$theraphyId';
+    final String url = '$urlBase$endpoint';
+
+    http.Response response = await http.get(Uri.parse(url));
+    print(response);
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+
+      return Treatment.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
+  }
+
 
   Future<List<Patient>?> getMyPatientsOnlyConsultation(
       int physiotherapistId) async {
@@ -570,6 +606,7 @@ class HttpHelper {
 
     return null;
   }
+
   
 
 
@@ -735,5 +772,6 @@ class HttpHelper {
       return null;
     }
   }
+
 
 }

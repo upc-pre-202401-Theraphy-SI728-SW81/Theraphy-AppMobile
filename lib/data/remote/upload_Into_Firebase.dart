@@ -32,9 +32,9 @@ Future<String?> uploadVideo(File video) async {
     String fileName = basename(video.path);
     Reference storageReference = storage.ref().child('videos/$fileName');
 
-    // Convertir el video a formato MP4 con calidad y bitrate especificados
+    // Convertir el video a formato MP4 con calidad y bitrate especificados .replaceAll(RegExp(r'\.\w+$'), '.mp4');
     final flutterFFmpeg = FlutterFFmpeg();
-    final outputVideoPath = video.path.replaceAll(RegExp(r'\.\w+$'), '.mp4');
+    final outputVideoPath = video.path;
     final cmd = '-i ${video.path} -c:v libx264 -b:v 1000k -c:a aac -b:a 128k $outputVideoPath';
     await flutterFFmpeg.execute(cmd);
 
