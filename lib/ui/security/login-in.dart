@@ -189,7 +189,7 @@ class _LoginState extends State<Login> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const HomePhysiotherapist(),
+                        builder: (context) => const ConsultationsList(),
                       ));
                   } catch (error) {
                     print('Error de inicio de sesión: $error');
