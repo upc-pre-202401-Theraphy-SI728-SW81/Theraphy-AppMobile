@@ -89,14 +89,12 @@ class _PatientProfileState extends State<PatientProfile> {
               icon: const Icon(Icons.arrow_back_ios),
               color: AppConfig.primaryColor,
               onPressed: () {
-                 Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PatientsList(
-                            
-                            ),
-                          ),
-                        );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PatientsList(),
+                  ),
+                );
               },
             ),
           ),
@@ -682,35 +680,15 @@ class _PatientProfileState extends State<PatientProfile> {
               ),
             ),
           ]),
-
-
-          if(patientTherapy==null)
-          // Botón "Crear Terapia" superpuesto en la parte inferior
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 1,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: () {
-                 Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NewTherapy(
-                              patientId: widget.patient.id,
-                            ),
-                          ),
-                        );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppConfig.primaryColor, // Color de fondo azul
-                  padding:
-                      const EdgeInsets.all(16), // Ajusta el relleno del botón
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15), // Borde redondeado
-
-                  ),
+          if (patientTherapy == null)
+            // Botón "Crear Terapia" superpuesto en la parte inferior
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 1,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
                   child: const Text(
                     "Create Therapy",
                     style: TextStyle(
@@ -718,39 +696,37 @@ class _PatientProfileState extends State<PatientProfile> {
                       fontSize: 18,
                     ),
                   ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewTherapy(
+                          patientId: widget.patient.id,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppConfig.primaryColor, // Color de fondo azul
+                    padding:
+                        const EdgeInsets.all(16), // Ajusta el relleno del botón
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(15), // Borde redondeado
+                    ),
+                  ),
                 ),
               ),
             ),
-
-          ),
-
-          if(patientTherapy!=null)
-          // Botón "Crear Terapia" superpuesto en la parte inferior
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 1,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MyTherapy(
-                              patientId: patientTherapy!.patient.id,
-                            ),
-                          ),
-                        );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppConfig.primaryColor, // Color de fondo azul
-                  padding:
-                      const EdgeInsets.all(16), // Ajusta el relleno del botón
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15), // Borde redondeado
-
-                  ),
+          if (patientTherapy != null)
+            // Botón "Crear Terapia" superpuesto en la parte inferior
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 1,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
                   child: const Text(
                     "View Therapy",
                     style: TextStyle(
@@ -758,9 +734,29 @@ class _PatientProfileState extends State<PatientProfile> {
                       fontSize: 18,
                     ),
                   ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyTherapy(
+                          patientId: patientTherapy!.patient.id,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        AppConfig.primaryColor, // Color de fondo azul
+                    padding:
+                        const EdgeInsets.all(16), // Ajusta el relleno del botón
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(15), // Borde redondeado
+                    ),
+                  ),
                 ),
               ),
-            ),
+            )
         ]));
   }
 

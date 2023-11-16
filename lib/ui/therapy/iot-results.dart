@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
+import 'package:mobile_app_theraphy/data/model/iot_Result.dart';
+import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:mobile_app_theraphy/data/model/iot_result.dart';
+
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 
 class IotResults extends StatefulWidget {
-  const IotResults({Key? key}) : super(key: key);
+  const IotResults({Key? key, required this.therapy, required this.date} ) : super(key: key);
+  final Therapy therapy;
+  final String date;
 
   @override
   State<IotResults> createState() => _IotResultsState();
@@ -70,7 +74,7 @@ class _IotResultsState extends State<IotResults> {
     // Obtén las listas
     iotResults = List.empty();
     iotResults =
-        await _httpHelper?.getIotResultsByTherapyIdandDate(3, "2023-11-16");
+        await _httpHelper?.getIotResultsByTherapyIdandDate(widget.therapy.id, widget.date);
 
     // Filtra los elementos con mapDuration diferente de 0
     iotResultswithMapDuration =

@@ -3,12 +3,14 @@ import 'package:flutter/widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
+import 'package:mobile_app_theraphy/data/model/iot_result.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/model/treatment.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
+import 'package:mobile_app_theraphy/ui/therapy/iot-results.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-appointment.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-video.dart';
 import 'package:chewie/chewie.dart';
@@ -166,7 +168,7 @@ class _MyTherapyState extends State<MyTherapy> {
                             _currentIndex = index;
                             appointment = null;
                             treatment = null;
-                            videoPlayerKey = UniqueKey(); 
+                            videoPlayerKey = UniqueKey();
                             dateShowed = format.format(
                                 dateTime1.add(Duration(days: _currentIndex)));
                             appointment = await _httpHelper
@@ -280,7 +282,19 @@ class _MyTherapyState extends State<MyTherapy> {
                                     const SizedBox(height: 8),
                                     Center(
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  IotResults(
+                                                therapy: therapies!,
+                                                date: dateShowed
+
+                                              ),
+                                            ),
+                                          );
+                                        },
                                         child: const Text('IoTheraphy Measure'),
                                       ),
                                     ),
