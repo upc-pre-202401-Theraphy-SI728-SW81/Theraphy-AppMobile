@@ -9,7 +9,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 
 class IotResults extends StatefulWidget {
-  const IotResults({Key? key, required this.therapy, required this.date} ) : super(key: key);
+  const IotResults({Key? key, required this.therapy, required this.date})
+      : super(key: key);
   final Therapy therapy;
   final String date;
 
@@ -73,8 +74,8 @@ class _IotResultsState extends State<IotResults> {
   Future initialize() async {
     // Obtén las listas
     iotResults = List.empty();
-    iotResults =
-        await _httpHelper?.getIotResultsByTherapyIdandDate(widget.therapy.id, widget.date);
+    iotResults = await _httpHelper?.getIotResultsByTherapyIdandDate(
+        widget.therapy.id, widget.date);
 
     // Filtra los elementos con mapDuration diferente de 0
     iotResultswithMapDuration =
@@ -340,7 +341,8 @@ class _IotResultsState extends State<IotResults> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: '$heartbeatAverage',
+                                      text:
+                                          '${heartbeatAverage.toStringAsFixed(2)}',
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 20,
@@ -439,7 +441,9 @@ class _IotResultsState extends State<IotResults> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.00001,
+                            ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left:
@@ -732,7 +736,9 @@ class _IotResultsState extends State<IotResults> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 8),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.00001,
+                            ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left:
