@@ -242,7 +242,7 @@ class _MyTherapyState extends State<MyTherapy> {
                             child: Text(
                               dateShowed,
                               textAlign: TextAlign.center,
-                              style:  TextStyle(
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: AppConfig.primaryColor,
@@ -290,12 +290,9 @@ class _MyTherapyState extends State<MyTherapy> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  IotResults(
-                                                therapy: therapies!,
-                                                date: dateShowed
-
-                                              ),
+                                              builder: (context) => IotResults(
+                                                  therapy: therapies!,
+                                                  date: dateShowed),
                                             ),
                                           );
                                         },
@@ -321,11 +318,10 @@ class _MyTherapyState extends State<MyTherapy> {
                                 child: Text(
                                   dateShowed,
                                   textAlign: TextAlign.center,
-                                  style:  TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppConfig.primaryColor
-                                  ),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppConfig.primaryColor),
                                 ),
                               ),
                               const SizedBox(
@@ -339,62 +335,83 @@ class _MyTherapyState extends State<MyTherapy> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const SizedBox(height: 25.0),
-                                      Row(
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 50.0,
-                                            backgroundImage: NetworkImage(
-                                                appointment!
-                                                    .therapy.patient.photoUrl),
+                                      const SizedBox(height: 12.0),
+                                      Center(
+                                        child: Text(
+                                          "You have scheduled an Appointment Today:  ",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppConfig.primaryColor,
                                           ),
-                                          const SizedBox(width: 16.0),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12.0),
+                                      Wrap(
+                                        // Puedes ajustar el espacio entre los elementos aquí
+                                        spacing: 16.0,
+                                        children: [
+                                          Center(
+                                            child: CircleAvatar(
+                                              radius: 50.0,
+                                              backgroundImage: NetworkImage(
+                                                  appointment!.therapy.patient
+                                                      .photoUrl),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16.0),
                                           Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Row(children: [
-                                                const Text(
-                                                  "Appointment with:  ",
-                                                  style: TextStyle(
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  "${appointment!.therapy.patient.user.firstname[0]}. ${appointment!.therapy.patient.user.lastname.split(' ')[0]}",
-                                                  style: const TextStyle(
-                                                      fontSize: 14.0),
-                                                ),
-                                              ]),
-                                              Row(children: [
-                                                const Text(
-                                                  "Hour:  ",
-                                                  style: TextStyle(
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  appointment!.hour,
-                                                  style: const TextStyle(
-                                                      fontSize: 14.0),
-                                                ),
-                                              ]),
-                                              Row(children: [
-                                                const Text(
-                                                  "Place:  ",
-                                                  style: TextStyle(
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  appointment!.place,
-                                                  style: const TextStyle(
-                                                      fontSize: 14.0),
-                                                ),
-                                              ]),
+                                              Row(
+                                                children: [
+                                                  const Text(
+                                                    "Patient:  ",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    "${appointment!.therapy.patient.user.firstname} ${appointment!.therapy.patient.user.lastname.split(' ')[0]}",
+                                                    style: const TextStyle(
+                                                        fontSize: 14.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Text(
+                                                    "Hour:  ",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    appointment!.hour,
+                                                    style: const TextStyle(
+                                                        fontSize: 14.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Text(
+                                                    "Place:  ",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    appointment!.place,
+                                                    style: const TextStyle(
+                                                        fontSize: 14.0),
+                                                  ),
+                                                ],
+                                              ),
                                               Row(
                                                 children: [
                                                   const Text(
@@ -407,10 +424,10 @@ class _MyTherapyState extends State<MyTherapy> {
                                                   Text(
                                                     appointment!.topic,
                                                     style: const TextStyle(
-                                                        fontSize: 16.0),
+                                                        fontSize: 14.0),
                                                   ),
                                                 ],
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ],
@@ -435,11 +452,10 @@ class _MyTherapyState extends State<MyTherapy> {
                               child: Text(
                                 dateShowed,
                                 textAlign: TextAlign.center,
-                                style:  TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppConfig.primaryColor
-                                ),
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppConfig.primaryColor),
                               ),
                             ),
                             const SizedBox(
@@ -532,7 +548,6 @@ class _MyTherapyState extends State<MyTherapy> {
           ],
         ),
       ),
-      
     );
   }
 }

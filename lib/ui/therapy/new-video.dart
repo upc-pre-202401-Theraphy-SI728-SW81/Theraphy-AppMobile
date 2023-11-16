@@ -119,7 +119,7 @@ class _NewVideoState extends State<NewVideo> {
         title: Row(
           children: <Widget>[
             IconButton(
-              icon:  Icon(
+              icon: Icon(
                 Icons.arrow_back,
                 color: AppConfig.primaryColor,
               ),
@@ -128,7 +128,7 @@ class _NewVideoState extends State<NewVideo> {
                 Navigator.of(context).pop();
               },
             ),
-             Text(
+            Text(
               "Therapy",
               style: TextStyle(color: AppConfig.primaryColor),
             ),
@@ -211,20 +211,7 @@ class _NewVideoState extends State<NewVideo> {
           ),
           // Elemento fijo abajo del carrusel de días
           // Puedes agregar más elementos según sea necesario
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: Text(
-                dateShowed,
-                textAlign: TextAlign.center,
-                style:  TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppConfig.primaryColor,
-                ),
-              ),
-            ),
-          ),
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -237,6 +224,20 @@ class _NewVideoState extends State<NewVideo> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: Text(
+                              dateShowed,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppConfig.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ),
                         const Text(
                           "Video's Title",
                           style: TextStyle(
@@ -253,7 +254,7 @@ class _NewVideoState extends State<NewVideo> {
                             labelText: "Write here",
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              borderSide:  BorderSide(
+                              borderSide: BorderSide(
                                 color: AppConfig.primaryColor,
                                 width: 1.5,
                               ),
@@ -285,7 +286,7 @@ class _NewVideoState extends State<NewVideo> {
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              borderSide:  BorderSide(
+                              borderSide: BorderSide(
                                 color: AppConfig.primaryColor,
                                 width: 1.5,
                               ),
@@ -325,16 +326,18 @@ class _NewVideoState extends State<NewVideo> {
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
-                           
-                            if (_videoUrl != null)
-                              Text(
-                                  'URL del Video en Firebase Storage: $_videoUrl'),
                             // Puedes agregar más elementos según sea necesario
                           ],
                         ),
                         const SizedBox(
                           height: 10,
                         ),
+                        if (_videoUrl != null)
+                          const Text(
+                            'Your video has been saved',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 53, 211, 29)),
+                          ),
                         Center(
                           child: ElevatedButton(
                             onPressed: () async {
@@ -346,8 +349,13 @@ class _NewVideoState extends State<NewVideo> {
                               if (title != "" &&
                                   descripction != "" &&
                                   _videoUrl != null) {
-                                _httpHelper?.addTreatment(therapies!.id, _videoUrl!,
-                                    "30 min", title, descripction, dateShowed);
+                                _httpHelper?.addTreatment(
+                                    therapies!.id,
+                                    _videoUrl!,
+                                    "30 min",
+                                    title,
+                                    descripction,
+                                    dateShowed);
                                 Navigator.of(context).pop();
 
                                 // Muestra un diálogo emergente con el mensaje de éxito
@@ -384,11 +392,15 @@ class _NewVideoState extends State<NewVideo> {
                                                   },
                                                   style: ButtonStyle(
                                                     backgroundColor:
-                                                        MaterialStateProperty.all<
-                                                                Color>(
-                                                            AppConfig.primaryColor), // Color de fondo personalizado para el botón "Cerrar"
+                                                        MaterialStateProperty
+                                                            .all<Color>(AppConfig
+                                                                .primaryColor), // Color de fondo personalizado para el botón "Cerrar"
                                                   ),
-                                                  child: const Text("Close"),
+                                                  child: const Text(
+                                                    "Close",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -402,7 +414,7 @@ class _NewVideoState extends State<NewVideo> {
                             },
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
-                               AppConfig.primaryColor,
+                                AppConfig.primaryColor,
                               ),
                             ),
                             child: const Text(
@@ -413,7 +425,7 @@ class _NewVideoState extends State<NewVideo> {
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
