@@ -22,7 +22,6 @@ import 'package:mobile_app_theraphy/ui/therapy/video-player.dart';
 import 'package:video_player/video_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class MyTherapy extends StatefulWidget {
   final int patientId;
   final int indexx;
@@ -460,8 +459,91 @@ class _MyTherapyState extends State<MyTherapy> {
                                           children: [
                                             ElevatedButton(
                                               onPressed: () {
-                                                // Lógica para "See Diagnosis"
-                                                // Agrega aquí el código que se ejecutará al presionar el botón "See Diagnosis"
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    String updatedDiagnosis =
+                                                        appointment!.diagnosis;
+
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                        "Your Diagnosis",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      content: Container(
+                                                        width: double.maxFinite,
+                                                        child:
+                                                            SingleChildScrollView(
+                                                          child: Column(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              TextFormField(
+                                                                maxLength: 250,
+                                                                maxLines: 4,
+                                                                initialValue:
+                                                                    appointment!
+                                                                        .diagnosis,
+                                                                onChanged:
+                                                                    (value) {
+                                                                  print(value);
+                                                                  updatedDiagnosis =
+                                                                      value;
+                                                                  appointment!
+                                                                          .diagnosis =
+                                                                      updatedDiagnosis;
+                                                                  print(
+                                                                      updatedDiagnosis);
+                                                                  print(
+                                                                      "hereeerere");
+                                                                  // Cierra el popup después de la actualización
+                                                                },
+                                                                decoration:
+                                                                    const InputDecoration(
+                                                                  hintText:
+                                                                      "Enter your diagnosis",
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 16.0),
+                                                              ElevatedButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  await _httpHelper!.updateDiagnosis(
+                                                                      appointment!
+                                                                          .id,
+                                                                      appointment!
+                                                                          .diagnosis);
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                  // Lógica para actualizar el diagnóstico
+                                                                  // Agrega aquí el código que se ejecutará al presionar el botón "Update"
+                                                                  // Puedes utilizar la variable `updatedDiagnosis` para obtener el nuevo diagnóstico
+                                                                },
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  primary: AppConfig
+                                                                      .primaryColor,
+                                                                  onPrimary:
+                                                                      Colors
+                                                                          .white,
+                                                                ),
+                                                                child: const Text(
+                                                                    "Update"),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 primary: AppConfig.primaryColor,
@@ -605,12 +687,12 @@ class _MyTherapyState extends State<MyTherapy> {
   }
 
   void _makePhoneCall() async {
-  final String phoneUrl = 'tel:$_cellNumber';
+    final String phoneUrl = 'tel:$_cellNumber';
 
-  if (await canLaunch(phoneUrl)) {
-    await launch(phoneUrl);
-  } else {
-    throw 'Could not launch $phoneUrl';
+    if (await canLaunch(phoneUrl)) {
+      await launch(phoneUrl);
+    } else {
+      throw 'Could not launch $phoneUrl';
+    }
   }
-}
 }
