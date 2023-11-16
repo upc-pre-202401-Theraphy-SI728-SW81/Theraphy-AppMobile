@@ -22,6 +22,8 @@ dependencies:
   flutter_ffmpeg: any
   chewie: ^1.7.1
   fluttertoast: ^8.2.4
+  carousel_slider: ^4.2.1
+  
 
 dev_dependencies:
   flutter_test:
@@ -33,3 +35,5 @@ flutter:
   assets:
     - assets/logotheraphy.png
     - assets/background.png
+    - assets/appointments3.png
+    - assets/consultation.png
