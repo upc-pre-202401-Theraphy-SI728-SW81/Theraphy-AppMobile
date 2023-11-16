@@ -204,7 +204,7 @@ class _MyTherapyState extends State<MyTherapy> {
                             margin: const EdgeInsets.symmetric(horizontal: 5.0),
                             decoration: BoxDecoration(
                               color: _currentIndex == index
-                                  ? const Color(0xFF013D98)
+                                  ? AppConfig.primaryColor
                                   : const Color(0xFFB0D0FF),
                               borderRadius: BorderRadius.circular(50.0),
                             ),
@@ -214,7 +214,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                 style: TextStyle(
                                   color: _currentIndex == index
                                       ? Colors.white
-                                      : const Color(0xFF013D98),
+                                      : AppConfig.primaryColor,
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -242,10 +242,10 @@ class _MyTherapyState extends State<MyTherapy> {
                             child: Text(
                               dateShowed,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style:  TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF013D98),
+                                color: AppConfig.primaryColor,
                               ),
                             ),
                           ),
@@ -321,10 +321,10 @@ class _MyTherapyState extends State<MyTherapy> {
                                 child: Text(
                                   dateShowed,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style:  TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF013D98),
+                                    color: AppConfig.primaryColor
                                   ),
                                 ),
                               ),
@@ -435,10 +435,10 @@ class _MyTherapyState extends State<MyTherapy> {
                               child: Text(
                                 dateShowed,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF013D98),
+                                  color: AppConfig.primaryColor
                                 ),
                               ),
                             ),
@@ -472,7 +472,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                 style: ButtonStyle(
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
-                                          const Color(0xFF014DBF)),
+                                          AppConfig.primaryColor),
                                 ),
                                 child: const Text(
                                   "Add Video",
@@ -514,7 +514,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                 style: ButtonStyle(
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
-                                          const Color(0xFF014DBF)),
+                                          AppConfig.primaryColor),
                                 ),
                                 child: const Text(
                                   "Add Appointment",

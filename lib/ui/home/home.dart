@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
@@ -72,7 +73,7 @@ class _HomePhysiotherapistState extends State<HomePhysiotherapist> {
       appBar: AppBar(
         title: Text(
           "Hello, ${physiotherapistLogged?.user.firstname}",
-          style: const TextStyle(color: Colors.blue),
+          style:TextStyle(color: AppConfig.primaryColor),
         ),
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
@@ -317,10 +318,10 @@ class _ConsultationItemState extends State<ConsultationItem> {
         color: Colors.white,
         elevation: 1,
         child: Container(
-          decoration: const BoxDecoration(
+          decoration:  BoxDecoration(
             border: Border(
               left: BorderSide(
-                color: Colors.blue,
+                color: AppConfig.primaryColor,
                 width: 7,
                 style: BorderStyle.solid,
               ),
@@ -362,8 +363,8 @@ class _ConsultationItemState extends State<ConsultationItem> {
                               "${widget.consultation.patient.user.firstname} ${widget.consultation.patient.user.lastname}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.blue,
+                              style:  TextStyle(
+                                color: AppConfig.primaryColor,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),

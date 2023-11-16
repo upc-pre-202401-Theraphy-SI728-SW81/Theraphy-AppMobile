@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
@@ -62,7 +63,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
             "My Consultations",
             style: TextStyle(
               // color: AppConfig.primaryColor,
-              color: Colors.blue,
+              color: AppConfig.primaryColor,
               fontSize: 24,
             ),
           ),
@@ -81,7 +82,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
               child: Container(
                 width: 360,
                 child: TextField(
-                  cursorColor: Colors.blue,
+                  cursorColor: AppConfig.primaryColor,
                 // cursorColor: AppConfig.primaryColor,
                   controller: searchController,
                   onChanged: (value) {
@@ -98,7 +99,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                     labelText: 'Search',
                     prefixIcon: Icon(
                       Icons.search,
-                      color: Colors.blue,
+                      color: AppConfig.primaryColor,
                       //color: AppConfig.primaryColor,
                     ),
                     border: const OutlineInputBorder(
@@ -107,7 +108,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         //color: AppConfig.primaryColor,
-                        color: Colors.blue,
+                        color: AppConfig.primaryColor,
                         width: 2
                       ),
                       borderRadius:
@@ -116,14 +117,14 @@ class _ConsultationsListState extends State<ConsultationsList> {
                     focusedBorder: OutlineInputBorder(
                       borderSide:
                           BorderSide(
-                            color: Colors.blue,//color: AppConfig.primaryColor,
+                            color: AppConfig.primaryColor,//color: AppConfig.primaryColor,
                              width:  2.2),
                       borderRadius:
                           const BorderRadius.all(Radius.circular(10.0)),
                     ),
                     labelStyle: TextStyle(
                      // color: AppConfig.primaryColor,
-                     color: Colors.blue,
+                     color: AppConfig.primaryColor,
                     ),
                   ),
                 ),
@@ -157,7 +158,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                         elevation:
                             MaterialStateProperty.all(0), // Sin elevación
                         side: MaterialStateProperty.all(BorderSide(
-                          color: Colors.blue,//AppConfig.primaryColor, // Color azul
+                          color: AppConfig.primaryColor,//AppConfig.primaryColor, // Color azul
                           width: 1.5, // Ancho del borde
                         )),
                         minimumSize: MaterialStateProperty.all(
@@ -166,7 +167,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                       child: Text(
                         'Done',
                         style: TextStyle(
-                          color: Colors.blue,//AppConfig.primaryColor
+                          color: AppConfig.primaryColor,//AppConfig.primaryColor
                           ),
                       ),
                     ),
@@ -183,7 +184,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
-                            Colors.blue), // Fondo blanco
+                            AppConfig.primaryColor), // Fondo blanco
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -230,7 +231,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                         elevation:
                             MaterialStateProperty.all(0), // Sin elevación
                         side: MaterialStateProperty.all(BorderSide(
-                          color: Colors.blue, //AppConfig.primaryColor, // Color azul
+                          color: AppConfig.primaryColor, //AppConfig.primaryColor, // Color azul
                           width: 1.5, // Ancho del borde
                         )),
                         minimumSize: MaterialStateProperty.all(
@@ -239,7 +240,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                       child: Text(
                         'All',
                         style: TextStyle(
-                          color: Colors.blue, 
+                          color: AppConfig.primaryColor, 
                           //AppConfig.primaryColor
                           ),
                       ),
@@ -257,7 +258,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
-                            Colors.blue,//AppConfig.primaryColor
+                            AppConfig.primaryColor,//AppConfig.primaryColor
                             ), // Fondo blanco
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(

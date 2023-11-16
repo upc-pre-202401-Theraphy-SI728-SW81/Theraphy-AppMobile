@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
@@ -96,18 +97,18 @@ class _NewAppointmentState extends State<NewAppointment> {
           title: Row(
             children: <Widget>[
               IconButton(
-                icon: const Icon(
+                icon:  Icon(
                   Icons.arrow_back,
-                  color: Color(0xFF014DBF),
+                  color: AppConfig.primaryColor
                 ),
                 onPressed: () {
                   // Agrega lógica para retroceder
                   Navigator.of(context).pop();
                 },
               ),
-              const Text(
+               Text(
                 "Add Appointment",
-                style: TextStyle(color: Color(0xFF014DBF)),
+                style: TextStyle(color: AppConfig.primaryColor),
               ),
             ],
           ),
@@ -170,7 +171,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                                       horizontal: 5.0),
                                   decoration: BoxDecoration(
                                     color: _currentIndex == index
-                                        ? const Color(0xFF013D98)
+                                        ? AppConfig.primaryColor
                                         : const Color(0xFFB0D0FF),
                                     borderRadius: BorderRadius.circular(50.0),
                                   ),
@@ -180,7 +181,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                                       style: TextStyle(
                                         color: _currentIndex == index
                                             ? const Color(0xFFF5F5F8)
-                                            : const Color(0xFF013D98),
+                                            : AppConfig.primaryColor,
                                         fontSize: 17,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -207,10 +208,10 @@ class _NewAppointmentState extends State<NewAppointment> {
                                   child: Text(
                                     dateShowed,
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(
+                                    style:  TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF013D98),
+                                      color: AppConfig.primaryColor,
                                     ),
                                   ),
                                 ),
@@ -263,9 +264,9 @@ class _NewAppointmentState extends State<NewAppointment> {
                                           labelText: "Write here",
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius:
-                                                BorderRadius.circular(1.0),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFF0166FE),
+                                                BorderRadius.circular(10.0),
+                                            borderSide:  BorderSide(
+                                              color: AppConfig.primaryColor,
                                               width: 1.5,
                                             ),
                                           ),
@@ -303,17 +304,17 @@ class _NewAppointmentState extends State<NewAppointment> {
                                                 "Select Hour", // Etiqueta para el campo desplegable
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(1.0),
-                                              borderSide: const BorderSide(
-                                                color: Color(0xFF0166FE),
+                                                  BorderRadius.circular(10.0),
+                                              borderSide:  BorderSide(
+                                                color: AppConfig.primaryColor,
                                                 width: 1.5,
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(1.0),
-                                              borderSide: const BorderSide(
-                                                color: Color(0xFF0166FE),
+                                                  BorderRadius.circular(10.0),
+                                              borderSide:  BorderSide(
+                                                color: AppConfig.primaryColor,
                                                 width: 1.5,
                                               ),
                                             ),
@@ -389,8 +390,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                                                                     ButtonStyle(
                                                                   backgroundColor: MaterialStateProperty.all<
                                                                           Color>(
-                                                                      const Color(
-                                                                          0xFF014DBF)), // Color de fondo personalizado para el botón "Cerrar"
+                                                                      AppConfig.primaryColor), // Color de fondo personalizado para el botón "Cerrar"
                                                                 ),
                                                                 child:
                                                                     const Text(
@@ -412,8 +412,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                                           },
                                           style: ButtonStyle(
                                             backgroundColor: MaterialStateProperty
-                                                .all<Color>(const Color(
-                                                    0xFF014DBF)), // Color de fondo personalizado para el botón "Schedule appointment"
+                                                .all<Color>(AppConfig.primaryColor), // Color de fondo personalizado para el botón "Schedule appointment"
                                           ),
                                           child: Container(
                                             height:

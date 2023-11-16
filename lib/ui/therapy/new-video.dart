@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
@@ -118,18 +119,18 @@ class _NewVideoState extends State<NewVideo> {
         title: Row(
           children: <Widget>[
             IconButton(
-              icon: const Icon(
+              icon:  Icon(
                 Icons.arrow_back,
-                color: Color(0xFF014DBF),
+                color: AppConfig.primaryColor,
               ),
               onPressed: () {
                 // Agrega lógica para retroceder
                 Navigator.of(context).pop();
               },
             ),
-            const Text(
+             Text(
               "Therapy",
-              style: TextStyle(color: Color(0xFF014DBF)),
+              style: TextStyle(color: AppConfig.primaryColor),
             ),
           ],
         ),
@@ -184,7 +185,7 @@ class _NewVideoState extends State<NewVideo> {
                           margin: const EdgeInsets.symmetric(horizontal: 5.0),
                           decoration: BoxDecoration(
                             color: _currentIndex == index
-                                ? const Color(0xFF013D98)
+                                ? AppConfig.primaryColor
                                 : const Color(0xFFB0D0FF),
                             borderRadius: BorderRadius.circular(50.0),
                           ),
@@ -194,7 +195,7 @@ class _NewVideoState extends State<NewVideo> {
                               style: TextStyle(
                                 color: _currentIndex == index
                                     ? const Color(0xFFF5F5F8)
-                                    : const Color(0xFF013D98),
+                                    : AppConfig.primaryColor,
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -216,10 +217,10 @@ class _NewVideoState extends State<NewVideo> {
               child: Text(
                 dateShowed,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style:  TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF013D98),
+                  color: AppConfig.primaryColor,
                 ),
               ),
             ),
@@ -251,9 +252,9 @@ class _NewVideoState extends State<NewVideo> {
                           decoration: InputDecoration(
                             labelText: "Write here",
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(1.0),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF0166FE),
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide:  BorderSide(
+                                color: AppConfig.primaryColor,
                                 width: 1.5,
                               ),
                             ),
@@ -283,9 +284,9 @@ class _NewVideoState extends State<NewVideo> {
                           style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(1.0),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF0166FE),
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide:  BorderSide(
+                                color: AppConfig.primaryColor,
                                 width: 1.5,
                               ),
                             ),
@@ -316,7 +317,7 @@ class _NewVideoState extends State<NewVideo> {
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(
-                                  const Color(0xFF014DBF),
+                                  AppConfig.primaryColor,
                                 ),
                               ),
                               child: const Text(
@@ -385,8 +386,7 @@ class _NewVideoState extends State<NewVideo> {
                                                     backgroundColor:
                                                         MaterialStateProperty.all<
                                                                 Color>(
-                                                            const Color(
-                                                                0xFF014DBF)), // Color de fondo personalizado para el botón "Cerrar"
+                                                            AppConfig.primaryColor), // Color de fondo personalizado para el botón "Cerrar"
                                                   ),
                                                   child: const Text("Close"),
                                                 ),
@@ -402,7 +402,7 @@ class _NewVideoState extends State<NewVideo> {
                             },
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color(0xFF014DBF),
+                               AppConfig.primaryColor,
                               ),
                             ),
                             child: const Text(

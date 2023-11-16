@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
 
@@ -58,18 +59,18 @@ class _NewTherapyState extends State<NewTherapy> {
           title: Row(
             children: <Widget>[
               IconButton(
-                icon: const Icon(
+                icon:  Icon(
                   Icons.arrow_back,
-                  color: Color(0xFF014DBF),
+                  color: AppConfig.primaryColor,
                 ),
                 onPressed: () {
                   // Agrega lógica para retroceder
                   Navigator.of(context).pop();
                 },
               ),
-              const Text(
+               Text(
                 "Therapy Creation",
-                style: TextStyle(color: Color(0xFF014DBF)),
+                style: TextStyle(color: AppConfig.primaryColor),
               ),
             ],
           ),
@@ -115,9 +116,9 @@ class _NewTherapyState extends State<NewTherapy> {
                           decoration: InputDecoration(
                             labelText: "Therapy's Title",
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(1.0),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF0166FE),
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:  BorderSide(
+                                color: AppConfig.primaryColor,
                                 width: 1.5,
                               ),
                             ),
@@ -140,9 +141,9 @@ class _NewTherapyState extends State<NewTherapy> {
                           style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(1.0),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF0166FE),
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide:  BorderSide(
+                                color: AppConfig.primaryColor,
                                 width: 1.5,
                               ),
                             ),
@@ -177,9 +178,9 @@ class _NewTherapyState extends State<NewTherapy> {
                           decoration: InputDecoration(
                             labelText: "Write here", // Etiqueta para el campo
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(1.0),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF0166FE),
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide:  BorderSide(
+                                color: AppConfig.primaryColor,
                                 width: 1.5,
                               ),
                             ),
@@ -266,8 +267,7 @@ class _NewTherapyState extends State<NewTherapy> {
                                                         backgroundColor:
                                                             MaterialStateProperty
                                                                 .all<Color>(
-                                                          const Color(
-                                                              0xFF014DBF),
+                                                          AppConfig.primaryColor,
                                                         ),
                                                       ),
                                                       child: const Text(
@@ -291,8 +291,7 @@ class _NewTherapyState extends State<NewTherapy> {
                             },
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
-                                  const Color(
-                                      0xFF014DBF)), // Color de fondo personalizado para el botón "Create Virtual Treatment"
+                                  AppConfig.primaryColor), // Color de fondo personalizado para el botón "Create Virtual Treatment"
                             ),
                             child: const Text(
                               "Create New Therapy",
