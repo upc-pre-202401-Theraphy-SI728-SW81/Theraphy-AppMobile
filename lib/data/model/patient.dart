@@ -1,3 +1,5 @@
+import 'package:mobile_app_theraphy/data/model/user.dart';
+
 class Patient{
     int id;
     String dni;
@@ -5,7 +7,8 @@ class Patient{
     String photoUrl;
     String birthdayDate;
     int appointmentQuantity;
-    String location;    
+    String location; 
+    User user;   
     
   Patient({
     required this.id,
@@ -15,6 +18,7 @@ class Patient{
     required this.birthdayDate,
     required this.appointmentQuantity,
     required this.location,
+    required this.user
   });
   
   Map<String, dynamic> toJson() {
@@ -25,7 +29,7 @@ class Patient{
       'photoUrl': photoUrl,
       'birthdayDate': birthdayDate,
       'appointmentQuantity': appointmentQuantity,
-      'location': location,
+      'location': location
     };
   }
 
@@ -37,7 +41,8 @@ class Patient{
             photoUrl: json['photoUrl'],
             birthdayDate: json['birthdayDate'],
             appointmentQuantity: json['appointmentQuantity'],
-            location: json['location']
+            location: json['location'],
+            user: User.fromJson(json['user'])
             );
 
 }
