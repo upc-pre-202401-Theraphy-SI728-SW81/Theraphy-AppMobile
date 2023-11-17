@@ -138,7 +138,7 @@ class _IotResultsState extends State<IotResults> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
@@ -200,8 +200,8 @@ class _IotResultsState extends State<IotResults> {
                         decoration: BoxDecoration(
                           color: Colors.black, // Color negro
                           borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            const BoxShadow(
+                          boxShadow: const [
+                            BoxShadow(
                                 color: Colors.grey,
                                 offset: Offset(0, 2),
                                 blurRadius: 3),
@@ -390,12 +390,12 @@ class _IotResultsState extends State<IotResults> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.all(10.0),
+                              padding: const EdgeInsets.all(10.0),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment
                                     .start, // Alinea los elementos en la parte superior
                                 children: [
-                                  Expanded(
+                                  const Expanded(
                                     child: Text(
                                       'Average Temperature',
                                       style: TextStyle(
@@ -503,7 +503,7 @@ class _IotResultsState extends State<IotResults> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 6),
                                   // Título a la derecha del termómetro
                                   Padding(
                                     padding: const EdgeInsets.only(
