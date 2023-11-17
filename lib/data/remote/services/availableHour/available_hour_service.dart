@@ -6,7 +6,7 @@ import 'package:mobile_app_theraphy/data/model/available_hour.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AvailableHourService {
-  final String baseUrl = 'http://192.168.226.60:8080/api/v1/available-hours';
+  final String baseUrl = 'https://api-iotheraphy-production.up.railway.app/api/v1/available-hours';
 
   Future<List<AvailableHour>?> getAll() async {
     final http.Response response = await http.get(Uri.parse(baseUrl));
@@ -31,7 +31,7 @@ class AvailableHourService {
     }
   }
 
-  void createAvailableHour(
+  Future<bool> createAvailableHour(
       int id, String hours, String day, int physiotherapistId) async {
     final availableHour = AvailableHour(
         id: id, hours: hours, day: day, physiotherapistId: physiotherapistId);
@@ -57,10 +57,12 @@ class AvailableHourService {
       // Solicitud exitosa
       print('Solicitud exitosa');
       print('Respuesta del servidor: ${result.body}');
+      return true;
     } else {
       // Solicitud fallida
       print('Solicitud fallida');
       print('Código de error: ${result.statusCode}');
+      return false;
     }
   }
 

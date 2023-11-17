@@ -3,7 +3,7 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 class Physiotherapist {
   final int id;
   final String dni;
-  final String specialization;
+  String specialization;
   final int age;
   final String location;
   final String photoUrl;
@@ -15,7 +15,7 @@ class Physiotherapist {
   final double fees;
   final User user;
 
-  const Physiotherapist(
+  Physiotherapist(
       {required this.id,
       required this.dni,
       required this.specialization,

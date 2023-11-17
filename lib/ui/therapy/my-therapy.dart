@@ -2,64 +2,86 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
+
+import 'package:mobile_app_theraphy/config/navBar.dart';
+
+import 'package:mobile_app_theraphy/data/model/appointment.dart';
+import 'package:mobile_app_theraphy/data/model/iot_result.dart';
+
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
+import 'package:mobile_app_theraphy/data/model/treatment.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
+import 'package:mobile_app_theraphy/ui/therapy/iot-results.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-appointment.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-video.dart';
 import 'package:chewie/chewie.dart';
+import 'package:mobile_app_theraphy/ui/therapy/video-player.dart';
 import 'package:video_player/video_player.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class MyTherapy extends StatefulWidget {
-  const MyTherapy({super.key});
-
+  final int patientId;
+  final int indexx;
+  const MyTherapy({Key? key, required this.patientId, this.indexx = 0})
+      : super(key: key);
   @override
   State<MyTherapy> createState() => _MyTherapyState();
 }
 
 class _MyTherapyState extends State<MyTherapy> {
+  Key videoPlayerKey = UniqueKey(); // Add this line
+
   HttpHelper? _httpHelper;
   Therapy? therapies;
-
-  bool isTreatment = true;
-
+  Treatment? treatment;
+  Appointment? appointment;
+  bool isTreatment = false;
+  bool isAppointment = false;
   String therapyName = "";
   String therapyDescription = "";
-
   List<String> days = [];
   int _currentIndex = 0;
-  int patientId = 2;
 
   final DateFormat format = DateFormat("yyyy-MM-dd");
   late DateTime dateTime1;
   late DateTime dateTime2;
-  late ChewieController _chewieController;
-  late VideoPlayerController _videoPlayerController;
-
   int difference = 0;
   String dateShowed = "";
+  String pastDateShowed = "";
+  final String _cellNumber = "955110309";
 
   Future initialize() async {
     int? id = await _httpHelper?.getPhysiotherapistLogged();
-
-    therapies = await _httpHelper?.getTherapyByPhysioAndPatient(id!, patientId);
-
+    _currentIndex = widget.indexx;
+    therapies =
+        await _httpHelper?.getTherapyByPhysioAndPatient(id!, widget.patientId);
+    appointment = await _httpHelper?.getApppointmentByTherapyAndDate(
+        therapies!.id, therapies!.startAt);
+    treatment = await _httpHelper?.getTreatmentByTherapyAndDate(
+        therapies!.id, therapies!.startAt);
     setState(() {
       therapies = therapies;
       print(therapies?.id);
       therapyDescription = therapies!.description;
       therapyName = therapies!.therapyName;
-
       dateTime1 = format.parse(therapies!.startAt);
       dateTime2 = format.parse(therapies!.finishAt);
-
       difference = dateTime2.difference(dateTime1).inDays;
-
       days = List.generate(difference + 1, (index) => "Día ${index + 1}",
           growable: false);
       dateShowed = format.format(dateTime1);
+      pastDateShowed = dateShowed;
+      if (appointment == null) {
+        if (treatment != null) {
+          isTreatment = true;
+        }
+      } else {
+        isAppointment = true;
+      }
     });
   }
 
@@ -68,25 +90,13 @@ class _MyTherapyState extends State<MyTherapy> {
     super.initState();
     _httpHelper = HttpHelper();
     initialize();
-    // Inicializar el controlador de video
-    // ignore: deprecated_member_use
-    _videoPlayerController = VideoPlayerController.network(
-        "https://www.youtube.com/watch?v=4BVZLYyuurk");
-
-    // Inicializar el controlador de Chewie
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay:
-          false, // Puedes cambiarlo a true si deseas reproducción automática
-      looping: false,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo F5F5F8
+      backgroundColor: Colors.white,
       appBar: AppBar(
         titleSpacing: -10,
         title: Padding(
@@ -120,7 +130,7 @@ class _MyTherapyState extends State<MyTherapy> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.05,
+          horizontal: MediaQuery.of(context).size.width * 0.0,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,8 +146,8 @@ class _MyTherapyState extends State<MyTherapy> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(16.0),
-              margin: const EdgeInsets.only(bottom: 16.0),
+              margin:
+                  const EdgeInsets.only(bottom: 16.0, right: 16.0, left: 16.0),
               child: Text(
                 therapyDescription,
                 style: const TextStyle(
@@ -146,45 +156,50 @@ class _MyTherapyState extends State<MyTherapy> {
                 textAlign: TextAlign.justify,
               ),
             ),
-            // Carrusel de días
             Container(
-              margin: const EdgeInsets.only(left: 16.0, right: 16.0),
-              padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-              height: 60, // Altura del contenedor grande
+              height: 60,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(
-                    40.0), // Radio de borde para esquinas curvas
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 5.0),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                      20.0), // Agrega un radio de 40 a los bordes izquierdo y derecho
                   child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: const Color(0xFF014DBF).withOpacity(0.9),
-                          width: 20.0, // Ancho de la sombra izquierda
-                        ),
-                        right: BorderSide(
-                          color: const Color(0xFF014DBF).withOpacity(0.9),
-                          width: 20.0, // Ancho de la sombra derecha
-                        ),
-                      ),
-                    ),
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: days.asMap().entries.map((entry) {
                         final index = entry.key;
                         final day = entry.value;
                         return GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            _currentIndex = index;
+                            appointment = null;
+                            treatment = null;
+                            videoPlayerKey = UniqueKey();
+                            dateShowed = format.format(
+                                dateTime1.add(Duration(days: _currentIndex)));
+                            appointment = await _httpHelper
+                                ?.getApppointmentByTherapyAndDate(
+                                    therapies!.id, dateShowed);
+                            treatment =
+                                await _httpHelper?.getTreatmentByTherapyAndDate(
+                                    therapies!.id, dateShowed);
+                            print("metooo");
+                            print(dateShowed);
+                            print(treatment);
                             setState(() {
-                              _currentIndex = index;
-                              dateShowed = format.format(
-                                  dateTime1.add(Duration(days: _currentIndex)));
+                              if (appointment == null) {
+                                if (treatment != null) {
+                                  isTreatment = true;
+                                }
+                                isAppointment = false;
+                              } else {
+                                isAppointment = true;
+                                isTreatment = false;
+                              }
+                              print(isTreatment);
+                              print("metooo2");
                             });
                           },
                           child: Container(
@@ -193,7 +208,7 @@ class _MyTherapyState extends State<MyTherapy> {
                             margin: const EdgeInsets.symmetric(horizontal: 5.0),
                             decoration: BoxDecoration(
                               color: _currentIndex == index
-                                  ? const Color(0xFF013D98)
+                                  ? AppConfig.primaryColor
                                   : const Color(0xFFB0D0FF),
                               borderRadius: BorderRadius.circular(50.0),
                             ),
@@ -203,7 +218,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                 style: TextStyle(
                                   color: _currentIndex == index
                                       ? Colors.white
-                                      : const Color(0xFF013D98),
+                                      : AppConfig.primaryColor,
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -217,148 +232,475 @@ class _MyTherapyState extends State<MyTherapy> {
                 ),
               ),
             ),
-
-            isTreatment && _chewieController != null
-                ? Column(
-                    children: [
-                      //Chewie(
-                      //controller: _chewieController,
-                      //),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "sadadad",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "sadada",
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Agregar lógica para manejar el botón (puede abrir resultados de IoT)
-                        },
-                        child: Text('View IoT Results'),
-                      ),
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(
-                        height: 30.0,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20.0),
-                        child: Text(
-                          dateShowed,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF013D98),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(
-                        height: 10.0,
-                      ),
-                      // Línea que dice "Create a Therapy Video"
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20.0),
-                        child: Text(
-                          "Create a Therapy Video",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-
-                      // Botón "Add video" con color de fondo personalizado y ancho del 80%
-                      FractionallySizedBox(
-                        widthFactor: 0.7, // Ancho del 80%
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Lógica para el botón "Add video"
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      NewVideo(initialIndex: _currentIndex),
-                                ));
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color(0xFF014DBF)),
-                          ),
-                          child: const Text(
-                            "Add Video",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
+            Expanded(
+                child: SingleChildScrollView(
+                    child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: isTreatment && treatment != null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: Text(
+                              dateShowed,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppConfig.primaryColor,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 50.0,
-                      ),
-                      // Texto que dice "Schedule an Appointment"
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20.0),
-                        child: Text(
-                          "Schedule an Appointment",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        Card(
+                          elevation: 5,
+                          margin: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 4 / 3,
+                                child: VideoPlayerWidget(
+                                    key: videoPlayerKey, // Pass the key here
+
+                                    videoUrl: treatment!.videoUrl),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        treatment!.title,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      treatment!.description,
+                                      style: const TextStyle(fontSize: 16),
+                                      textAlign: TextAlign.justify,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Center(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => IotResults(
+                                                  therapy: therapies!,
+                                                  date: dateShowed),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text('IoTheraphy Measure'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
+                      ],
+                    )
+                  : isAppointment && appointment != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 20.0),
+                                child: Text(
+                                  dateShowed,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppConfig.primaryColor),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10.0,
+                              ),
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16.0, right: 16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 12.0),
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 250,
+                                            child: Text(
+                                              "You have scheduled an Appointment Today:  ",
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppConfig.primaryColor,
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              _makePhoneCall();
 
-                      // Botón "Add appointment" con color de fondo personalizado
-                      FractionallySizedBox(
-                        widthFactor: 0.7, // Ancho del 80%
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Lógica para el botón "Add video"
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => NewAppointment(
-                                      initialIndex: _currentIndex),
-                                ));
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color(0xFF014DBF)),
+                                              // Lógica para el icono de teléfono
+                                              // Agrega aquí el código que se ejecutará al presionar el icono de teléfono
+                                            },
+                                            icon: const Icon(
+                                              Icons.phone,
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12.0),
+                                      Wrap(
+                                        spacing: 16.0,
+                                        children: [
+                                          Center(
+                                            child: CircleAvatar(
+                                              radius: 50.0,
+                                              backgroundImage: NetworkImage(
+                                                  appointment!.therapy.patient
+                                                      .photoUrl),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16.0),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Text(
+                                                    "Patient:  ",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    "${appointment!.therapy.patient.user.firstname} ${appointment!.therapy.patient.user.lastname.split(' ')[0]}",
+                                                    style: const TextStyle(
+                                                        fontSize: 14.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Text(
+                                                    "Hour:  ",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    appointment!.hour,
+                                                    style: const TextStyle(
+                                                        fontSize: 14.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Text(
+                                                    "Place:  ",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    appointment!.place,
+                                                    style: const TextStyle(
+                                                        fontSize: 14.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Text(
+                                                    "Topic:  ",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    appointment!.topic,
+                                                    style: const TextStyle(
+                                                        fontSize: 14.0),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 25.0),
+                                      Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    String updatedDiagnosis =
+                                                        appointment!.diagnosis;
+
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                        "Your Diagnosis",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      content: Container(
+                                                        width: double.maxFinite,
+                                                        child:
+                                                            SingleChildScrollView(
+                                                          child: Column(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              TextFormField(
+                                                                maxLength: 250,
+                                                                maxLines: 4,
+                                                                initialValue:
+                                                                    appointment!
+                                                                        .diagnosis,
+                                                                onChanged:
+                                                                    (value) {
+                                                                  print(value);
+                                                                  updatedDiagnosis =
+                                                                      value;
+                                                                  appointment!
+                                                                          .diagnosis =
+                                                                      updatedDiagnosis;
+                                                                  print(
+                                                                      updatedDiagnosis);
+                                                                  print(
+                                                                      "hereeerere");
+                                                                  // Cierra el popup después de la actualización
+                                                                },
+                                                                decoration:
+                                                                    const InputDecoration(
+                                                                  hintText:
+                                                                      "Enter your diagnosis",
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 16.0),
+                                                              ElevatedButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  await _httpHelper!.updateDiagnosis(
+                                                                      appointment!
+                                                                          .id,
+                                                                      appointment!
+                                                                          .diagnosis);
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                  // Lógica para actualizar el diagnóstico
+                                                                  // Agrega aquí el código que se ejecutará al presionar el botón "Update"
+                                                                  // Puedes utilizar la variable `updatedDiagnosis` para obtener el nuevo diagnóstico
+                                                                },
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  primary: AppConfig
+                                                                      .primaryColor,
+                                                                  onPrimary:
+                                                                      Colors
+                                                                          .white,
+                                                                ),
+                                                                child: const Text(
+                                                                    "Update"),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: AppConfig.primaryColor,
+                                                onPrimary: Colors.white,
+                                              ),
+                                              child:
+                                                  const Text("See Diagnosis"),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                // Lógica para "Go to Map"
+                                                // Agrega aquí el código que se ejecutará al presionar el botón "Go to Map"
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: AppConfig.primaryColor,
+                                                onPrimary: Colors.white,
+                                              ),
+                                              child: const Text("Go to Map"),
+                                            ),
+                                            const SizedBox(height: 10),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
-                          child: const Text(
-                            "Add Appointment",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(
+                              height: 16.0,
                             ),
-                          ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 20.0),
+                              child: Text(
+                                dateShowed,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppConfig.primaryColor),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.0),
+                              child: Text(
+                                "Create a Therapy Video",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: 0.7,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NewVideo(
+                                          initialIndex: _currentIndex,
+                                          patientId: widget.patientId,
+                                        ),
+                                      ));
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          AppConfig.primaryColor),
+                                ),
+                                child: const Text(
+                                  "Add Video",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 40.0,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.0),
+                              child: Text(
+                                "Schedule an Appointment",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: 0.7,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NewAppointment(
+                                          initialIndex: _currentIndex,
+                                          patientId: widget.patientId,
+                                        ),
+                                      ));
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          AppConfig.primaryColor),
+                                ),
+                                child: const Text(
+                                  "Add Appointment",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-
-            // Aquí puedes agregar el contenido adicional de tu página
+            )))
           ],
         ),
       ),
     );
+  }
+
+  void _makePhoneCall() async {
+
+    //IOS VESION
+
+    /*final String phoneUrl = 'tel:$_cellNumber';
+    
+    if (await canLaunchUrl(Uri.parse(phoneUrl))) {
+      await launchUrl(Uri.parse(phoneUrl));
+    } else {
+      throw 'Could not launch $phoneUrl';
+    }*/
+
+    //ANDROID VERSION
+    String number = '955110309';
+    FlutterPhoneDirectCaller.callNumber(number);
   }
 }

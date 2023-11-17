@@ -13,7 +13,6 @@ import 'package:mobile_app_theraphy/ui/therapy/new-therapy.dart';
 class PatientProfile extends StatefulWidget {
   const PatientProfile({Key? key, required this.patient}) : super(key: key);
   final Patient patient;
-  
 
   @override
   State<PatientProfile> createState() => _PatientProfileState();
@@ -47,7 +46,8 @@ class _PatientProfileState extends State<PatientProfile> {
 
     patientTherapy = await _httpHelper?.getPatientTherapy(widget.patient.id);
 
-    patientMedicalHistory = await _httpHelper?.getMedicalHistoryByPatientId(widget.patient.id);
+    patientMedicalHistory =
+        await _httpHelper?.getMedicalHistoryByPatientId(widget.patient.id);
 
     //Update lists
     setState(() {
@@ -70,7 +70,7 @@ class _PatientProfileState extends State<PatientProfile> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           titleSpacing: -10,
-          title:  Padding(
+          title: Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Text(
               "Patient Profile",
@@ -89,7 +89,12 @@ class _PatientProfileState extends State<PatientProfile> {
               icon: const Icon(Icons.arrow_back_ios),
               color: AppConfig.primaryColor,
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PatientsList(),
+                  ),
+                );
               },
             ),
           ),
@@ -221,8 +226,7 @@ class _PatientProfileState extends State<PatientProfile> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                 AppConfig.primaryColor,
+                              backgroundColor: AppConfig.primaryColor,
                             ),
                             child: const Text(
                               "Create Medical History",
@@ -244,7 +248,7 @@ class _PatientProfileState extends State<PatientProfile> {
                               1.0, // 1.0 significa el 100% del ancho disponible
                           child: Container(
                             margin: const EdgeInsets.only(left: 10, right: 10),
-                            decoration:  BoxDecoration(
+                            decoration: BoxDecoration(
                               border: Border(
                                 top: BorderSide(
                                   color: AppConfig.primaryColor,
@@ -389,8 +393,7 @@ class _PatientProfileState extends State<PatientProfile> {
                                       _isHereditaryHistoryPanelExpanded
                                           ? Icons.keyboard_arrow_up
                                           : Icons.keyboard_arrow_down,
-                                      color:
-                                          AppConfig.primaryColor,
+                                      color: AppConfig.primaryColor,
                                     ),
                                   ],
                                 ),
@@ -459,7 +462,7 @@ class _PatientProfileState extends State<PatientProfile> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
-                                      "Non-pathological History",
+                                      "Non Pathological History",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 20,
@@ -470,8 +473,7 @@ class _PatientProfileState extends State<PatientProfile> {
                                       _isNonPathologicalHistoryPanelExpanded
                                           ? Icons.keyboard_arrow_up
                                           : Icons.keyboard_arrow_down,
-                                      color:
-                                         AppConfig.primaryColor,
+                                      color: AppConfig.primaryColor,
                                     ),
                                   ],
                                 ),
@@ -551,8 +553,7 @@ class _PatientProfileState extends State<PatientProfile> {
                                       _isPathologicalHistoryPanelExpanded
                                           ? Icons.keyboard_arrow_up
                                           : Icons.keyboard_arrow_down,
-                                      color:
-                                          AppConfig.primaryColor,
+                                      color: AppConfig.primaryColor,
                                     ),
                                   ],
                                 ),
@@ -599,7 +600,7 @@ class _PatientProfileState extends State<PatientProfile> {
                           children: [
                             Expanded(
                               child: Container(
-                                decoration:  BoxDecoration(
+                                decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
                                       color: AppConfig.primaryColor,
@@ -672,90 +673,90 @@ class _PatientProfileState extends State<PatientProfile> {
                               ),
                             ),
                           ),
-                        const SizedBox(height:50),
+                        const SizedBox(height: 50),
                       ],
                     ),
                 ],
               ),
             ),
           ]),
-
-          if(patientTherapy==null)
-          // Botón "Crear Terapia" superpuesto en la parte inferior
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 1,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: () {
-                 Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NewTherapy(
-                           
-                            ),
-                          ),
-                        );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppConfig.primaryColor, // Color de fondo azul
-                  padding:
-                      const EdgeInsets.all(16), // Ajusta el relleno del botón
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15), // Borde redondeado
+          if (patientTherapy == null)
+            // Botón "Crear Terapia" superpuesto en la parte inferior
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 1,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                  child: const Text(
+                    "Create Therapy",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                child: const Text(
-                  "Create Therapy",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          if(patientTherapy!=null)
-          // Botón "Crear Terapia" superpuesto en la parte inferior
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 1,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MyTherapy(
-                           
-                            ),
-                          ),
-                        );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppConfig.primaryColor, // Color de fondo azul
-                  padding:
-                      const EdgeInsets.all(16), // Ajusta el relleno del botón
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15), // Borde redondeado
-                  ),
-                ),
-                child: const Text(
-                  "View Therapy",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewTherapy(
+                          patientId: widget.patient.id,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppConfig.primaryColor, // Color de fondo azul
+                    padding:
+                        const EdgeInsets.all(16), // Ajusta el relleno del botón
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(15), // Borde redondeado
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-
+          if (patientTherapy != null)
+            // Botón "Crear Terapia" superpuesto en la parte inferior
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 1,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                  child: const Text(
+                    "View Therapy",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyTherapy(
+                          patientId: patientTherapy!.patient.id,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        AppConfig.primaryColor, // Color de fondo azul
+                    padding:
+                        const EdgeInsets.all(16), // Ajusta el relleno del botón
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(15), // Borde redondeado
+                    ),
+                  ),
+                ),
+              ),
+            )
         ]));
   }
 
