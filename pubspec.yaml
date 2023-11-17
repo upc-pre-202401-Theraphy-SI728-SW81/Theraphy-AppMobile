@@ -21,16 +21,17 @@ dependencies:
   flutter_ffmpeg: any
   chewie: ^1.7.1
   curved_navigation_bar: ^1.0.3
-
   syncfusion_flutter_charts: ^23.1.44
   percent_indicator: ^3.0.1
-  
-
   fluttertoast: ^8.2.4
   carousel_slider: ^4.2.1
   url_launcher: ^6.2.1
   flutter_phone_direct_caller: ^2.0.1
-
+  permission_handler: ^11.0.1
+  geolocator: ^10.1.0
+  google_maps_flutter: ^2.5.0
+  flutter_polyline_points: ^2.0.0
+  location: ^5.0.3
 
 dev_dependencies:
   flutter_test:

@@ -108,7 +108,7 @@ class _CitizenMapState extends State<CitizenMap> {
                   )
                 : GoogleMap(
                     initialCameraPosition:
-                        CameraPosition(target: myPosition!, zoom: 5.5),
+                        CameraPosition(target: myPosition!, zoom: 10.5),
                     polylines: {
                       Polyline(
                         polylineId: PolylineId("route"),
