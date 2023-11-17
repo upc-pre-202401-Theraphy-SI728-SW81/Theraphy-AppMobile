@@ -21,6 +21,7 @@ import 'package:chewie/chewie.dart';
 import 'package:mobile_app_theraphy/ui/therapy/video-player.dart';
 import 'package:video_player/video_player.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class MyTherapy extends StatefulWidget {
   final int patientId;
@@ -687,12 +688,19 @@ class _MyTherapyState extends State<MyTherapy> {
   }
 
   void _makePhoneCall() async {
-    final String phoneUrl = 'tel:$_cellNumber';
 
-    if (await canLaunch(phoneUrl)) {
-      await launch(phoneUrl);
+    //IOS VESION
+
+    /*final String phoneUrl = 'tel:$_cellNumber';
+    
+    if (await canLaunchUrl(Uri.parse(phoneUrl))) {
+      await launchUrl(Uri.parse(phoneUrl));
     } else {
       throw 'Could not launch $phoneUrl';
-    }
+    }*/
+
+    //ANDROID VERSION
+    String number = '955110309';
+    FlutterPhoneDirectCaller.callNumber(number);
   }
 }

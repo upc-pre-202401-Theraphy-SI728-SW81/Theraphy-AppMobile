@@ -29,7 +29,7 @@ dependencies:
   fluttertoast: ^8.2.4
   carousel_slider: ^4.2.1
   url_launcher: ^6.2.1
-  
+  flutter_phone_direct_caller: ^2.0.1
 
 
 dev_dependencies:
