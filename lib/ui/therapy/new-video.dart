@@ -11,6 +11,7 @@ import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/data/remote/upload_Into_Firebase.dart';
+import 'package:mobile_app_theraphy/ui/therapy/body-selector/body-selector-adapter.dart';
 import 'package:video_player/video_player.dart';
 
 class NewVideo extends StatefulWidget {
@@ -338,6 +339,46 @@ class _NewVideoState extends State<NewVideo> {
                             style: TextStyle(
                                 color: Color.fromARGB(255, 53, 211, 29)),
                           ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Column(children: [
+                                Text(
+                                  "IoTheraphy Band",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const BodySelectorAdapter(
+                                 
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                      AppConfig.primaryColor,
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Select Body Parts",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            )
+                          ],
+                        ),
                         Center(
                           child: ElevatedButton(
                             onPressed: () async {

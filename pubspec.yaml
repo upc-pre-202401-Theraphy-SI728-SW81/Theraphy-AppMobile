@@ -24,6 +24,10 @@ dependencies:
 
   syncfusion_flutter_charts: ^23.1.44
   percent_indicator: ^3.0.1
+  flutter_svg: ^1.1.0
+  touchable: ^1.0.2
+  freezed_annotation: ^2.0.3
+  rotation_stage: ^0.0.3
   
 
   fluttertoast: ^8.2.4
@@ -36,6 +40,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.1.11
+  freezed: ^2.0.3+1
+  json_serializable: ^6.2.0
 
 flutter:
   uses-material-design: true
@@ -44,3 +51,8 @@ flutter:
     - assets/background.png
     - assets/appointments3.png
     - assets/consultation.png
+    - assets/m_back.svg
+    - assets/m_front.svg
+    - assets/m_left.svg 
+    - assets/m_right.svg
+
