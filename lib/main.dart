@@ -4,10 +4,6 @@ import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/firebase_options.dart';
 import 'package:mobile_app_theraphy/ui/security/login-in.dart';
 
-
-
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

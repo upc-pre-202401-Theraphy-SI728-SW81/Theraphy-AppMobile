@@ -42,5 +42,6 @@ flutter:
   assets:
     - assets/logotheraphy.png
     - assets/background.png
+    - assets/Thinking.png
     - assets/appointments3.png
     - assets/consultation.png
