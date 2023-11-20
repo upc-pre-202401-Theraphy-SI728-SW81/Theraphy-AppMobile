@@ -15,6 +15,7 @@ import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 import 'package:mobile_app_theraphy/ui/therapy/iot-results.dart';
+import 'package:mobile_app_theraphy/ui/therapy/map-view.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-appointment.dart';
 import 'package:mobile_app_theraphy/ui/therapy/new-video.dart';
 import 'package:chewie/chewie.dart';
@@ -556,6 +557,16 @@ class _MyTherapyState extends State<MyTherapy> {
                                             const SizedBox(height: 10),
                                             ElevatedButton(
                                               onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          CitizenMap(
+                                                            appointment:
+                                                                appointment!,
+                                                          )),
+                                                );
+
                                                 // Lógica para "Go to Map"
                                                 // Agrega aquí el código que se ejecutará al presionar el botón "Go to Map"
                                               },
@@ -688,7 +699,6 @@ class _MyTherapyState extends State<MyTherapy> {
   }
 
   void _makePhoneCall() async {
-
     //IOS VESION
 
     /*final String phoneUrl = 'tel:$_cellNumber';
