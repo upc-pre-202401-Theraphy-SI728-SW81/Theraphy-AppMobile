@@ -86,19 +86,19 @@ class HttpHelper {
     }
   }
 
-  Future<CPatient> createPatient(dni,age,selectedDateAsString,location) async {
+  Future<CPatient> createPatient(
+      dni, age, selectedDateAsString, location) async {
     const reference = '/patient';
     const createPatientEndpoint = '/registration-patient';
     final String createPatientUrl = '$urlBase$reference$createPatientEndpoint';
     final patient = CPatient(
-      id: 0, 
-      dni: dni, 
-      age: age, 
-      photoUrl: "", 
-      birthdayDate: selectedDateAsString, 
-      appointmentQuantity: 0, 
-      location: location 
-      );
+        id: 0,
+        dni: dni,
+        age: age,
+        photoUrl: "",
+        birthdayDate: selectedDateAsString,
+        appointmentQuantity: 0,
+        location: location);
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
 
@@ -131,8 +131,8 @@ class HttpHelper {
     }
   }
 
-  Future<CPhysiotherapist> createPhysiotherapist(
-      dni,age,specialization,selectedDateAsString,location,fees,experience) async {
+  Future<CPhysiotherapist> createPhysiotherapist(dni, age, specialization,
+      selectedDateAsString, location, fees, experience) async {
     const reference = '/physiotherapists';
     final physiotherapist = CPhysiotherapist(
         id: 0,
@@ -574,6 +574,7 @@ class HttpHelper {
       return null;
     }
   }
+
   Future<List<Patient>?> getMyPatientsOnlyConsultation(
       int physiotherapistId) async {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
@@ -725,7 +726,7 @@ class HttpHelper {
 
     return null;
   }
-  
+
   Future<MedicalHistory> createMedicalHistory(
       String gender,
       double size,
