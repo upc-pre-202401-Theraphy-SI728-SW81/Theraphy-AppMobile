@@ -12,7 +12,7 @@ Future<String?> uploadImage(File image) async {
     Reference storageReference = storage.ref().child('images/$fileName');
 
     print('Error al cargar la imagen: $storageReference');
-    
+
     // Subir la imagen al almacenamiento de Firebase
     TaskSnapshot uploadTask = await storageReference.putFile(image);
     String imageUrl = await uploadTask.ref.getDownloadURL();
@@ -35,7 +35,8 @@ Future<String?> uploadVideo(File video) async {
     // Convertir el video a formato MP4 con calidad y bitrate especificados .replaceAll(RegExp(r'\.\w+$'), '.mp4');
     final flutterFFmpeg = FlutterFFmpeg();
     final outputVideoPath = video.path;
-    final cmd = '-i ${video.path} -c:v libx264 -b:v 1000k -c:a aac -b:a 128k $outputVideoPath';
+    final cmd =
+        '-i ${video.path} -c:v libx264 -b:v 1000k -c:a aac -b:a 128k $outputVideoPath';
     await flutterFFmpeg.execute(cmd);
 
     // Subir el video convertido al almacenamiento de Firebase

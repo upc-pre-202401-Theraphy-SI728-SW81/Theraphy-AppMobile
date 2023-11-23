@@ -60,6 +60,12 @@
 	<string>I need acces for search in my files</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>I need upload photos and videos</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Application needs ubication for clients.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Application needs ubication for clients.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Application needs ubication for clients.</string>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>I need upload media</string>
 	<key></key>

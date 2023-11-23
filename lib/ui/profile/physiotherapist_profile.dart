@@ -61,13 +61,18 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController hourController = TextEditingController();
   int maxElementCount = 6;
 
+  // List<Color> cardColors = [
+  //   Colors.blue,
+  //   Colors.green,
+  //   Colors.orange,
+  //   Colors.purple,
+  //   Colors.red,
+  //   Colors.teal,
+  // ];
+
   List<Color> cardColors = [
-    Colors.blue,
-    Colors.green,
-    Colors.orange,
-    Colors.purple,
-    Colors.red,
-    Colors.teal,
+    const Color(0xFFB1D7F3), // Celeste
+    const Color(0xFFC7B6E4), // Rosado
   ];
 
   bool isValidHourFormat(String hour) {
@@ -85,233 +90,238 @@ class _ProfilePageState extends State<ProfilePage> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: Text(
-              "My Profile",
-              style: TextStyle(
-                color: AppConfig.primaryColor,
-                fontSize: 24,
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(
+                "My Profile",
+                style: TextStyle(
+                  color: AppConfig.primaryColor,
+                  fontSize: 24,
+                ),
               ),
             ),
+            backgroundColor: Colors.white,
+            iconTheme: const IconThemeData(color: Colors.black),
+            automaticallyImplyLeading: false,
+            elevation: 0,
           ),
-          backgroundColor: Colors.white,
-          iconTheme: const IconThemeData(color: Colors.black),
-          automaticallyImplyLeading: false,
-          elevation: 0,
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundImage:
-                        NetworkImage(_physiotherapist?.photoUrl ?? ""),
-                    backgroundColor: Colors.transparent,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 2.5,
+          body: SingleChildScrollView(
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage:
+                          NetworkImage(_physiotherapist?.photoUrl ?? ""),
+                      backgroundColor: Colors.transparent,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 2.5,
+                          ),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context)
+                                .push(_createRoute(_physiotherapist!.photoUrl));
+                          },
                         ),
                       ),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context)
-                              .push(_createRoute(_physiotherapist!.photoUrl));
-                        },
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      _physiotherapist?.user.firstname ?? "",
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      _physiotherapist?.user.role ?? "",
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    Text(
+                      _physiotherapist?.specialization ?? "",
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    Text(
+                      _physiotherapist?.user.username ?? "",
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 20),
+                    Visibility(
+                      visible: _availableHours?.isNotEmpty == true,
+                      child: const Text(
+                        "Your available schedules: ",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    _physiotherapist?.user.firstname ?? "",
-                    style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    _physiotherapist?.user.role ?? "",
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  Text(
-                    _physiotherapist?.specialization ?? "",
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  Text(
-                    _physiotherapist?.user.username ?? "",
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 20),
-                  Visibility(
-                    visible: _availableHours?.isNotEmpty == true,
-                    child: const Text(
-                      "Your available schedules: ",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Visibility(
-                    visible: _availableHours?.isNotEmpty == true,
-                    child: SizedBox(
-                      height: 80,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _availableHours?.length ?? 0,
-                        itemBuilder: (context, index) {
-                          Color cardColor =
-                              cardColors[index % cardColors.length];
-                          return InkWell(
-                            onTap: () {
-                              dayController.text =
-                                  _availableHours?[index].day ?? '';
-                              hourController.text =
-                                  _availableHours?[index].hours ?? '';
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text("Edit availability hour"),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        TextFormField(
-                                          controller: dayController,
-                                          decoration: const InputDecoration(
-                                              labelText: "Day"),
-                                        ),
-                                        TextFormField(
-                                          controller: hourController,
-                                          decoration: const InputDecoration(
-                                              labelText: "Hour"),
-                                        ),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context)
-                                              .pop(); // Cierra el diálogo
-                                        },
-                                        child: const Text("Cancel"),
+                    const SizedBox(height: 20),
+                    Visibility(
+                      visible: _availableHours?.isNotEmpty == true,
+                      child: SizedBox(
+                        height: 80,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _availableHours?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            Color cardColor =
+                                cardColors[index % cardColors.length];
+                            return InkWell(
+                              onTap: () {
+                                dayController.text =
+                                    _availableHours?[index].day ?? '';
+                                hourController.text =
+                                    _availableHours?[index].hours ?? '';
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title:
+                                          const Text("Edit availability hour"),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextFormField(
+                                            controller: dayController,
+                                            decoration: const InputDecoration(
+                                                labelText: "Day"),
+                                          ),
+                                          TextFormField(
+                                            controller: hourController,
+                                            decoration: const InputDecoration(
+                                                labelText: "Hour"),
+                                          ),
+                                        ],
                                       ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          final String updatedDay =
-                                              dayController.text.isNotEmpty
-                                                  ? dayController.text
-                                                  : _availableHours![index].day;
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Cierra el diálogo
+                                          },
+                                          child: const Text("Cancel"),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            final String updatedDay =
+                                                dayController.text.isNotEmpty
+                                                    ? dayController.text
+                                                    : _availableHours![index]
+                                                        .day;
 
-                                          final String updatedHour =
-                                              hourController.text.isNotEmpty
-                                                  ? hourController.text
-                                                  : _availableHours![index]
-                                                      .hours;
+                                            final String updatedHour =
+                                                hourController.text.isNotEmpty
+                                                    ? hourController.text
+                                                    : _availableHours![index]
+                                                        .hours;
 
-                                          if (isValidHourFormat(updatedHour)) {
-                                            _availableHourService
-                                                ?.updateAvailableHour(
-                                                    _availableHours![index].id,
-                                                    updatedDay,
-                                                    updatedHour)
-                                                .then((value) {
-                                              initialize();
+                                            if (isValidHourFormat(
+                                                updatedHour)) {
+                                              _availableHourService
+                                                  ?.updateAvailableHour(
+                                                      _availableHours![index]
+                                                          .id,
+                                                      updatedDay,
+                                                      updatedHour)
+                                                  .then((value) {
+                                                initialize();
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Updated data successfully',
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 2,
+                                                  backgroundColor: Colors.green,
+                                                  textColor: Colors.white,
+                                                );
+                                                Navigator.of(context).pop();
+                                              });
+                                            } else {
                                               Fluttertoast.showToast(
                                                 msg:
-                                                    'Updated data successfully',
+                                                    'Invalid hour format. Please use "hr:00-hr:00" or "hr:00 - hr:00" format.',
                                                 gravity: ToastGravity.BOTTOM,
                                                 timeInSecForIosWeb: 2,
-                                                backgroundColor: Colors.green,
+                                                backgroundColor: Colors.red,
                                                 textColor: Colors.white,
                                               );
-                                              Navigator.of(context).pop();
-                                            });
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg:
-                                                  'Invalid hour format. Please use "hr:00-hr:00" or "hr:00 - hr:00" format.',
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 2,
-                                              backgroundColor: Colors.red,
-                                              textColor: Colors.white,
-                                            );
-                                          }
-                                        },
-                                        child: const Text("Save"),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              width: 80,
-                              height: 80,
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: cardColor,
-                                borderRadius: BorderRadius.circular(12),
+                                            }
+                                          },
+                                          child: const Text("Save"),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: Container(
+                                width: 80,
+                                height: 80,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: cardColors[index % cardColors.length],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "${_availableHours?[index].day}",
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "${_availableHours?[index].hours}",
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "${_availableHours?[index].day}",
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    "${_availableHours?[index].hours}",
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const EditProfilePage()),
-                      );
-                    },
-                    child: const Text("Edit Profile"),
-                  ),
-                  ElevatedButton(
-                    onPressed: isButtonEnabled
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AvailabilityPage(id: id!),
-                              ),
-                            ).then((value) => initialize());
-                          }
-                        : null,
-                    child: const Text("Enter your schedules"),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const EditProfilePage()),
+                        );
+                      },
+                      child: const Text("Edit Profile"),
+                    ),
+                    ElevatedButton(
+                      onPressed: isButtonEnabled
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AvailabilityPage(id: id!),
+                                ),
+                              ).then((value) => initialize());
+                            }
+                          : null,
+                      child: const Text("Enter your schedules"),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        bottomNavigationBar:NavBar(currentIndex: 2)
-      ),
+          bottomNavigationBar: NavBar(currentIndex: 2)),
     );
   }
 

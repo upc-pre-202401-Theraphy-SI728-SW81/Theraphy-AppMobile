@@ -86,11 +86,19 @@ class HttpHelper {
     }
   }
 
-  Future<Patient> createPatient(Patient patient) async {
+  Future<CPatient> createPatient(
+      dni, age, selectedDateAsString, location) async {
     const reference = '/patient';
     const createPatientEndpoint = '/registration-patient';
     final String createPatientUrl = '$urlBase$reference$createPatientEndpoint';
-
+    final patient = CPatient(
+        id: 0,
+        dni: dni,
+        age: age,
+        photoUrl: "",
+        birthdayDate: selectedDateAsString,
+        appointmentQuantity: 0,
+        location: location);
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
 
@@ -107,12 +115,12 @@ class HttpHelper {
       final response = await http.post(
         Uri.parse(createPatientUrl),
         headers: headers,
-        body: jsonEncode(patient.toJson()),
+        body: jsonEncode(patient.toCJson()),
       );
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        return Patient.fromJson(jsonResponse);
+        return CPatient.fromCJson(jsonResponse);
       } else {
         throw Exception(
             'Failed to create patient. Status code: ${response.statusCode}');
@@ -123,16 +131,36 @@ class HttpHelper {
     }
   }
 
-  Future<Physiotherapist> createPhysiotherapist(
-      Physiotherapist physiotherapist) async {
+  Future<CPhysiotherapist> createPhysiotherapist(dni, age, specialization,
+      selectedDateAsString, location, fees, experience) async {
     const reference = '/physiotherapists';
+    final physiotherapist = CPhysiotherapist(
+        id: 0,
+        dni: dni ?? "",
+        specialization: specialization ?? "",
+        age: age != null ? int.parse(age.toString()) : 0,
+        location: location ?? "",
+        photoUrl: "",
+        birthdayDate: selectedDateAsString ?? "",
+        rating: 0,
+        consultationQuantity: 0,
+        patientQuantity: 0,
+        yearsExperience:
+            experience != null ? int.parse(experience.toString()) : 0,
+        fees: fees != null ? double.parse(fees.toString()) : 0);
     const createPhysiotherapistEndpoint = '/registration-physiotherapist';
     final String createPhysiotherapistUrl =
         '$urlBase$reference$createPhysiotherapistEndpoint';
-
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
-
+    print(jwtToken);
+    print(createPhysiotherapistUrl);
+    print(physiotherapist.age);
+    print(physiotherapist.dni);
+    print(physiotherapist.specialization);
+    print(physiotherapist.location);
+    print(physiotherapist.photoUrl);
+    print(physiotherapist.birthdayDate);
     if (jwtToken == null) {
       throw Exception('JWT Token not found in SharedPreferences.');
     }
@@ -146,12 +174,12 @@ class HttpHelper {
       final response = await http.post(
         Uri.parse(createPhysiotherapistUrl),
         headers: headers,
-        body: jsonEncode(physiotherapist.toJson()),
+        body: jsonEncode(physiotherapist.toCJson()),
       );
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        return Physiotherapist.fromJson(jsonResponse);
+        return CPhysiotherapist.fromCJson(jsonResponse);
       } else {
         throw Exception(
             'Failed to create physiotherapist. Status code: ${response.statusCode}');
@@ -201,7 +229,6 @@ class HttpHelper {
       }
     } catch (exception) {
       print("chuuu");
-
       print('Error: $exception');
       throw Exception('Failed to get physiotherapist logged.');
     }
@@ -229,7 +256,6 @@ class HttpHelper {
         Uri.parse(url),
         headers: headers,
       );
-
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         print(response.body);

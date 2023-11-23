@@ -129,7 +129,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ],
       ),
-      SizedBox(height: 20),
+      SizedBox(height: 15),
       Row(
           children: [
             Expanded(
@@ -166,7 +166,7 @@ class _SignUpState extends State<SignUp> {
             ),
           ],
         ),
-      SizedBox(height: 20),
+      SizedBox(height: 15),
       Row(
         children: [
           Expanded(
@@ -203,7 +203,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ],
       ),
-      SizedBox(height: 20),
+      SizedBox(height: 15),
       Row(
         children: [
           Expanded(
@@ -253,7 +253,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ],
       ),
-      SizedBox(height: 20),
+      SizedBox(height: 15),
       Expanded(
         flex: 3,
         child: Container(
