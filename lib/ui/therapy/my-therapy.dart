@@ -301,7 +301,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                             ),
                                           );
                                         },
-                                        child: const Text('IoTheraphy Measure'),
+                                        child: const Text('Physical Performance Summary'),
                                       ),
                                     ),
                                   ],
