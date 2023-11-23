@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/ui/therapy/body-selector/src/body_part_selector_turnable.dart';
 import 'package:mobile_app_theraphy/ui/therapy/body-selector/src/model/body_parts.dart';
+import 'package:mobile_app_theraphy/ui/therapy/new-video.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BodySelectorAdapter extends StatefulWidget {
-  const BodySelectorAdapter({Key? key}) : super(key: key);
+  final int initialIndex;
+  final int patientId;
+
+  const BodySelectorAdapter({Key? key, required this.initialIndex, required this.patientId}) : super(key: key);
 
   @override
   State<BodySelectorAdapter> createState() => _BodySelectorAdapterState();
@@ -12,6 +19,19 @@ class BodySelectorAdapter extends StatefulWidget {
 
 class _BodySelectorAdapterState extends State<BodySelectorAdapter> {
   BodyParts _bodyParts = const BodyParts();
+  
+  void _saveSelectedParts(List<String> selectedParts) async {
+  // Obtén una instancia de SharedPreferences
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // Elimina las partes seleccionadas antiguas
+    prefs.remove('selectedParts');
+
+  // Guarda la lista de partes seleccionadas como una cadena JSON
+  String partsJson = jsonEncode(selectedParts);
+  prefs.setString('selectedParts', partsJson);
+
+  // Puedes agregar más lógica aquí según tus necesidades
+}
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +123,16 @@ class _BodySelectorAdapterState extends State<BodySelectorAdapter> {
                   padding: const EdgeInsets.only(left: 130.0, bottom: 20),
                   child: ElevatedButton(
                     onPressed: () {
+          
+                      _saveSelectedParts(_bodyParts.selectedParts);
+                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NewVideo(
+                                          initialIndex: widget.initialIndex,
+                                          patientId: widget.patientId,
+                                        ),
+                                      ));
                       // Lógica para confirmar la selección
                       // Puedes agregar aquí la lógica que necesites al confirmar la selección
                       // por ejemplo, navegar a otra pantalla o realizar alguna acción específica.

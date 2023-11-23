@@ -111,7 +111,7 @@ class _IotResultsState extends State<IotResults> {
         title: Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Text(
-            "IoT Results",
+            "Patient's Physical Performance",
             style: TextStyle(
               color: AppConfig.primaryColor,
               fontSize: 24,
@@ -631,7 +631,7 @@ class _IotResultsState extends State<IotResults> {
                                       ),
                                       primaryYAxis: NumericAxis(
                                         interval:
-                                            20, // Ajusta el valor del intervalo según tus necesidades
+                                            10000, // Ajusta el valor del intervalo según tus necesidades
                                       ),
                                       series: <ChartSeries>[
                                         ColumnSeries<IotResult, int>(

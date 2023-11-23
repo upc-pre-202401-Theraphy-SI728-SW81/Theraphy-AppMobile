@@ -34,7 +34,7 @@ class BodyParts with _$BodyParts {
     @Default(false) bool vestibular,
   }) = _BodyParts;
 
-  List<String> get selectedParts {
+  List<String> get selectedParts{
     final selected = <String>[];
     for (final entry in toJson().entries) {
       if (entry.value == true) {
@@ -43,6 +43,7 @@ class BodyParts with _$BodyParts {
     }
     return selected;
   }
+
 
   // Mapa que asocia los IDs con los nombres de las partes del cuerpo
   static const Map<String, String> bodyPartNames = {
