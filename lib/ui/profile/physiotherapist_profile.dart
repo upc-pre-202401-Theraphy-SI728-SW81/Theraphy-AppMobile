@@ -10,6 +10,7 @@ import 'package:mobile_app_theraphy/data/remote/services/physiotherapist/physiot
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 import 'package:mobile_app_theraphy/ui/profile/available_hour.dart';
 import 'package:mobile_app_theraphy/ui/profile/edit_profile.dart';
+import 'package:mobile_app_theraphy/ui/security/login-in.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -142,11 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      _physiotherapist?.user.role ?? "",
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      _physiotherapist?.specialization ?? "",
+                      "Specialization: ${_physiotherapist?.specialization ?? ""}",
                       style: const TextStyle(fontSize: 18),
                     ),
                     Text(
@@ -315,6 +312,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             }
                           : null,
                       child: const Text("Enter your schedules"),
+                    ),
+                    const SizedBox(height: 50),
+                    ElevatedButton( onPressed:  () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const Login()
+                                ),
+                              );
+                            },
+                      child: const Text("Logout"),
                     ),
                   ],
                 ),

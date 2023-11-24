@@ -114,7 +114,7 @@ class _IotResultsState extends State<IotResults> {
             "Patient's Physical Performance",
             style: TextStyle(
               color: AppConfig.primaryColor,
-              fontSize: 24,
+              fontSize: 21,
             ),
           ),
         ),

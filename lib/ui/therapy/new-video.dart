@@ -527,7 +527,14 @@ class _NewVideoState extends State<NewVideo> {
                                     title,
                                     descripction,
                                     dateShowed);
-                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MyTherapy(
+                                      patientId: widget.patientId,
+                                    ),
+                                  ),
+                                );
 
                                 // Muestra un diálogo emergente con el mensaje de éxito
                                 showDialog(
