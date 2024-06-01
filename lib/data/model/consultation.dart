@@ -35,7 +35,7 @@ class Consultation {
             date: json['date'],
             hour: json['hour'],
             place: json['place'],
-             physiotherapist: Physiotherapist.fromJson(json['physiotherapist']),
-            patient: Patient.fromJson(json['patient']));
+             physiotherapist: Physiotherapist.fromJson(json['physiotherapistId']),
+            patient: Patient.fromJson(json['patientId']));
            
 }
