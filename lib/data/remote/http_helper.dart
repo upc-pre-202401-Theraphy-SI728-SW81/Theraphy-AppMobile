@@ -533,9 +533,9 @@ class HttpHelper {
     }
   }
 
-  Future<Appointment> addAppointment(String topic, String date, String hour,
+  void addAppointment(String topic, String date, String hour,
       String place, int therapyId) async {
-    const String endpoint = 'therapy/appointments';
+    const String endpoint = '/therapy/appointments';
     final String url = '$urlBase$endpoint';
 
     final Map<String, dynamic> requestBody = {
@@ -569,7 +569,7 @@ class HttpHelper {
 
     if (response.statusCode == 201) {
       final jsonResponse = json.decode(response.body);
-      return Appointment.fromJson(jsonResponse);
+      print( jsonResponse);
     } else {
       throw Exception(
           'Failed to create physiotherapist. Status code: ${response.statusCode}');
@@ -581,10 +581,23 @@ class HttpHelper {
     var endpoint = '/therapy/appointments/byDate/$date/TherapyId/$theraphyId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
-
+      
       return Appointment.fromJson(jsonResponse);
     } else {
       return null;

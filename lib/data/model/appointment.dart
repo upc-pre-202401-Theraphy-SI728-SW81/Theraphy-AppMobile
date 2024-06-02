@@ -32,4 +32,5 @@ class Appointment {
           place: json['place'],
           therapy: Therapy.fromJson(json['therapy']),
         );
+
 }
