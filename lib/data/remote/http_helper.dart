@@ -15,12 +15,11 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase =
-      'https://api-iotheraphy-production.up.railway.app/api/v1';
+  final String urlBase = 'http://192.168.107.60:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
-    const endpoint = '/auth/registration';
+    const endpoint = '/security/auth/registration';
     final user = User(
         id: id,
         firstname: firstName,
@@ -52,7 +51,7 @@ class HttpHelper {
 
   Future<void> login(String username, String password) async {
     final credentials = {'username': username, 'password': password};
-    const endpoint = '/auth/authentication';
+    const endpoint = '/security/auth/authentication';
     final String url = '$urlBase$endpoint';
 
     try {
@@ -88,7 +87,7 @@ class HttpHelper {
 
   Future<CPatient> createPatient(
       dni, age, selectedDateAsString, location) async {
-    const reference = '/patient';
+    const reference = '/profile/patients';
     const createPatientEndpoint = '/registration-patient';
     final String createPatientUrl = '$urlBase$reference$createPatientEndpoint';
     final patient = CPatient(
@@ -133,7 +132,7 @@ class HttpHelper {
 
   Future<CPhysiotherapist> createPhysiotherapist(dni, age, specialization,
       selectedDateAsString, location, fees, experience) async {
-    const reference = '/physiotherapists';
+    const reference = '/profile/physiotherapists';
     final physiotherapist = CPhysiotherapist(
         id: 0,
         dni: dni ?? "",
@@ -191,8 +190,8 @@ class HttpHelper {
   }
 
   Future<int> getPhysiotherapistLogged() async {
-    const reference = '/physiotherapists';
-    const getPhysiotherapistLoggedEndpoint = '/profile';
+    const reference = '/profile/physiotherapists';
+    const getPhysiotherapistLoggedEndpoint = '/PhysiotherapistLogget';
     final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
 
     final prefs = await SharedPreferences.getInstance();
@@ -235,8 +234,8 @@ class HttpHelper {
   }
 
   Future<Physiotherapist> getPhysiotherapist() async {
-    const reference = '/physiotherapists';
-    const getPhysiotherapistLoggedEndpoint = '/profile';
+    const reference = '/profile/physiotherapists';
+    const getPhysiotherapistLoggedEndpoint = '/PhysiotherapistLogget';
     final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
 
     final prefs = await SharedPreferences.getInstance();
@@ -710,7 +709,7 @@ class HttpHelper {
 
   Future<List<IotResult>?> getIotResultsByTherapyIdandDate(
       int therapyId, String date) async {
-    final endpoint = '/iotResults/byTherapyId/$therapyId/Date/$date';
+    final endpoint = '/iot-data/iotResults/byTherapyId/$therapyId/Date/$date';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -780,7 +779,7 @@ class HttpHelper {
 
   Future<List<Appointment>?> getMyAppointments(int physiotherapistId) async {
     String endpoint =
-        '/appointments/appointment/therapy-physiotherapist/$physiotherapistId';
+        '/therapy/appointments/appointment/therapy-physiotherapist/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -799,7 +798,7 @@ class HttpHelper {
 
   Future<List<Appointment>?> getAllAppointmentsByPhysiotherapistId(
       int physiotherapistId) async {
-    String endpoint = '/appointments';
+    String endpoint = '/therapy/appointments';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -823,10 +822,23 @@ class HttpHelper {
 
   Future<List<Appointment>?> getAllAppointmentsByPhysiotherapistIdNoDone(
       int physiotherapistId) async {
-    String endpoint = '/appointments';
+    String endpoint = '/therapy/appointments';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    print(url);
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -844,12 +856,15 @@ class HttpHelper {
           .toList();
       return myAppointmentsNoDone;
     } else {
+      print('Error¿sadasd.--wdadad');
+      print(response.statusCode);
+      print(response.body);
       return null;
     }
   }
 
   Future<void> updateDiagnosis(int appointmentId, String diagnosis) async {
-    String endpoint = '/appointments/updateDiagnosis/$appointmentId';
+    String endpoint = '/therapy/appointments/updateDiagnosis/$appointmentId';
     final String url = '$urlBase$endpoint';
 
     print(url);
