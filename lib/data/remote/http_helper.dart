@@ -16,11 +16,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
   final String urlBase =
-      'https://api-iotheraphy-production.up.railway.app/api/v1';
+      'http://192.168.18.140:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
-    const endpoint = '/auth/registration';
+    const endpoint = '/security/auth/registration';
     final user = User(
         id: id,
         firstname: firstName,
@@ -52,7 +52,7 @@ class HttpHelper {
 
   Future<void> login(String username, String password) async {
     final credentials = {'username': username, 'password': password};
-    const endpoint = '/auth/authentication';
+    const endpoint = '/security/auth/authentication';
     final String url = '$urlBase$endpoint';
 
     try {
@@ -88,8 +88,8 @@ class HttpHelper {
 
   Future<CPatient> createPatient(
       dni, age, selectedDateAsString, location) async {
-    const reference = '/patient';
-    const createPatientEndpoint = '/registration-patient';
+    const reference = '/profile';
+    const createPatientEndpoint = '/patients/registration-patient';
     final String createPatientUrl = '$urlBase$reference$createPatientEndpoint';
     final patient = CPatient(
         id: 0,
@@ -133,7 +133,7 @@ class HttpHelper {
 
   Future<CPhysiotherapist> createPhysiotherapist(dni, age, specialization,
       selectedDateAsString, location, fees, experience) async {
-    const reference = '/physiotherapists';
+    const reference = '/profile';
     final physiotherapist = CPhysiotherapist(
         id: 0,
         dni: dni ?? "",
@@ -148,7 +148,7 @@ class HttpHelper {
         yearsExperience:
             experience != null ? int.parse(experience.toString()) : 0,
         fees: fees != null ? double.parse(fees.toString()) : 0);
-    const createPhysiotherapistEndpoint = '/registration-physiotherapist';
+    const createPhysiotherapistEndpoint = '/physiotherapists/registration-physiotherapist';
     final String createPhysiotherapistUrl =
         '$urlBase$reference$createPhysiotherapistEndpoint';
     final prefs = await SharedPreferences.getInstance();
@@ -190,9 +190,9 @@ class HttpHelper {
     }
   }
 
-  Future<int> getPhysiotherapistLogged() async {
-    const reference = '/physiotherapists';
-    const getPhysiotherapistLoggedEndpoint = '/profile';
+ Future<int> getPhysiotherapistLogged() async {
+    const reference = '/profile/physiotherapists';
+    const getPhysiotherapistLoggedEndpoint = '/PhysiotherapistLogget';
     final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
 
     final prefs = await SharedPreferences.getInstance();
@@ -234,9 +234,9 @@ class HttpHelper {
     }
   }
 
-  Future<Physiotherapist> getPhysiotherapist() async {
-    const reference = '/physiotherapists';
-    const getPhysiotherapistLoggedEndpoint = '/profile';
+    Future<Physiotherapist> getPhysiotherapist() async {
+    const reference = '/profile/physiotherapists';
+    const getPhysiotherapistLoggedEndpoint = '/PhysiotherapistLogget';
     final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
 
     final prefs = await SharedPreferences.getInstance();
@@ -274,7 +274,19 @@ class HttpHelper {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -303,7 +315,19 @@ class HttpHelper {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -317,12 +341,26 @@ class HttpHelper {
     }
   }
 
+  ////////////////////////////////
+
   Future<List<Consultation>?> getMyConsultationsDone(
       int physiotherapistId) async {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -344,7 +382,19 @@ class HttpHelper {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -363,10 +413,23 @@ class HttpHelper {
 
   Future<List<Patient>?> getMyPatientsWithTheraphy(
       int physiotherapistId) async {
-    const String endpoint = '/therapies';
+    const String endpoint = '/therapy/therapies';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -397,10 +460,22 @@ class HttpHelper {
   Future<Therapy?> getTherapyByPhysioAndPatient(
       int physiotherapistId, int patientId) async {
     var endpoint =
-        '/therapies/byPhysioAndPatient/$physiotherapistId/$patientId';
+        '/therapy/therapies/byPhysioAndPatient/$physiotherapistId/$patientId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url),headers: headers);
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
 
@@ -460,7 +535,7 @@ class HttpHelper {
 
   Future<Appointment> addAppointment(String topic, String date, String hour,
       String place, int therapyId) async {
-    const String endpoint = '/appointments';
+    const String endpoint = 'therapy/appointments';
     final String url = '$urlBase$endpoint';
 
     final Map<String, dynamic> requestBody = {
@@ -503,7 +578,7 @@ class HttpHelper {
 
   Future<Appointment?> getApppointmentByTherapyAndDate(
       int theraphyId, String date) async {
-    var endpoint = '/appointments/byDate/$date/TherapyId/$theraphyId';
+    var endpoint = '/therapy/appointments/byDate/$date/TherapyId/$theraphyId';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -518,7 +593,7 @@ class HttpHelper {
 
   Future<Treatment> addTreatment(int therapyId, String videoUrl,
       String duration, String title, String description, String day) async {
-    const String endpoint = '/treatments';
+    const String endpoint = '/therapy/treatments';
     final String url = '$urlBase$endpoint';
 
     final Map<String, dynamic> requestBody = {
@@ -561,7 +636,7 @@ class HttpHelper {
 
   Future<Treatment?> getTreatmentByTherapyAndDate(
       int theraphyId, String date) async {
-    var endpoint = '/treatments/byDate/$date/TherapyId/$theraphyId';
+    var endpoint = '/therapy/treatments/byDate/$date/TherapyId/$theraphyId';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
@@ -580,7 +655,20 @@ class HttpHelper {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -638,6 +726,7 @@ class HttpHelper {
     }
   }
 
+  ////FALTAAAAAA
   Future<List<Diagnosis>?> getPatientDiagnoses(int patientId) async {
     final endpoint = '/diagnoses/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
@@ -660,10 +749,22 @@ class HttpHelper {
   }
 
   Future<Therapy?> getPatientTherapy(int patientId) async {
-    final endpoint = '/therapies/byPatientId/$patientId';
+    final endpoint = '/therapy/therapies/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -691,6 +792,7 @@ class HttpHelper {
     return null;
   }
 
+  /////FALTAA
   Future<MedicalHistory?> getMedicalHistoryByPatientId(int patientId) async {
     String endpoint = '/medical-histories/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
@@ -708,6 +810,7 @@ class HttpHelper {
     }
   }
 
+  ///FALTAAAAA
   Future<List<IotResult>?> getIotResultsByTherapyIdandDate(
       int therapyId, String date) async {
     final endpoint = '/iotResults/byTherapyId/$therapyId/Date/$date';
@@ -727,6 +830,7 @@ class HttpHelper {
     return null;
   }
 
+  ////FALTAAAA
   Future<MedicalHistory> createMedicalHistory(
       String gender,
       double size,
@@ -778,12 +882,26 @@ class HttpHelper {
     }
   }
 
+
   Future<List<Appointment>?> getMyAppointments(int physiotherapistId) async {
     String endpoint =
-        '/appointments/appointment/therapy-physiotherapist/$physiotherapistId';
+        '/therapy/appointments/appointment/therapy-physiotherapist/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -799,10 +917,22 @@ class HttpHelper {
 
   Future<List<Appointment>?> getAllAppointmentsByPhysiotherapistId(
       int physiotherapistId) async {
-    String endpoint = '/appointments';
+    String endpoint = '/therapy/appointments';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -823,10 +953,23 @@ class HttpHelper {
 
   Future<List<Appointment>?> getAllAppointmentsByPhysiotherapistIdNoDone(
       int physiotherapistId) async {
-    String endpoint = '/appointments';
+    String endpoint = '/therapy/appointments';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
@@ -848,6 +991,8 @@ class HttpHelper {
     }
   }
 
+
+  /////FALTAAAAAA
   Future<void> updateDiagnosis(int appointmentId, String diagnosis) async {
     String endpoint = '/appointments/updateDiagnosis/$appointmentId';
     final String url = '$urlBase$endpoint';
