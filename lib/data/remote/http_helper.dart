@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
   final String urlBase =
-      'http://192.168.41.111:8080/api/v1';
+      'http://localhost:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -820,13 +820,29 @@ class HttpHelper {
     return null;
   }
 
-  /////FALTAA
   Future<MedicalHistory?> getMedicalHistoryByPatientId(int patientId) async {
-    String endpoint = '/medical-histories/byPatientId/$patientId';
+    String endpoint = '/health-expertise/medical-histories/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
+    
+    print(url);
+    print("OHHH ME VENGOOOO");
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
 
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+
+    http.Response response = await http.get(Uri.parse(url),headers: headers);
+
+    print(response.body);
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
       final MedicalHistory medicalHistory =
@@ -858,7 +874,6 @@ class HttpHelper {
     return null;
   }
 
-  ////FALTAAAA
   void createMedicalHistory(
       String gender,
       double size,
@@ -868,7 +883,7 @@ class HttpHelper {
       String nonPathologicalHistory,
       String pathologicalHistory,
       int patientId) async {
-    const String endpoint = '/medical-histories';
+    const String endpoint = '/health-expertise/medical-histories';
     final String url = '$urlBase$endpoint';
 
     final Map<String, dynamic> requestBody = {

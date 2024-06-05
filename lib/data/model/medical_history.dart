@@ -37,6 +37,6 @@ String pathologicalHistory;
             birthplace: json['birthplace'],
             hereditaryHistory: json['hereditaryHistory'],
             nonPathologicalHistory: json['nonPathologicalHistory'],
-             pathologicalHistory: json['pathologicalHistory']);
+            pathologicalHistory: json['pathologicalHistory']);
            
 }
