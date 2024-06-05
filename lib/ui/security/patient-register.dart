@@ -258,8 +258,7 @@ class _PatientRegisterState extends State<PatientRegister> {
                 width: 365,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue[700], // Color de fondo
-                    onPrimary: Colors.white, // Color del texto
+                    foregroundColor: Colors.white, backgroundColor: Colors.blue[700], // Color del texto
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

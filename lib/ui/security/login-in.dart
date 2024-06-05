@@ -196,8 +196,7 @@ class _LoginState extends State<Login> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue[700],
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white, backgroundColor: Colors.blue[700],
                   padding: EdgeInsets.symmetric(
                     vertical: 20,
                   ),
@@ -260,8 +259,7 @@ class _LoginState extends State<Login> {
                     // Acción a realizar al presionar el botón
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue[700],
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white, backgroundColor: Colors.blue[700],
                     padding: EdgeInsets.symmetric(
                       vertical: 20,
                     ),

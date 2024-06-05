@@ -530,11 +530,9 @@ class _MyTherapyState extends State<MyTherapy> {
                                                                 },
                                                                 style: ElevatedButton
                                                                     .styleFrom(
-                                                                  primary: AppConfig
+                                                                  foregroundColor: Colors
+                                                                          .white, backgroundColor: AppConfig
                                                                       .primaryColor,
-                                                                  onPrimary:
-                                                                      Colors
-                                                                          .white,
                                                                 ),
                                                                 child: const Text(
                                                                     "Update"),
@@ -548,8 +546,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                                 );
                                               },
                                               style: ElevatedButton.styleFrom(
-                                                primary: AppConfig.primaryColor,
-                                                onPrimary: Colors.white,
+                                                foregroundColor: Colors.white, backgroundColor: AppConfig.primaryColor,
                                               ),
                                               child:
                                                   const Text("See Diagnosis"),
@@ -571,8 +568,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                                 // Agrega aquí el código que se ejecutará al presionar el botón "Go to Map"
                                               },
                                               style: ElevatedButton.styleFrom(
-                                                primary: AppConfig.primaryColor,
-                                                onPrimary: Colors.white,
+                                                foregroundColor: Colors.white, backgroundColor: AppConfig.primaryColor,
                                               ),
                                               child: const Text("Go to Map"),
                                             ),

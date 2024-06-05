@@ -707,7 +707,7 @@ class _PatientProfileState extends State<PatientProfile> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: AppConfig.primaryColor, // Color de fondo azul
+                    backgroundColor: AppConfig.primaryColor, // Color de fondo azul
                     padding:
                         const EdgeInsets.all(16), // Ajusta el relleno del botón
                     shape: RoundedRectangleBorder(

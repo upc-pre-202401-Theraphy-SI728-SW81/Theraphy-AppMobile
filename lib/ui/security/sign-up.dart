@@ -396,8 +396,7 @@ class _SignUpState extends State<SignUp> {
                   }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue[700],
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white, backgroundColor: Colors.blue[700],
                     padding: EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
