@@ -268,8 +268,9 @@ class _PatientRegisterState extends State<PatientRegister> {
                     if (_formKey.currentState?.validate() ?? false) {
                       _formKey.currentState?.save();
                       print("object");
-                      try {
-                        await httpHelper?.createPatient(
+                      setState(() {
+                        try {
+                          httpHelper?.createPatient(
                             dni,
                             age,
                             selectedDateAsString,
@@ -283,6 +284,8 @@ class _PatientRegisterState extends State<PatientRegister> {
                       } catch (e) {
                         print("Error al registar el physioterapeuta: $e");
                       }
+                      });
+                      
                     }
                   },
                   child: const Text("Create Account"),

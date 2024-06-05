@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
   final String urlBase =
-      'http://192.168.18.140:8080/api/v1';
+      'http://192.168.41.111:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -86,7 +86,7 @@ class HttpHelper {
     }
   }
 
-  Future<CPatient> createPatient(
+  void createPatient(
       dni, age, selectedDateAsString, location) async {
     const reference = '/profile';
     const createPatientEndpoint = '/patients/registration-patient';
@@ -120,7 +120,7 @@ class HttpHelper {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        return CPatient.fromCJson(jsonResponse);
+        print(jsonResponse);
       } else {
         throw Exception(
             'Failed to create patient. Status code: ${response.statusCode}');
@@ -131,7 +131,7 @@ class HttpHelper {
     }
   }
 
-  Future<CPhysiotherapist> createPhysiotherapist(dni, age, specialization,
+  void createPhysiotherapist(dni, age, specialization,
       selectedDateAsString, location, fees, experience) async {
     const reference = '/profile';
     final physiotherapist = CPhysiotherapist(
@@ -179,7 +179,7 @@ class HttpHelper {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        return CPhysiotherapist.fromCJson(jsonResponse);
+        print(jsonResponse);
       } else {
         throw Exception(
             'Failed to create physiotherapist. Status code: ${response.statusCode}');
@@ -485,7 +485,7 @@ class HttpHelper {
     }
   }
 
-  Future<Therapy> addTherapy(
+  void addTherapy(
       String therapyName,
       String description,
       String appointmentQuantity,
@@ -526,7 +526,7 @@ class HttpHelper {
 
     if (response.statusCode == 201) {
       final jsonResponse = json.decode(response.body);
-      return Therapy.fromJson(jsonResponse);
+      print(jsonResponse);
     } else {
       throw Exception(
           'Failed to create physiotherapist. Status code: ${response.statusCode}');
@@ -604,7 +604,7 @@ class HttpHelper {
     }
   }
 
-  Future<Treatment> addTreatment(int therapyId, String videoUrl,
+  void addTreatment(int therapyId, String videoUrl,
       String duration, String title, String description, String day) async {
     const String endpoint = '/therapy/treatments';
     final String url = '$urlBase$endpoint';
@@ -640,7 +640,7 @@ class HttpHelper {
 
     if (response.statusCode == 201) {
       final jsonResponse = json.decode(response.body);
-      return Treatment.fromJson(jsonResponse);
+      print(jsonResponse);
     } else {
       throw Exception(
           'Failed to create physiotherapist. Status code: ${response.statusCode}');
@@ -650,10 +650,25 @@ class HttpHelper {
   Future<Treatment?> getTreatmentByTherapyAndDate(
       int theraphyId, String date) async {
     var endpoint = '/therapy/treatments/byDate/$date/TherapyId/$theraphyId';
+
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
-    print(response);
+    print(url);
+    print("HOLA BEBE");
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
+    print(response.body);
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
 
@@ -844,7 +859,7 @@ class HttpHelper {
   }
 
   ////FALTAAAA
-  Future<MedicalHistory> createMedicalHistory(
+  void createMedicalHistory(
       String gender,
       double size,
       double weight,
@@ -888,7 +903,7 @@ class HttpHelper {
 
     if (response.statusCode == 201) {
       final jsonResponse = json.decode(response.body);
-      return MedicalHistory.fromJson(jsonResponse);
+      print(jsonResponse);
     } else {
       throw Exception(
           'Failed to create medical history. Status code: ${response.statusCode}');

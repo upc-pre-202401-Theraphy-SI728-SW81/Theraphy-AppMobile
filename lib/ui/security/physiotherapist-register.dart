@@ -368,8 +368,9 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                       print(location);
                       print(fees);
                       print(experience);
-                      try {
-                        await httpHelper?.createPhysiotherapist(
+                      setState(() {
+                         try {
+                         httpHelper?.createPhysiotherapist(
                           dni,
                           age,
                           specialization,
@@ -386,6 +387,8 @@ class _PhysiotherapistRegisterState extends State<PhysiotherapistRegister> {
                       } catch (e) {
                         print("Error al registar el physioterapeuta: $e");
                       }
+                      });
+                     
                     }
                   },
                   child: const Text("Create Account"),
