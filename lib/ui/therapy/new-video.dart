@@ -80,10 +80,13 @@ class _NewVideoState extends State<NewVideo> {
 
   Future<void> _pickVideo() async {
     final imagePicker = ImagePicker();
-    final pickedVideo = await imagePicker.getVideo(source: ImageSource.gallery);
+    final pickedVideo = await imagePicker.pickVideo(source: ImageSource.gallery);
+    //get-video
+    print("aeaaa");
 
     if (pickedVideo != null) {
       final videoFile = File(pickedVideo.path);
+      print("aea21");
       final videoUrl = await uploadVideo(videoFile);
       print("hola");
       setState(() {
