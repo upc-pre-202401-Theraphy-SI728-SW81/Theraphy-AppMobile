@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
@@ -21,12 +22,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int selectedIndex = 4;
+  int _selectedIndexSchedule = -1;
   AvailableHourService? _availableHourService;
   List<AvailableHour>? _availableHours;
   PhysiotherapistService? _physiotherapistService;
   Physiotherapist? _physiotherapist;
   HttpHelper? _httpHelper;
   int? id;
+  late List<DateTime> _weekDates;
+  final int numberOfCards = 5;
 
   List<Widget> pages = const [
     PatientsList(),
@@ -41,8 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
     id = await _httpHelper?.getPhysiotherapistLogged();
     _availableHours = await _availableHourService?.getByPhysiotherapistId(id!);
 
-    _physiotherapist =
-        await _physiotherapistService?.getPhysiotherapistById(id!);
+    _physiotherapist = await _httpHelper?.getPhysiotherapist();
     setState(() {
       _availableHours = _availableHours;
     });
@@ -53,8 +56,23 @@ class _ProfilePageState extends State<ProfilePage> {
     _availableHourService = AvailableHourService();
     _physiotherapistService = PhysiotherapistService();
     _httpHelper = HttpHelper();
+    _initializeWeekDates();
     initialize();
     super.initState();
+  }
+
+  void _initializeWeekDates() {
+    DateTime now =
+        DateTime.now().toUtc(); // Obtener la fecha y hora actual en UTC
+    // Convertir la fecha y hora actual a la zona horaria de Perú
+    DateTime nowPeru = now.add(
+        Duration(hours: -5)); // Ajuste según el huso horario de Perú (UTC-5)
+
+    // Obtener la fecha del lunes de esta semana
+    DateTime monday = nowPeru.subtract(Duration(days: nowPeru.weekday - 1));
+
+    // Generar la lista de fechas de la semana
+    _weekDates = List.generate(7, (index) => monday.add(Duration(days: index)));
   }
 
   bool isButtonEnabled = true;
@@ -86,6 +104,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     isButtonEnabled = (_availableHours?.length ?? 0) < maxElementCount;
+
+    String formatDay(int day) {
+      return day < 10 ? '0$day' : '$day';
+    }
+
     return WillPopScope(
       onWillPop: () async {
         return false;
@@ -115,42 +138,273 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundImage:
-                          NetworkImage(_physiotherapist?.photoUrl ?? ""),
-                      backgroundColor: Colors.transparent,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 2.5,
+                    Container(
+                      width: 140, // Tamaño reducido para la imagen
+                      height: 110, // Tamaño reducido para la imagen
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromARGB(255, 101, 101, 101)
+                                .withOpacity(0.5),
+                            spreadRadius: 0.1,
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
                           ),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context)
-                                .push(_createRoute(_physiotherapist!.photoUrl));
-                          },
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 58,
+                        backgroundImage:
+                            NetworkImage(_physiotherapist?.photoUrl ?? ""),
+                        backgroundColor: Colors.white,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 5,
+                            ),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(_createRoute(
+                                  _physiotherapist?.photoUrl ?? ""));
+                            },
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      _physiotherapist?.user.firstname ?? "",
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text:
+                                "Dr. ${_physiotherapist?.user.firstname} ${_physiotherapist?.user.lastname}" ??
+                                    "",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "\n${_physiotherapist?.user.username}" ?? "",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 8),
                     Text(
-                      "Specialization: ${_physiotherapist?.specialization ?? ""}",
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      _physiotherapist?.user.username ?? "",
+                      "${_physiotherapist?.specialization ?? ""} Specialist",
                       style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(height: 20),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildIconWithText(
+                            icon: Icons.people,
+                            text1: "Patients",
+                            text2:
+                                _physiotherapist?.patientQuantity?.toString() ??
+                                    "",
+                          ),
+                          const SizedBox(width: 20),
+                          _buildIconWithText(
+                            icon: Icons.work,
+                            text1: "Years Exp.",
+                            text2:
+                                _physiotherapist?.yearsExperience?.toString() ??
+                                    "",
+                          ),
+                          const SizedBox(width: 20),
+                          _buildIconWithText(
+                            icon: Icons.star,
+                            text1: "Rating",
+                            text2: _physiotherapist?.rating?.toString() ?? "",
+                          ),
+                          const SizedBox(width: 20),
+                          _buildIconWithText(
+                            icon: Icons.message,
+                            text1: "Reviews",
+                            text2: _physiotherapist?.rating?.toString() ?? "",
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppConfig.primaryColor, // Color primario
+                        borderRadius:
+                            BorderRadius.circular(12), // Bordes redondeados
+                      ),
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Fee per Consultation',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors
+                                      .white, // Ajuste de color para el texto
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.white),
+                                iconSize: 18,
+                                onPressed: () {
+                                  // Acción del botón de editar
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Center(
+                            child: Text(
+                              'S/. ${_physiotherapist?.fees?.toString()}' ?? "",
+                              style: TextStyle(
+                                fontSize: 28,
+                                color: Colors
+                                    .white, // Ajuste de color para el texto grande
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Working Hours",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            "These are your work hours for this week",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w100,
+                              color: Colors.black,
+                            ),
+                          ),
+                          // Agrega más widgets hijos aquí si es necesario
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                buildDayButton(
+                                    'Mon', formatDay(_weekDates[0].day),
+                                    isSelected: _selectedIndexSchedule == 0,
+                                    index: 0),
+                                buildDayButton(
+                                    'Tue', formatDay(_weekDates[1].day),
+                                    isSelected: _selectedIndexSchedule == 1,
+                                    index: 1),
+                                buildDayButton(
+                                    'Wed', formatDay(_weekDates[2].day),
+                                    isSelected: _selectedIndexSchedule == 2,
+                                    index: 2),
+                                buildDayButton(
+                                    'Thu', formatDay(_weekDates[3].day),
+                                    isSelected: _selectedIndexSchedule == 3,
+                                    index: 3),
+                                buildDayButton(
+                                    'Fri', formatDay(_weekDates[4].day),
+                                    isSelected: _selectedIndexSchedule == 4,
+                                    index: 4),
+                                buildDayButton(
+                                    'Sat', formatDay(_weekDates[5].day),
+                                    isSelected: _selectedIndexSchedule == 5,
+                                    index: 5),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Reviews",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            "This is what your patients say about your work",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w100,
+                              color: Colors.black,
+                            ),
+                          ),
+                          // Agrega más widgets hijos aquí si es necesario
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    CarouselSlider(
+                      options: CarouselOptions(
+                        height: 200,
+                        enlargeCenterPage: true,
+                        enableInfiniteScroll: false,
+                        initialPage: 0,
+                      ),
+                      items: List.generate(numberOfCards, (index) {
+                        return Card(
+                          color: Colors.blueAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Card ${index + 1}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
                     Visibility(
                       visible: _availableHours?.isNotEmpty == true,
                       child: const Text(
@@ -314,15 +568,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Text("Enter your schedules"),
                     ),
                     const SizedBox(height: 50),
-                    ElevatedButton( onPressed:  () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const Login()
-                                ),
-                              );
-                            },
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Login()),
+                        );
+                      },
                       child: const Text("Logout"),
                     ),
                   ],
@@ -352,6 +605,106 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
     );
+  }
+
+  Widget _buildIconWithText({
+    required IconData icon,
+    required String text1,
+    required String text2,
+  }) {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.blue, // Color primario como color del borde
+              width: 2, // Ancho del borde
+            ),
+          ),
+          child: CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.white,
+            child: Icon(
+              icon,
+              size: 30,
+              color: Colors.blue, // Color primario como color del icono
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          text1,
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+        Text(
+          text2,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  Widget buildDayButton(String day, String date,
+      {bool isSelected = false, int index = -1}) {
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Color.fromRGBO(255, 255, 255, 1),
+          onPrimary: Colors.white,
+          padding: EdgeInsets.zero,
+          minimumSize: Size(20, 20),
+        ),
+        onPressed: () {
+          setState(() {
+            _selectedIndexSchedule =
+                _selectedIndexSchedule == index ? -1 : index;
+          });
+        },
+        child: Container(
+          padding: EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: AppConfig.primaryColor,
+            ),
+            borderRadius: BorderRadius.circular(10.0),
+            color: isSelected ? AppConfig.primaryColor : Colors.white,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset:
+                          Offset(0, 3), // cambios en la posición de la sombra
+                    ),
+                  ]
+                : [],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                day,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.normal,
+                  color: isSelected
+                      ? Colors.white
+                      : Color.fromARGB(255, 124, 124, 124),
+                ),
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
 

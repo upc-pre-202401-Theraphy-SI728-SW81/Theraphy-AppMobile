@@ -15,8 +15,7 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase =
-      'http://192.168.18.19:8080/api/v1';
+  final String urlBase = 'http://192.168.18.19:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -55,6 +54,7 @@ class HttpHelper {
     const endpoint = '/security/auth/authentication';
     final String url = '$urlBase$endpoint';
 
+    
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -63,6 +63,7 @@ class HttpHelper {
       );
 
       if (response.statusCode == 200) {
+        print("asdadasda");
         final jsonResponse = json.decode(response.body);
 
         if (jsonResponse.containsKey('access_Token')) {
@@ -86,8 +87,7 @@ class HttpHelper {
     }
   }
 
-  void createPatient(
-      dni, age, selectedDateAsString, location) async {
+  void createPatient(dni, age, selectedDateAsString, location) async {
     const reference = '/profile';
     const createPatientEndpoint = '/patients/registration-patient';
     final String createPatientUrl = '$urlBase$reference$createPatientEndpoint';
@@ -131,8 +131,8 @@ class HttpHelper {
     }
   }
 
-  void createPhysiotherapist(dni, age, specialization,
-      selectedDateAsString, location, fees, experience) async {
+  void createPhysiotherapist(dni, age, specialization, selectedDateAsString,
+      location, fees, experience) async {
     const reference = '/profile';
     final physiotherapist = CPhysiotherapist(
         id: 0,
@@ -148,7 +148,8 @@ class HttpHelper {
         yearsExperience:
             experience != null ? int.parse(experience.toString()) : 0,
         fees: fees != null ? double.parse(fees.toString()) : 0);
-    const createPhysiotherapistEndpoint = '/physiotherapists/registration-physiotherapist';
+    const createPhysiotherapistEndpoint =
+        '/physiotherapists/registration-physiotherapist';
     final String createPhysiotherapistUrl =
         '$urlBase$reference$createPhysiotherapistEndpoint';
     final prefs = await SharedPreferences.getInstance();
@@ -190,7 +191,7 @@ class HttpHelper {
     }
   }
 
- Future<int> getPhysiotherapistLogged() async {
+  Future<int> getPhysiotherapistLogged() async {
     const reference = '/profile/physiotherapists';
     const getPhysiotherapistLoggedEndpoint = '/PhysiotherapistLogget';
     final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
@@ -234,7 +235,7 @@ class HttpHelper {
     }
   }
 
-    Future<Physiotherapist> getPhysiotherapist() async {
+  Future<Physiotherapist> getPhysiotherapist() async {
     const reference = '/profile/physiotherapists';
     const getPhysiotherapistLoggedEndpoint = '/PhysiotherapistLogget';
     final String url = '$urlBase$reference$getPhysiotherapistLoggedEndpoint';
@@ -416,7 +417,6 @@ class HttpHelper {
     const String endpoint = '/therapy/therapies';
     final String url = '$urlBase$endpoint';
 
-
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
 
@@ -475,7 +475,7 @@ class HttpHelper {
       'Content-Type': 'application/json',
     };
 
-    http.Response response = await http.get(Uri.parse(url),headers: headers);
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
 
@@ -533,8 +533,8 @@ class HttpHelper {
     }
   }
 
-  void addAppointment(String topic, String date, String hour,
-      String place, int therapyId) async {
+  void addAppointment(String topic, String date, String hour, String place,
+      int therapyId) async {
     const String endpoint = '/therapy/appointments';
     final String url = '$urlBase$endpoint';
 
@@ -569,7 +569,7 @@ class HttpHelper {
 
     if (response.statusCode == 201) {
       final jsonResponse = json.decode(response.body);
-      print( jsonResponse);
+      print(jsonResponse);
     } else {
       throw Exception(
           'Failed to create physiotherapist. Status code: ${response.statusCode}');
@@ -580,7 +580,6 @@ class HttpHelper {
       int theraphyId, String date) async {
     var endpoint = '/therapy/appointments/byDate/$date/TherapyId/$theraphyId';
     final String url = '$urlBase$endpoint';
-
 
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
@@ -597,15 +596,15 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(response.body);
-      
+
       return Appointment.fromJson(jsonResponse);
     } else {
       return null;
     }
   }
 
-  void addTreatment(int therapyId, String videoUrl,
-      String duration, String title, String description, String day) async {
+  void addTreatment(int therapyId, String videoUrl, String duration,
+      String title, String description, String day) async {
     const String endpoint = '/therapy/treatments';
     final String url = '$urlBase$endpoint';
 
@@ -681,7 +680,6 @@ class HttpHelper {
       int physiotherapistId) async {
     String endpoint = '/consultations/byPhysiotherapistId/$physiotherapistId';
     final String url = '$urlBase$endpoint';
-
 
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
@@ -821,9 +819,10 @@ class HttpHelper {
 
   /////FALTAA
   Future<MedicalHistory?> getMedicalHistoryByPatientId(int patientId) async {
-    String endpoint = '/health-expertise/medical-histories/byPatientId/$patientId';
+    String endpoint =
+        '/health-expertise/medical-histories/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
-    
+
     print(url);
     print("OHHH ME VENGOOOO");
 
@@ -839,8 +838,7 @@ class HttpHelper {
       'Content-Type': 'application/json',
     };
 
-
-    http.Response response = await http.get(Uri.parse(url),headers: headers);
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     print(response.body);
     if (response.statusCode == HttpStatus.ok) {
@@ -925,7 +923,6 @@ class HttpHelper {
     }
   }
 
-
   Future<List<Appointment>?> getMyAppointments(int physiotherapistId) async {
     String endpoint =
         '/therapy/appointments/appointment/therapy-physiotherapist/$physiotherapistId';
@@ -942,7 +939,6 @@ class HttpHelper {
       'Authorization': 'Bearer $jwtToken',
       'Content-Type': 'application/json',
     };
-
 
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
@@ -1011,7 +1007,6 @@ class HttpHelper {
       'Content-Type': 'application/json',
     };
 
-
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
@@ -1033,7 +1028,6 @@ class HttpHelper {
       return null;
     }
   }
-
 
   /////FALTAAAAAA
   Future<void> updateDiagnosis(int appointmentId, String diagnosis) async {
@@ -1066,7 +1060,7 @@ class HttpHelper {
         headers: headers,
       );
 
-      print("diagnossis update"+response.body);
+      print("diagnossis update" + response.body);
 
       if (response.statusCode == 201) {
         final jsonResponse = json.decode(response.body);

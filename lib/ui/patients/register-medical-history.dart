@@ -65,6 +65,18 @@ class _RegisterMedicalHistoryState extends State<RegisterMedicalHistory> {
 
   @override
   Widget build(BuildContext context) {
+    String fullName =
+        "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.patient.user.firstname} \n${widget.patient.user.lastname}";
+    } else {
+      displayName = fullName;
+    }
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -137,7 +149,7 @@ class _RegisterMedicalHistoryState extends State<RegisterMedicalHistory> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${widget.patient.user.firstname} ${widget.patient.user.lastname}",
+                              displayName,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,

@@ -72,7 +72,7 @@ class _PatientProfileState extends State<PatientProfile> {
     int maxDisplayNameLength = 20;
 
  if (fullName.length > maxDisplayNameLength) {
-      displayName = "${widget.patient.user.firstname} ${widget.patient.user.lastname[0]}.";
+      displayName =  "${widget.patient.user.firstname} \n${widget.patient.user.lastname}";;
     } else {
       displayName = fullName;
     }
