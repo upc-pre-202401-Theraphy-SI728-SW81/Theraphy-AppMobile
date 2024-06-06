@@ -16,7 +16,7 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://192.168.18.19:8080/api/v1';
+  final String urlBase = 'http://192.168.55.60:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -696,7 +696,6 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-     
       final jsonResponse = json.decode(response.body);
       final List<dynamic> consultationsMap = jsonResponse['content'];
       final List<Consultation> consultations =
@@ -716,7 +715,8 @@ class HttpHelper {
       const String endpoint = '/therapy/therapies';
       final String url = '$urlBase$endpoint';
 
-      http.Response response2 = await http.get(Uri.parse(url), headers: headers);
+      http.Response response2 =
+          await http.get(Uri.parse(url), headers: headers);
 
       if (response2.statusCode == HttpStatus.ok) {
         final jsonResponse = json.decode(response2.body);
@@ -736,7 +736,6 @@ class HttpHelper {
         // Recorrer las terapias filtradas y extraer los atributos 'patient'
         for (var therapy in filteredTherapies) {
           myPatientsWithTherapy.add(therapy.patient);
-          
         }
 
         for (Patient patientWithTherapy in myPatientsWithTherapy) {
@@ -1075,6 +1074,46 @@ class HttpHelper {
     } catch (exception) {
       print('Error: $exception');
       // Puedes manejar el error aquí, por ejemplo, mostrar un mensaje de error al usuario.
+    }
+  }
+
+  Future<void> updateDiagnosisCosultation(
+      int consultationId, String diagnosis) async {
+    String endpoint = '/consultations/updateDiagnosis/$consultationId';
+    final String url = '$urlBase$endpoint';
+
+
+
+    final String requestBody = diagnosis;
+
+    final encodedBody = json.encode(requestBody);
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.patch(
+        Uri.parse(url),
+        body: encodedBody,
+        headers: headers,
+      );
+
+      if (response.statusCode == 201) {
+        final jsonResponse = json.decode(response.body);
+      } else {
+        throw Exception(
+            'Failed to update diagnosis. Status code: ${response.statusCode}');
+      }
+    } catch (exception) {
+      print('Error: $exception');
     }
   }
 

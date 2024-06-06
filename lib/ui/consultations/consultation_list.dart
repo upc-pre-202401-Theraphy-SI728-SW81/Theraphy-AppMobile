@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
@@ -318,6 +319,15 @@ class ConsultationItem extends StatefulWidget {
 }
 
 class _ConsultationItemState extends State<ConsultationItem> {
+  final DateFormat _dateFormat = DateFormat('dd-MM-yyyy');
+  HttpHelper? _httpHelper;
+
+  @override
+  void initState() {
+    _httpHelper = HttpHelper();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     String fullName =
@@ -337,116 +347,231 @@ class _ConsultationItemState extends State<ConsultationItem> {
         widthFactor: 0.9,
         child: GestureDetector(
           onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  elevation: 0.0,
-                  backgroundColor: Colors.transparent,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
+            DateTime now = DateTime.now();
+            DateTime consultationDate =
+                _dateFormat.parse(widget.consultation.date);
+
+            if (consultationDate.isBefore(now) ||
+                consultationDate.isAtSameMomentAs(now)) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  String updatedDiagnosis = "";
+                  if (widget.consultation.diagnosis != "") {
+                    String updatedDiagnosis = widget.consultation.diagnosis;
+                  }
+
+                  return Dialog(
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.0),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(16.0),
-                              topRight: Radius.circular(16.0),
+                    elevation: 0.0,
+                    backgroundColor: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color: AppConfig.primaryColor,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16.0),
+                                topRight: Radius.circular(16.0),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  'Send Diagnosis',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.close, color: Colors.white),
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Cerrar el diálogo
+                                  },
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                'Send Diagnosis',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Diagnosis:',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.close, color: Colors.white),
+                                SizedBox(height: 8.0),
+                                TextFormField(
+                                  initialValue: widget.consultation?.diagnosis,
+                                  onChanged: (value) {
+                                    updatedDiagnosis = value;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: updatedDiagnosis,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                  ),
+                                  maxLines: 8,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              TextButton(
                                 onPressed: () {
                                   Navigator.of(context)
                                       .pop(); // Cerrar el diálogo
                                 },
+                                child: Text(
+                                  'Cancelar',
+                                  style:
+                                      TextStyle(color: AppConfig.primaryColor),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await _httpHelper?.updateDiagnosisCosultation(
+                                      widget.consultation.id, updatedDiagnosis);
+                                  Navigator.of(context).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary:
+                                      Colors.blue, // Cambia el color del botón
+                                ),
+                                child: Text(
+                                  'Enviar',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ],
                           ),
+                          SizedBox(height: 10.0),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    titlePadding: EdgeInsets.all(0),
+                    title: Container(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      decoration: BoxDecoration(
+                        color: AppConfig.primaryColor,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0),
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Diagnosis:',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(7),
+                            child: Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.white,
+                              size: 50, // Tamaño grande para el icono
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Aún no se llega a la fecha de la cita',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                    contentPadding: EdgeInsets
+                        .zero, // Eliminar el padding predeterminado del contenido
+                    content: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(20.0),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Text(
+                              'Cuando llegue la fecha, podrá enviar el diagnóstico.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
                               ),
-                              SizedBox(height: 8.0),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  hintText: 'Type the diagnosis here',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Center(
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Cerrar el diálogo
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: AppConfig
+                                      .primaryColor, // Color primario de tu aplicación
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                 ),
-                                maxLines: 8,
+                                child: Text(
+                                  'Aceptar',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context)
-                                    .pop(); // Cerrar el diálogo
-                              },
-                              child: Text(
-                                'Cancelar',
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Guardar el diagnóstico
-                                Navigator.of(context)
-                                    .pop(); // Cerrar el diálogo
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary:
-                                    Colors.blue, // Cambia el color del botón
-                              ),
-                              child: Text(
-                                'Enviar',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.0),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            );
+                  );
+                },
+              );
+            }
           },
           child: Card(
             shape: RoundedRectangleBorder(
