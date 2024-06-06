@@ -341,6 +341,18 @@ class ConsultationItem extends StatefulWidget {
 class _ConsultationItemState extends State<ConsultationItem> {
   @override
   Widget build(BuildContext context) {
+    String fullName =
+        "${widget.consultation.patient.user.firstname} ${widget.consultation.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.consultation.patient.user.firstname} ${widget.consultation.patient.user.lastname[0]}.";
+    } else {
+      displayName = fullName;
+    }
     return FractionallySizedBox(
       widthFactor: 0.9,
       child: Card(
@@ -392,7 +404,7 @@ class _ConsultationItemState extends State<ConsultationItem> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${widget.consultation.patient.user.firstname} ${widget.consultation.patient.user.lastname}",
+                              displayName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(

@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
   final String urlBase =
-      'http://localhost:8080/api/v1';
+      'http://192.168.18.19:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -1037,11 +1037,14 @@ class HttpHelper {
 
   /////FALTAAAAAA
   Future<void> updateDiagnosis(int appointmentId, String diagnosis) async {
-    String endpoint = '/appointments/updateDiagnosis/$appointmentId';
+    String endpoint = '/therapy/appointments/$appointmentId';
     final String url = '$urlBase$endpoint';
 
     print(url);
-    final String requestBody = diagnosis;
+
+    final Map<String, dynamic> requestBody = {
+      "diagnosis": diagnosis,
+    };
 
     final encodedBody = json.encode(requestBody);
     final prefs = await SharedPreferences.getInstance();
@@ -1063,7 +1066,7 @@ class HttpHelper {
         headers: headers,
       );
 
-      print(response);
+      print("diagnossis update"+response.body);
 
       if (response.statusCode == 201) {
         final jsonResponse = json.decode(response.body);

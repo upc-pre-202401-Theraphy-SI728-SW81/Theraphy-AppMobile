@@ -66,6 +66,16 @@ class _PatientProfileState extends State<PatientProfile> {
 
   @override
   Widget build(BuildContext context) {
+    String fullName = "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+ if (fullName.length > maxDisplayNameLength) {
+      displayName = "${widget.patient.user.firstname} ${widget.patient.user.lastname[0]}.";
+    } else {
+      displayName = fullName;
+    }
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -138,7 +148,7 @@ class _PatientProfileState extends State<PatientProfile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${widget.patient.user.firstname} ${widget.patient.user.lastname}",
+                              displayName,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,

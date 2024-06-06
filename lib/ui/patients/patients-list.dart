@@ -310,6 +310,17 @@ class PatientItem extends StatefulWidget {
 class _PatientItemState extends State<PatientItem> {
   @override
   Widget build(BuildContext context) {
+    String fullName = "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+ if (fullName.length > maxDisplayNameLength) {
+      displayName = "${widget.patient.user.firstname} ${widget.patient.user.lastname[0]}.";
+    } else {
+      displayName = fullName;
+    }
+    
     return FractionallySizedBox(
       widthFactor: 0.9,
       child: Card(
@@ -346,7 +357,7 @@ class _PatientItemState extends State<PatientItem> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${widget.patient.user.firstname} ${widget.patient.user.lastname}",
+                      displayName,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18,
