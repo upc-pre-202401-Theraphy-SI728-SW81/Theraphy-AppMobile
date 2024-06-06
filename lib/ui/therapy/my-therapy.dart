@@ -301,7 +301,8 @@ class _MyTherapyState extends State<MyTherapy> {
                                             ),
                                           );
                                         },
-                                        child: const Text('Physical Performance Summary'),
+                                        child: const Text(
+                                            'Physical Performance Summary'),
                                       ),
                                     ),
                                   ],
@@ -462,90 +463,197 @@ class _MyTherapyState extends State<MyTherapy> {
                                             ElevatedButton(
                                               onPressed: () {
                                                 showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    String updatedDiagnosis =
-                                                        appointment!.diagnosis;
-
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                        "Your Diagnosis",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      content: Container(
-                                                        width: double.maxFinite,
-                                                        child:
-                                                            SingleChildScrollView(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      String updatedDiagnosis =
+                                                          appointment!
+                                                              .diagnosis;
+                                                      return Dialog(
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      16.0),
+                                                        ),
+                                                        elevation: 0.0,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        16.0),
+                                                          ),
                                                           child: Column(
                                                             mainAxisSize:
                                                                 MainAxisSize
                                                                     .min,
-                                                            children: [
-                                                              TextFormField(
-                                                                maxLength: 250,
-                                                                maxLines: 4,
-                                                                initialValue:
-                                                                    appointment!
-                                                                        .diagnosis,
-                                                                onChanged:
-                                                                    (value) {
-                                                                  print(value);
-                                                                  updatedDiagnosis =
-                                                                      value;
-                                                                  appointment!
-                                                                          .diagnosis =
-                                                                      updatedDiagnosis;
-                                                                  print(
-                                                                      updatedDiagnosis);
-                                                                  print(
-                                                                      "hereeerere");
-                                                                  // Cierra el popup después de la actualización
-                                                                },
+                                                            children: <Widget>[
+                                                              Container(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            16.0),
                                                                 decoration:
-                                                                    const InputDecoration(
-                                                                  hintText:
-                                                                      "Enter your diagnosis",
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .blue,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            16.0),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            16.0),
+                                                                  ),
+                                                                ),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: <Widget>[
+                                                                    Text(
+                                                                      'Send Diagnosis',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            20.0,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    IconButton(
+                                                                      icon: Icon(
+                                                                          Icons
+                                                                              .close,
+                                                                          color:
+                                                                              Colors.white),
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop(); // Cerrar el diálogo
+                                                                      },
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ),
-                                                              const SizedBox(
-                                                                  height: 16.0),
-                                                              ElevatedButton(
-                                                                onPressed:
-                                                                    () async {
-                                                                  await _httpHelper!.updateDiagnosis(
-                                                                      appointment!
-                                                                          .id,
-                                                                      appointment!
-                                                                          .diagnosis);
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                  // Lógica para actualizar el diagnóstico
-                                                                  // Agrega aquí el código que se ejecutará al presionar el botón "Update"
-                                                                  // Puedes utilizar la variable `updatedDiagnosis` para obtener el nuevo diagnóstico
-                                                                },
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                  primary: AppConfig
-                                                                      .primaryColor,
-                                                                  onPrimary:
-                                                                      Colors
-                                                                          .white,
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            16.0),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: <Widget>[
+                                                                    Text(
+                                                                      'Diagnosis:',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            16.0,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color: Colors
+                                                                            .black87,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                        height:
+                                                                            8.0),
+                                                                    TextFormField(
+                                                                      initialValue:
+                                                                          appointment?.diagnosis
+                                                                              ,
+                                                                      onChanged:
+                                                                          (value) {
+                                                                        updatedDiagnosis =
+                                                                            value;
+
+                                                                        appointment!.diagnosis =
+                                                                            updatedDiagnosis;
+                                                                      },
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                            hintText: "Type the diagnosis here",
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10.0),
+                                                                        ),
+                                                                      ),
+                                                                      maxLines:
+                                                                          8,
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                                child: const Text(
-                                                                    "Update"),
                                                               ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceEvenly,
+                                                                children: <Widget>[
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(); // Cerrar el diálogo
+                                                                    },
+                                                                    child: Text(
+                                                                      'Cancelar',
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.blue),
+                                                                    ),
+                                                                  ),
+                                                                  ElevatedButton(
+                                                                    onPressed:
+                                                                        () async {
+                                                                      await _httpHelper!.updateDiagnosis(
+                                                                          appointment!
+                                                                              .id,
+                                                                          appointment!
+                                                                              .diagnosis);
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                      // Lógica para actualizar el diagnóstico
+                                                                      // Agrega aquí el código que se ejecutará al presionar el botón "Update"
+                                                                      // Puedes utilizar la variable `updatedDiagnosis` para obtener el nuevo diagnóstico
+                                                                    },
+                                                                    style: ElevatedButton
+                                                                        .styleFrom(
+                                                                      primary:
+                                                                          Colors
+                                                                              .blue, // Cambia el color del botón
+                                                                    ),
+                                                                    child: Text(
+                                                                      'Enviar',
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.white),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              SizedBox(
+                                                                  height: 10.0),
                                                             ],
                                                           ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  },
-                                                );
+                                                      );
+                                                    });
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 primary: AppConfig.primaryColor,

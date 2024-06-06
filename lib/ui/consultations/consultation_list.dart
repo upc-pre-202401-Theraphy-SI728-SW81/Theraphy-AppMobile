@@ -309,53 +309,6 @@ class _ConsultationsListState extends State<ConsultationsList> {
   }
 }
 
-/*   return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "My consultations",
-          style: TextStyle(color: Colors.blue),
-        ),
-        backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        
-      ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-        
-
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const SizedBox(
-                height: 15.0,
-              ),
-            ]),
-          ),
-                    SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 5.0,
-                      horizontal:
-                          0.0), // Ajusta el valor vertical según tus necesidades
-                  child: ConsultationItem(
-                      consultation: myConsultations![index]),
-                );
-              },
-              childCount: myConsultations?.length ?? 0,
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const SizedBox(
-                height: 15.0,
-              ),
-            ]),
-          ),
-        ],
-      ),
-    );*/
 class ConsultationItem extends StatefulWidget {
   const ConsultationItem({super.key, required this.consultation});
   final Consultation consultation;
@@ -381,168 +334,283 @@ class _ConsultationItemState extends State<ConsultationItem> {
     }
 
     return FractionallySizedBox(
-      widthFactor: 0.9,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        color: Colors.white,
-        elevation: 1,
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              left: BorderSide(
-                color: Colors.blue,
-                width: 7,
-                style: BorderStyle.solid,
-              ),
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Hero(
-                          tag: widget.consultation.id,
-                          child: Container(
-                            padding: const EdgeInsets.all(10.0),
-                            constraints: const BoxConstraints(
-                              minWidth: 80.0,
-                              maxWidth: 80.0,
-                              minHeight: 80,
-                              maxHeight: 80,
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Image(
-                                image: NetworkImage(
-                                    widget.consultation.patient.photoUrl),
-                                fit: BoxFit.cover,
-                              ),
+        widthFactor: 0.9,
+        child: GestureDetector(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  elevation: 0.0,
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(16.0),
+                              topRight: Radius.circular(16.0),
                             ),
                           ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                'Send Diagnosis',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.close, color: Colors.white),
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Cerrar el diálogo
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.blue,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Diagnosis:',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              TextFormField(
+                                decoration: InputDecoration(
+                                  hintText: 'Type the diagnosis here',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                maxLines: 8,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pop(); // Cerrar el diálogo
+                              },
+                              child: Text(
+                                'Cancelar',
+                                style: TextStyle(color: Colors.blue),
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            ElevatedButton(
+                              onPressed: () {
+                                // Guardar el diagnóstico
+                                Navigator.of(context)
+                                    .pop(); // Cerrar el diálogo
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary:
+                                    Colors.blue, // Cambia el color del botón
+                              ),
+                              child: Text(
+                                'Enviar',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            color: Colors.white,
+            elevation: 1,
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    color: Colors.blue,
+                    width: 7,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Hero(
+                              tag: widget.consultation.id,
+                              child: Container(
+                                padding: const EdgeInsets.all(10.0),
+                                constraints: const BoxConstraints(
+                                  minWidth: 80.0,
+                                  maxWidth: 80.0,
+                                  minHeight: 80,
+                                  maxHeight: 80,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  child: Image(
+                                    image: NetworkImage(
+                                        widget.consultation.patient.photoUrl),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${widget.consultation.hour} / ${widget.consultation.date} ",
+                                  displayName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    color: Color(0xFFB1D7F3),
-                                    fontSize: 14,
+                                    color: Colors.blue,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "${widget.consultation.hour} / ${widget.consultation.date} ",
+                                      style: const TextStyle(
+                                        color: Color(0xFFB1D7F3),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
                               ],
                             ),
-                            const SizedBox(height: 5),
                           ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              const Padding(
-                padding: const EdgeInsets.only(left: 15, right: 15),
-                child: Divider(
-                  color: Color(0xFFB1D7F3),
-                  height: 10,
-                  thickness: 1,
-                  indent: 0,
-                  endIndent: 0,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 5,
-                        horizontal: 15,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFB1D7F3),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        children: [
-                          const Text(
-                            "Topic: ",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            widget.consultation.topic,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+                  ),
+                  const Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15),
+                    child: Divider(
+                      color: Color(0xFFB1D7F3),
+                      height: 10,
+                      thickness: 1,
+                      indent: 0,
+                      endIndent: 0,
                     ),
-                    const SizedBox(width: 5),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 5,
-                        horizontal: 15,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFB1D7F3),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        children: [
-                          const Text(
-                            "At: ",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 5,
+                            horizontal: 15,
                           ),
-                          Text(
-                            widget.consultation.place,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFB1D7F3),
+                            borderRadius: BorderRadius.circular(50),
                           ),
-                        ],
-                      ),
+                          child: Row(
+                            children: [
+                              const Text(
+                                "Topic: ",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.consultation.topic,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 5,
+                            horizontal: 15,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFB1D7F3),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Row(
+                            children: [
+                              const Text(
+                                "At: ",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.consultation.place,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
 
