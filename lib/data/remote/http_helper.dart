@@ -9,6 +9,7 @@ import 'package:mobile_app_theraphy/data/model/iot_Result.dart';
 import 'package:mobile_app_theraphy/data/model/medical_history.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
+import 'package:mobile_app_theraphy/data/model/review.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/model/treatment.dart';
 import 'package:mobile_app_theraphy/data/model/user.dart';
@@ -54,7 +55,6 @@ class HttpHelper {
     const endpoint = '/security/auth/authentication';
     final String url = '$urlBase$endpoint';
 
-    
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -696,6 +696,7 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
+     
       final jsonResponse = json.decode(response.body);
       final List<dynamic> consultationsMap = jsonResponse['content'];
       final List<Consultation> consultations =
@@ -712,10 +713,10 @@ class HttpHelper {
         }
       }
 
-      const String endpoint = '/therapies';
+      const String endpoint = '/therapy/therapies';
       final String url = '$urlBase$endpoint';
 
-      http.Response response2 = await http.get(Uri.parse(url));
+      http.Response response2 = await http.get(Uri.parse(url), headers: headers);
 
       if (response2.statusCode == HttpStatus.ok) {
         final jsonResponse = json.decode(response2.body);
@@ -735,6 +736,7 @@ class HttpHelper {
         // Recorrer las terapias filtradas y extraer los atributos 'patient'
         for (var therapy in filteredTherapies) {
           myPatientsWithTherapy.add(therapy.patient);
+          
         }
 
         for (Patient patientWithTherapy in myPatientsWithTherapy) {
@@ -1073,6 +1075,36 @@ class HttpHelper {
     } catch (exception) {
       print('Error: $exception');
       // Puedes manejar el error aquí, por ejemplo, mostrar un mensaje de error al usuario.
+    }
+  }
+
+  Future<List<Review>?> getMyReviews(int physiotherapistId) async {
+    String endpoint = '/social/reviews/byPhysiotherapistId/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> reviewsMap = jsonResponse['content'];
+      final List<Review> reviews =
+          reviewsMap.map((map) => Review.fromJson(map)).toList();
+
+      return reviews;
+    } else {
+      return null;
     }
   }
 }

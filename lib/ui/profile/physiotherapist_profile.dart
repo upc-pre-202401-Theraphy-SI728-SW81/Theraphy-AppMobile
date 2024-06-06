@@ -5,6 +5,7 @@ import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/available_hour.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
+import 'package:mobile_app_theraphy/data/model/review.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/data/remote/services/availableHour/available_hour_service.dart';
 import 'package:mobile_app_theraphy/data/remote/services/physiotherapist/physiotherapist_service.dart';
@@ -30,7 +31,8 @@ class _ProfilePageState extends State<ProfilePage> {
   HttpHelper? _httpHelper;
   int? id;
   late List<DateTime> _weekDates;
-  final int numberOfCards = 5;
+  List<Review>? myReviews = [];
+  int numberOfReviews = 0;
 
   List<Widget> pages = const [
     PatientsList(),
@@ -46,7 +48,17 @@ class _ProfilePageState extends State<ProfilePage> {
     _availableHours = await _availableHourService?.getByPhysiotherapistId(id!);
 
     _physiotherapist = await _httpHelper?.getPhysiotherapist();
+
+    id = await _httpHelper?.getPhysiotherapistLogged();
+
+    // Get Lists
+    // ignore: sdk_version_since
+    myReviews = List.empty();
+    myReviews = await _httpHelper?.getMyReviews(id!);
+
     setState(() {
+      myReviews = myReviews;
+      numberOfReviews = myReviews!.length;
       _availableHours = _availableHours;
     });
   }
@@ -138,42 +150,93 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                      width: 140, // Tamaño reducido para la imagen
-                      height: 110, // Tamaño reducido para la imagen
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.fromARGB(255, 101, 101, 101)
-                                .withOpacity(0.5),
-                            spreadRadius: 0.1,
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 58,
-                        backgroundImage:
-                            NetworkImage(_physiotherapist?.photoUrl ?? ""),
-                        backgroundColor: Colors.white,
-                        child: Container(
+                    Stack(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context)
+                              .size
+                              .width, // Ocupa todo el ancho de la pantalla
+                          padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 5,
-                            ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(_createRoute(
-                                  _physiotherapist?.photoUrl ?? ""));
-                            },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                // Centro el contenedor interno
+                                child: Container(
+                                  width: 140, // Tamaño reducido para la imagen
+                                  height: 110, // Tamaño reducido para la imagen
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromARGB(255, 101, 101, 101)
+                                                .withOpacity(0.5),
+                                        spreadRadius: 0.1,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 58,
+                                    backgroundImage: NetworkImage(
+                                        _physiotherapist?.photoUrl ?? ""),
+                                    backgroundColor: Colors.white,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 5,
+                                        ),
+                                      ),
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              _createRoute(
+                                                  _physiotherapist?.photoUrl ??
+                                                      ""));
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Más widgets aquí si es necesario
+                            ],
                           ),
                         ),
-                      ),
+                        Positioned(
+                          top: -15,
+                          right: 0,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.black),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const EditProfilePage()),
+                                  ); // Acción al presionar el primer icono
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.logout, color: Colors.black),
+                                onPressed: () {
+                                  // Acción al presionar el segundo icono
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
                     RichText(
@@ -229,13 +292,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           _buildIconWithText(
                             icon: Icons.star,
                             text1: "Rating",
-                            text2: _physiotherapist?.rating?.toString() ?? "",
+                            text2:
+                                _physiotherapist?.rating?.toStringAsFixed(2) ??
+                                    "",
                           ),
                           const SizedBox(width: 20),
                           _buildIconWithText(
                             icon: Icons.message,
                             text1: "Reviews",
-                            text2: _physiotherapist?.rating?.toString() ?? "",
+                            text2: myReviews?.length.toString() ?? "",
                           ),
                         ],
                       ),
@@ -382,202 +447,98 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 10),
                     CarouselSlider(
                       options: CarouselOptions(
-                        height: 200,
+                        height: 250,
                         enlargeCenterPage: true,
                         enableInfiniteScroll: false,
                         initialPage: 0,
                       ),
-                      items: List.generate(numberOfCards, (index) {
+                      items: List.generate(numberOfReviews, (index) {
+                        String fullName =
+                            "${myReviews![index].patient.user.firstname} ${myReviews![index].patient.user.lastname}";
+                        String displayName;
+
+                        int maxDisplayNameLength = 20;
+
+                        if (fullName.length > maxDisplayNameLength) {
+                          displayName =
+                              "${myReviews![index].patient.user.firstname} ${myReviews![index].patient.user.lastname[0]}.";
+                        } else {
+                          displayName = fullName;
+                        }
+
                         return Card(
-                          color: Colors.blueAccent,
+                          color: AppConfig.primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Center(
-                            child: Text(
-                              'Card ${index + 1}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: NetworkImage(
+                                              myReviews![index]
+                                                  .patient
+                                                  .photoUrl),
+                                          backgroundColor: Colors.white,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          displayName,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.star,
+                                            color: Colors.white, size: 20),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          myReviews![index].score.toString(),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Divider(color: Colors.white),
+                                SizedBox(height: 8),
+                                Expanded(
+                                  child: Center(
+                                    child: Text(
+                                      myReviews![index].content,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );
                       }),
                     ),
-                    Visibility(
-                      visible: _availableHours?.isNotEmpty == true,
-                      child: const Text(
-                        "Your available schedules: ",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
                     const SizedBox(height: 20),
-                    Visibility(
-                      visible: _availableHours?.isNotEmpty == true,
-                      child: SizedBox(
-                        height: 80,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _availableHours?.length ?? 0,
-                          itemBuilder: (context, index) {
-                            Color cardColor =
-                                cardColors[index % cardColors.length];
-                            return InkWell(
-                              onTap: () {
-                                dayController.text =
-                                    _availableHours?[index].day ?? '';
-                                hourController.text =
-                                    _availableHours?[index].hours ?? '';
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title:
-                                          const Text("Edit availability hour"),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          TextFormField(
-                                            controller: dayController,
-                                            decoration: const InputDecoration(
-                                                labelText: "Day"),
-                                          ),
-                                          TextFormField(
-                                            controller: hourController,
-                                            decoration: const InputDecoration(
-                                                labelText: "Hour"),
-                                          ),
-                                        ],
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Cierra el diálogo
-                                          },
-                                          child: const Text("Cancel"),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            final String updatedDay =
-                                                dayController.text.isNotEmpty
-                                                    ? dayController.text
-                                                    : _availableHours![index]
-                                                        .day;
-
-                                            final String updatedHour =
-                                                hourController.text.isNotEmpty
-                                                    ? hourController.text
-                                                    : _availableHours![index]
-                                                        .hours;
-
-                                            if (isValidHourFormat(
-                                                updatedHour)) {
-                                              _availableHourService
-                                                  ?.updateAvailableHour(
-                                                      _availableHours![index]
-                                                          .id,
-                                                      updatedDay,
-                                                      updatedHour)
-                                                  .then((value) {
-                                                initialize();
-                                                Fluttertoast.showToast(
-                                                  msg:
-                                                      'Updated data successfully',
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 2,
-                                                  backgroundColor: Colors.green,
-                                                  textColor: Colors.white,
-                                                );
-                                                Navigator.of(context).pop();
-                                              });
-                                            } else {
-                                              Fluttertoast.showToast(
-                                                msg:
-                                                    'Invalid hour format. Please use "hr:00-hr:00" or "hr:00 - hr:00" format.',
-                                                gravity: ToastGravity.BOTTOM,
-                                                timeInSecForIosWeb: 2,
-                                                backgroundColor: Colors.red,
-                                                textColor: Colors.white,
-                                              );
-                                            }
-                                          },
-                                          child: const Text("Save"),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              child: Container(
-                                width: 80,
-                                height: 80,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: cardColors[index % cardColors.length],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "${_availableHours?[index].day}",
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      "${_availableHours?[index].hours}",
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditProfilePage()),
-                        );
-                      },
-                      child: const Text("Edit Profile"),
-                    ),
-                    ElevatedButton(
-                      onPressed: isButtonEnabled
-                          ? () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      AvailabilityPage(id: id!),
-                                ),
-                              ).then((value) => initialize());
-                            }
-                          : null,
-                      child: const Text("Enter your schedules"),
-                    ),
-                    const SizedBox(height: 50),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()),
-                        );
-                      },
-                      child: const Text("Logout"),
-                    ),
                   ],
                 ),
               ),
