@@ -6,6 +6,7 @@ import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/diagnosis.dart';
 import 'package:mobile_app_theraphy/data/model/iot_Result.dart';
+import 'package:mobile_app_theraphy/data/model/iot_device.dart';
 import 'package:mobile_app_theraphy/data/model/medical_history.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
@@ -16,7 +17,7 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
-  final String urlBase = 'http://192.168.55.60:8080/api/v1';
+  final String urlBase = 'http://192.168.74.60:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
@@ -492,7 +493,7 @@ class HttpHelper {
       String startAt,
       String finishAt,
       int patientId) async {
-    const String endpoint = '/therapies';
+    const String endpoint = '/therapy/therapies';
     final String url = '$urlBase$endpoint';
 
     final Map<String, dynamic> requestBody = {
@@ -523,7 +524,7 @@ class HttpHelper {
       body: encodedBody,
       headers: headers,
     );
-
+    print(response.body);
     if (response.statusCode == 201) {
       final jsonResponse = json.decode(response.body);
       print(jsonResponse);
@@ -1082,8 +1083,6 @@ class HttpHelper {
     String endpoint = '/consultations/updateDiagnosis/$consultationId';
     final String url = '$urlBase$endpoint';
 
-
-
     final String requestBody = diagnosis;
 
     final encodedBody = json.encode(requestBody);
@@ -1142,6 +1141,37 @@ class HttpHelper {
           reviewsMap.map((map) => Review.fromJson(map)).toList();
 
       return reviews;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<IotDevice>?> getMyIotDevices(int physiotherapistId) async {
+    String endpoint =
+        '/iot-data/iotDevice//byPhysiotherapistId/$physiotherapistId';
+    final String url = '$urlBase$endpoint';
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final List<dynamic> iotdevicesmap = jsonResponse['content'];
+      final List<IotDevice> myiotdevices =
+          iotdevicesmap.map((map) => IotDevice.fromJson(map)).toList();
+
+      return myiotdevices;
     } else {
       return null;
     }
