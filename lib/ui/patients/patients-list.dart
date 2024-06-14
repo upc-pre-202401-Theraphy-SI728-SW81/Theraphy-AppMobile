@@ -22,6 +22,7 @@ class _PatientsListState extends State<PatientsList> {
   int? id;
   bool _withTherapy = false;
   bool _onlyConsultation = false;
+  int itemsQuantity = 0;
 
   List<Widget> pages = const [
     PatientsList(),
@@ -49,6 +50,7 @@ class _PatientsListState extends State<PatientsList> {
       id = id;
       myPatients = myPatients;
       filteredPatients = myPatients;
+      itemsQuantity = filteredPatients!.length;
     });
   }
 
@@ -65,237 +67,275 @@ class _PatientsListState extends State<PatientsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(
-              top: 20), // Ajusta la cantidad de espacio según tus necesidades
-          child: Text(
-            "My Patients",
-            style: TextStyle(
-              color: AppConfig.primaryColor,
-              fontSize: 24,
+        appBar: AppBar(
+          title: Padding(
+            padding: const EdgeInsets.only(
+                top: 20), // Ajusta la cantidad de espacio según tus necesidades
+            child: Text(
+              "My Patients",
+              style: TextStyle(
+                color: AppConfig.primaryColor,
+                fontSize: 24,
+              ),
             ),
           ),
+          backgroundColor: Colors.white,
+          iconTheme: const IconThemeData(color: Colors.black),
+          automaticallyImplyLeading: false,
+          elevation: 0,
         ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        automaticallyImplyLeading: false,
-        elevation: 0,
-      ),
-      body: Container(
-        color: Colors.white, // Fondo blanco
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22.0, 22.0, 22.0, 0),
-              child: Container(
-                width: 360,
-                child: TextField(
-                  cursorColor: AppConfig.primaryColor,
-                  controller: searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      filteredPatients = myPatients
-                          ?.where((patient) =>
-                              ('${patient.user.firstname} ${patient.user.lastname}')
-                                  .toLowerCase()
-                                  .contains(value.toLowerCase()))
-                          .toList();
-                    });
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Search',
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: AppConfig.primaryColor,
-                    ),
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: AppConfig.primaryColor, width: 2),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: AppConfig.primaryColor, width: 2.2),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(10.0)),
-                    ),
-                    labelStyle: TextStyle(
-                      color: AppConfig.primaryColor,
+        body: Container(
+          color: Colors.white, // Fondo blanco
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(22.0, 22.0, 22.0, 0),
+                child: Container(
+                  width: 360,
+                  child: TextField(
+                    cursorColor: AppConfig.primaryColor,
+                    controller: searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        filteredPatients = myPatients
+                            ?.where((patient) =>
+                                ('${patient.user.firstname} ${patient.user.lastname}')
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()))
+                            .toList();
+
+                        itemsQuantity = filteredPatients!.length;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Search',
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AppConfig.primaryColor,
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: AppConfig.primaryColor, width: 2),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: AppConfig.primaryColor, width: 2.2),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      labelStyle: TextStyle(
+                        color: AppConfig.primaryColor,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22.0, 5, 22.0, 10),
-              child: Row(
-                children: [
-                  if (_withTherapy == false)
-                    ElevatedButton(
-                      onPressed: () async {
-                        filteredPatients =
-                            await _httpHelper?.getMyPatientsWithTheraphy(id!);
-                        setState(() {
-                          filteredPatients = filteredPatients;
-                          _withTherapy = true;
-                          _onlyConsultation = false;
-                        });
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            Colors.white), // Fondo blanco
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                10), // Bordes redondeados en todos los lados
+              Padding(
+                padding: const EdgeInsets.fromLTRB(22.0, 5, 22.0, 10),
+                child: Row(
+                  children: [
+                    if (_withTherapy == false)
+                      ElevatedButton(
+                        onPressed: () async {
+                          filteredPatients =
+                              await _httpHelper?.getMyPatientsWithTheraphy(id!);
+                          setState(() {
+                            filteredPatients = filteredPatients;
+                            _withTherapy = true;
+                            _onlyConsultation = false;
+
+                            itemsQuantity = filteredPatients!.length;
+                          });
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              Colors.white), // Fondo blanco
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Bordes redondeados en todos los lados
+                            ),
+                          ),
+                          elevation:
+                              MaterialStateProperty.all(0), // Sin elevación
+                          side: MaterialStateProperty.all(BorderSide(
+                            color: AppConfig.primaryColor, // Color azul
+                            width: 1.5, // Ancho del borde
+                          )),
+                          minimumSize: MaterialStateProperty.all(
+                              Size(110, 30)), // Ancho mínimo del botón
+                        ),
+                        child: Text(
+                          'With Therapy',
+                          style: TextStyle(color: AppConfig.primaryColor),
+                        ),
+                      ),
+                    if (_withTherapy == true)
+                      ElevatedButton(
+                        onPressed: () async {
+                          filteredPatients =
+                              await _httpHelper?.getMyPatients(id!);
+                          setState(() {
+                            filteredPatients = filteredPatients;
+                            _withTherapy = false;
+                            itemsQuantity = filteredPatients!.length;
+                          });
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              AppConfig.primaryColor), // Fondo blanco
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Bordes redondeados en todos los lados
+                            ),
+                          ),
+                          elevation:
+                              MaterialStateProperty.all(0), // Sin elevación
+                          minimumSize: MaterialStateProperty.all(
+                              Size(110, 30)), // Ancho mínimo del botón
+                        ),
+                        child: Text(
+                          'With Therapy',
+                          style: TextStyle(
+                            color: Colors.white,
                           ),
                         ),
-                        elevation:
-                            MaterialStateProperty.all(0), // Sin elevación
-                        side: MaterialStateProperty.all(BorderSide(
-                          color: AppConfig.primaryColor, // Color azul
-                          width: 1.5, // Ancho del borde
-                        )),
-                        minimumSize: MaterialStateProperty.all(
-                            Size(110, 30)), // Ancho mínimo del botón
                       ),
-                      child: Text(
-                        'With Therapy',
-                        style: TextStyle(color: AppConfig.primaryColor),
+                    Container(width: 10, color: AppConfig.primaryColor),
+                    if (_onlyConsultation == false)
+                      ElevatedButton(
+                        onPressed: () async {
+                          filteredPatients = await _httpHelper
+                              ?.getMyPatientsOnlyConsultation(id!);
+                          setState(() {
+                            filteredPatients = filteredPatients;
+                            _onlyConsultation = true;
+                            _withTherapy = false;
+                            itemsQuantity = filteredPatients!.length;
+                          });
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              Colors.white), // Fondo blanco
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Bordes redondeados en todos los lados
+                            ),
+                          ),
+                          elevation:
+                              MaterialStateProperty.all(0), // Sin elevación
+                          side: MaterialStateProperty.all(BorderSide(
+                            color: AppConfig.primaryColor, // Color azul
+                            width: 1.5, // Ancho del borde
+                          )),
+                          minimumSize: MaterialStateProperty.all(
+                              Size(110, 30)), // Ancho mínimo del botón
+                        ),
+                        child: Text(
+                          'Only Consultation',
+                          style: TextStyle(color: AppConfig.primaryColor),
+                        ),
                       ),
-                    ),
-                  if (_withTherapy == true)
-                    ElevatedButton(
-                      onPressed: () async {
-                        filteredPatients =
-                            await _httpHelper?.getMyPatients(id!);
-                        setState(() {
-                          filteredPatients = filteredPatients;
-                          _withTherapy = false;
-                        });
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            AppConfig.primaryColor), // Fondo blanco
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                10), // Bordes redondeados en todos los lados
+                    if (_onlyConsultation == true)
+                      ElevatedButton(
+                        onPressed: () async {
+                          filteredPatients =
+                              await _httpHelper?.getMyPatients(id!);
+                          setState(() {
+                            filteredPatients = filteredPatients;
+                            _onlyConsultation = false;
+                            itemsQuantity = filteredPatients!.length;
+                          });
+                          ;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              AppConfig.primaryColor), // Fondo blanco
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Bordes redondeados en todos los lados
+                            ),
+                          ),
+                          elevation:
+                              MaterialStateProperty.all(0), // Sin elevación
+                          minimumSize: MaterialStateProperty.all(
+                              Size(110, 30)), // Ancho mínimo del botón
+                        ),
+                        child: Text(
+                          'Only Consultation',
+                          style: TextStyle(
+                            color: Colors.white,
                           ),
                         ),
-                        elevation:
-                            MaterialStateProperty.all(0), // Sin elevación
-                        minimumSize: MaterialStateProperty.all(
-                            Size(110, 30)), // Ancho mínimo del botón
                       ),
-                      child: Text(
-                        'With Therapy',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                    Container(
+                      width: 38,
+                      color: Colors.white, //AppConfig.primaryColor
                     ),
-                  Container(width: 10, color: AppConfig.primaryColor),
-                  if (_onlyConsultation == false)
-                    ElevatedButton(
-                      onPressed: () async {
-                        filteredPatients = await _httpHelper
-                            ?.getMyPatientsOnlyConsultation(id!);
-                        setState(() {
-                          filteredPatients = filteredPatients;
-                          _onlyConsultation = true;
-                          _withTherapy = false;
-                        });
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            Colors.white), // Fondo blanco
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                10), // Bordes redondeados en todos los lados
-                          ),
-                        ),
-                        elevation:
-                            MaterialStateProperty.all(0), // Sin elevación
-                        side: MaterialStateProperty.all(BorderSide(
-                          color: AppConfig.primaryColor, // Color azul
-                          width: 1.5, // Ancho del borde
-                        )),
-                        minimumSize: MaterialStateProperty.all(
-                            Size(110, 30)), // Ancho mínimo del botón
-                      ),
-                      child: Text(
-                        'Only Consultation',
-                        style: TextStyle(color: AppConfig.primaryColor),
-                      ),
-                    ),
-                  if (_onlyConsultation == true)
-                    ElevatedButton(
-                      onPressed: () async {
-                        filteredPatients =
-                            await _httpHelper?.getMyPatients(id!);
-                        setState(() {
-                          filteredPatients = filteredPatients;
-                          _onlyConsultation = false;
-                        });
-                        ;
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            AppConfig.primaryColor), // Fondo blanco
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                10), // Bordes redondeados en todos los lados
-                          ),
-                        ),
-                        elevation:
-                            MaterialStateProperty.all(0), // Sin elevación
-                        minimumSize: MaterialStateProperty.all(
-                            Size(110, 30)), // Ancho mínimo del botón
-                      ),
-                      child: Text(
-                        'Only Consultation',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: filteredPatients == null || filteredPatients!.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No patients found',
+                    RichText(
+                      text: TextSpan(
                         style: TextStyle(
                           fontSize: 17,
+                          color: AppConfig.primaryColor,
                         ),
+                        children: [
+                          TextSpan(
+                            text: '$itemsQuantity',
+                            style: TextStyle(
+                              fontSize: 17, // Tamaño más grande para el valor
+                              fontWeight: FontWeight
+                                  .bold, // Opcional: para hacer el valor en negrita
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' results',
+                            style: TextStyle(
+                              fontSize: 11, // Tamaño del texto
+                            ),
+                          ),
+                        ],
                       ),
                     )
-                  : ListView.builder(
-                      itemCount: filteredPatients!.length,
-                      itemBuilder: (context, index) {
-                        return PatientItem(patient: filteredPatients![index]);
-                      },
-                    ),
-            ),
-          ],
+                  ],
+                ),
+              ),
+              Expanded(
+                child: filteredPatients == null || filteredPatients!.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No patients found',
+                          style: TextStyle(
+                            fontSize: 17,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: filteredPatients!.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                             padding: EdgeInsets.only(top: 5, bottom: 5.0), 
+                              // Ajusta el valor del padding según sea necesario
+                              child: PatientItem(
+                                  patient: filteredPatients![index]));
+                        },
+                      ),
+              ),
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar:NavBar(currentIndex: 1)
-    );
+        bottomNavigationBar: NavBar(currentIndex: 1));
   }
 }
 
@@ -310,17 +350,19 @@ class PatientItem extends StatefulWidget {
 class _PatientItemState extends State<PatientItem> {
   @override
   Widget build(BuildContext context) {
-    String fullName = "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
+    String fullName =
+        "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
     String displayName;
 
     int maxDisplayNameLength = 20;
 
- if (fullName.length > maxDisplayNameLength) {
-      displayName = "${widget.patient.user.firstname} ${widget.patient.user.lastname[0]}.";
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.patient.user.firstname} ${widget.patient.user.lastname[0]}.";
     } else {
       displayName = fullName;
     }
-    
+
     return FractionallySizedBox(
       widthFactor: 0.9,
       child: Card(

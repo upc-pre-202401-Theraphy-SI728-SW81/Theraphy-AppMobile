@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/diagnosis.dart';
 import 'package:mobile_app_theraphy/data/model/medical_history.dart';
@@ -49,12 +50,13 @@ class _PatientProfileState extends State<PatientProfile> {
     patientMedicalHistory =
         await _httpHelper?.getMedicalHistoryByPatientId(widget.patient.id);
 
-    //Update lists
-    setState(() {
-      patientMedicalHistory = patientMedicalHistory;
-      patientTherapy = patientTherapy;
-      patientDiagnoses = patientDiagnoses;
-    });
+    if (mounted) {
+      setState(() {
+        patientMedicalHistory = patientMedicalHistory;
+        patientTherapy = patientTherapy;
+        patientDiagnoses = patientDiagnoses;
+      });
+    }
   }
 
   @override
@@ -66,13 +68,16 @@ class _PatientProfileState extends State<PatientProfile> {
 
   @override
   Widget build(BuildContext context) {
-    String fullName = "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
+    String fullName =
+        "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
     String displayName;
 
     int maxDisplayNameLength = 20;
 
- if (fullName.length > maxDisplayNameLength) {
-      displayName =  "${widget.patient.user.firstname} \n${widget.patient.user.lastname}";;
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.patient.user.firstname} \n${widget.patient.user.lastname}";
+      ;
     } else {
       displayName = fullName;
     }
@@ -379,10 +384,12 @@ class _PatientProfileState extends State<PatientProfile> {
                             children: [
                               TextButton(
                                 onPressed: () {
-                                  setState(() {
-                                    _isHereditaryHistoryPanelExpanded =
-                                        !_isHereditaryHistoryPanelExpanded;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _isHereditaryHistoryPanelExpanded =
+                                          !_isHereditaryHistoryPanelExpanded;
+                                    });
+                                  }
                                 },
                                 style: TextButton.styleFrom(
                                   backgroundColor: Colors.white, // Fondo blanco
@@ -459,10 +466,12 @@ class _PatientProfileState extends State<PatientProfile> {
                             children: [
                               TextButton(
                                 onPressed: () {
-                                  setState(() {
-                                    _isNonPathologicalHistoryPanelExpanded =
-                                        !_isNonPathologicalHistoryPanelExpanded;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _isNonPathologicalHistoryPanelExpanded =
+                                          !_isNonPathologicalHistoryPanelExpanded;
+                                    });
+                                  }
                                 },
                                 style: TextButton.styleFrom(
                                   backgroundColor: Colors.white, // Fondo blanco
@@ -539,10 +548,12 @@ class _PatientProfileState extends State<PatientProfile> {
                             children: [
                               TextButton(
                                 onPressed: () {
-                                  setState(() {
-                                    _isPathologicalHistoryPanelExpanded =
-                                        !_isPathologicalHistoryPanelExpanded;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _isPathologicalHistoryPanelExpanded =
+                                          !_isPathologicalHistoryPanelExpanded;
+                                    });
+                                  }
                                 },
                                 style: TextButton.styleFrom(
                                   backgroundColor: Colors.white, // Fondo blanco
@@ -826,6 +837,17 @@ class DiagnosisItem extends StatefulWidget {
 class _DiagnosisItemState extends State<DiagnosisItem> {
   @override
   Widget build(BuildContext context) {
+
+    String formattedDate = '';
+
+    try {
+      DateTime parsedDate =
+          DateFormat('yyyy-MM-dd').parse(widget.diagnosis.date);
+      formattedDate = DateFormat('MMMM dd, yyyy').format(parsedDate);
+
+    } catch (e) {
+      print('Error parsing date: $e');
+    }
     return Container(
       margin: const EdgeInsets.only(
           bottom: 16), // Ajusta el espacio entre las tarjetas
@@ -863,7 +885,7 @@ class _DiagnosisItemState extends State<DiagnosisItem> {
                 right: 10, // Ajusta la posición derecha para la fecha
                 child: Row(
                   children: [
-                    const Text(
+                     Text(
                       "Date: ",
                       style: TextStyle(
                         color: Color.fromARGB(255, 111, 111, 111),
@@ -872,7 +894,7 @@ class _DiagnosisItemState extends State<DiagnosisItem> {
                       ),
                     ),
                     Text(
-                      widget.diagnosis.date,
+                      formattedDate,
                       style: const TextStyle(
                         color: Color.fromARGB(255, 111, 111, 111),
                         fontSize: 15,
@@ -889,7 +911,7 @@ class _DiagnosisItemState extends State<DiagnosisItem> {
                 child: Row(
                   children: [
                     const Text(
-                      "Dr ",
+                      "Dr. ",
                       style: TextStyle(
                         color: Color.fromARGB(255, 111, 111, 111),
                         fontSize: 15,

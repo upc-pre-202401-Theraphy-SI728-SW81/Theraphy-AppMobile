@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
+import 'package:mobile_app_theraphy/ui/consultations/map_location.dart';
+import 'package:mobile_app_theraphy/ui/therapy/map-view.dart';
 
 class ConsultationsList extends StatefulWidget {
   const ConsultationsList({super.key});
@@ -22,7 +25,8 @@ class _ConsultationsListState extends State<ConsultationsList> {
   Physiotherapist? physiotherapistLogged;
 
   bool _done = false;
-  bool _all = true;
+  bool _all = false;
+  int itemsQuantity = 0;
 
   Future initialize() async {
     //Get user logged
@@ -31,7 +35,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
     // Get Lists
     // ignore: sdk_version_since
     myConsultations = List.empty();
-    myConsultations = await _httpHelper?.getMyConsultations(id!);
+    myConsultations = await _httpHelper?.getMyConsultations(id!) ?? [];
     physiotherapistLogged = await _httpHelper?.getPhysiotherapist();
 
     //Update lists
@@ -40,6 +44,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
       physiotherapistLogged = physiotherapistLogged;
       myConsultations = myConsultations;
       filteredConsultations = myConsultations;
+      itemsQuantity = myConsultations!.length;
     });
   }
 
@@ -93,6 +98,8 @@ class _ConsultationsListState extends State<ConsultationsList> {
                                     .toLowerCase()
                                     .contains(value.toLowerCase()))
                             .toList();
+
+                        itemsQuantity = filteredConsultations!.length;
                       });
                     },
                     decoration: InputDecoration(
@@ -142,6 +149,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                             filteredConsultations = filteredConsultations;
                             _done = true;
                             _all = false;
+                            itemsQuantity = filteredConsultations!.length;
                           });
                         },
                         style: ButtonStyle(
@@ -180,6 +188,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                           setState(() {
                             filteredConsultations = filteredConsultations;
                             _done = false;
+                            itemsQuantity = filteredConsultations!.length;
                           });
                         },
                         style: ButtonStyle(
@@ -212,11 +221,12 @@ class _ConsultationsListState extends State<ConsultationsList> {
                       ElevatedButton(
                         onPressed: () async {
                           filteredConsultations =
-                              await _httpHelper?.getMyConsultations(id!);
+                              await _httpHelper?.getMyConsultationsNoDone(id!);
                           setState(() {
                             filteredConsultations = filteredConsultations;
                             _all = true;
                             _done = false;
+                            itemsQuantity = filteredConsultations!.length;
                           });
                         },
                         style: ButtonStyle(
@@ -240,7 +250,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                               Size(110, 30)), // Ancho mínimo del botón
                         ),
                         child: Text(
-                          'All',
+                          'Upcoming',
                           style: TextStyle(
                             color: AppConfig.primaryColor,
                             //AppConfig.primaryColor
@@ -255,6 +265,7 @@ class _ConsultationsListState extends State<ConsultationsList> {
                           setState(() {
                             filteredConsultations = filteredConsultations;
                             _all = false;
+                            itemsQuantity = filteredConsultations!.length;
                           });
                           ;
                         },
@@ -275,12 +286,40 @@ class _ConsultationsListState extends State<ConsultationsList> {
                               Size(110, 30)), // Ancho mínimo del botón
                         ),
                         child: Text(
-                          'All',
+                          'Upcoming',
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
                       ),
+                    Container(
+                      width: 70,
+                      color: Colors.white, //AppConfig.primaryColor
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: AppConfig.primaryColor,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '$itemsQuantity',
+                            style: TextStyle(
+                              fontSize: 17, // Tamaño más grande para el valor
+                              fontWeight: FontWeight
+                                  .bold, // Opcional: para hacer el valor en negrita
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' results',
+                            style: TextStyle(
+                              fontSize: 11, // Tamaño del texto
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -298,8 +337,10 @@ class _ConsultationsListState extends State<ConsultationsList> {
                     : ListView.builder(
                         itemCount: filteredConsultations!.length,
                         itemBuilder: (context, index) {
-                          return ConsultationItem(
-                              consultation: filteredConsultations![index]);
+                          return Padding(
+                              padding: EdgeInsets.only(top: 5, bottom: 5.0),
+                              child: ConsultationItem(
+                                  consultation: filteredConsultations![index]));
                         },
                       ),
               ),
@@ -343,236 +384,26 @@ class _ConsultationItemState extends State<ConsultationItem> {
       displayName = fullName;
     }
 
+    String formattedDate = '';
+    String formattedTime = '';
+
+    try {
+      // Formatear fecha
+      DateTime parsedDate =
+          DateFormat('dd-MM-yyyy').parse(widget.consultation.date);
+      formattedDate = DateFormat('MMMM dd, yyyy').format(parsedDate);
+
+      // Formatear hora
+      DateTime parsedTime = DateFormat('HH:mm').parse(widget.consultation.hour);
+      formattedTime = DateFormat('h:mm a').format(parsedTime);
+    } catch (e) {
+      print('Error parsing date or time: $e');
+    }
+
     return FractionallySizedBox(
         widthFactor: 0.9,
         child: GestureDetector(
-          onTap: () {
-            DateTime now = DateTime.now();
-            DateTime consultationDate =
-                _dateFormat.parse(widget.consultation.date);
-
-            if (consultationDate.isBefore(now) ||
-                consultationDate.isAtSameMomentAs(now)) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  String updatedDiagnosis = "";
-                  if (widget.consultation.diagnosis != "") {
-                    String updatedDiagnosis = widget.consultation.diagnosis;
-                  }
-
-                  return Dialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    elevation: 0.0,
-                    backgroundColor: Colors.transparent,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: AppConfig.primaryColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(16.0),
-                                topRight: Radius.circular(16.0),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  'Send Diagnosis',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.close, color: Colors.white),
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); // Cerrar el diálogo
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  'Diagnosis:',
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                SizedBox(height: 8.0),
-                                TextFormField(
-                                  initialValue: widget.consultation?.diagnosis,
-                                  onChanged: (value) {
-                                    updatedDiagnosis = value;
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: updatedDiagnosis,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                  ),
-                                  maxLines: 8,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .pop(); // Cerrar el diálogo
-                                },
-                                child: Text(
-                                  'Cancelar',
-                                  style:
-                                      TextStyle(color: AppConfig.primaryColor),
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  await _httpHelper?.updateDiagnosisCosultation(
-                                      widget.consultation.id, updatedDiagnosis);
-                                  Navigator.of(context).pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  primary:
-                                      Colors.blue, // Cambia el color del botón
-                                ),
-                                child: Text(
-                                  'Enviar',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.0),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            } else {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    titlePadding: EdgeInsets.all(0),
-                    title: Container(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      decoration: BoxDecoration(
-                        color: AppConfig.primaryColor,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          topRight: Radius.circular(20.0),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(7),
-                            child: Icon(
-                              Icons.warning_amber_rounded,
-                              color: Colors.white,
-                              size: 50, // Tamaño grande para el icono
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Aún no se llega a la fecha de la cita',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    contentPadding: EdgeInsets
-                        .zero, // Eliminar el padding predeterminado del contenido
-                    content: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Text(
-                              'Cuando llegue la fecha, podrá enviar el diagnóstico.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Container(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: Center(
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .pop(); // Cerrar el diálogo
-                                },
-                                style: TextButton.styleFrom(
-                                  backgroundColor: AppConfig
-                                      .primaryColor, // Color primario de tu aplicación
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 24, vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Aceptar',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            }
-          },
+          onTap: () {},
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -589,23 +420,24 @@ class _ConsultationItemState extends State<ConsultationItem> {
                   ),
                 ),
               ),
-              child: Column(
+              child: Stack(
+                alignment: Alignment.topRight,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(0),
-                    child: Column(
-                      children: [
-                        Row(
+                  Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
                           children: [
                             Hero(
                               tag: widget.consultation.id,
                               child: Container(
-                                padding: const EdgeInsets.all(10.0),
+                                padding: const EdgeInsets.all(2.0),
                                 constraints: const BoxConstraints(
-                                  minWidth: 80.0,
-                                  maxWidth: 80.0,
-                                  minHeight: 80,
-                                  maxHeight: 80,
+                                  minWidth: 100.0,
+                                  maxWidth: 100.0,
+                                  minHeight: 100,
+                                  maxHeight: 100,
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -626,21 +458,57 @@ class _ConsultationItemState extends State<ConsultationItem> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 18,
+                                    color: Colors.black,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
+                                RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 13,
+                                    ),
+                                    children: [
+                                      const TextSpan(
+                                        text: 'Topic: ',
+                                      ),
+                                      WidgetSpan(
+                                        alignment:
+                                            PlaceholderAlignment.baseline,
+                                        baseline: TextBaseline.alphabetic,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: Color.fromARGB(
+                                                255, 219, 229, 236),
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Text(
+                                            widget.consultation.topic,
+                                            style: TextStyle(
+                                              color: AppConfig.primaryColor,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "${widget.consultation.hour} / ${widget.consultation.date} ",
+                                      "$formattedDate  |  $formattedTime",
                                       style: const TextStyle(
-                                        color: Color(0xFFB1D7F3),
-                                        fontSize: 14,
+                                        color: Colors.black,
+                                        fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -651,84 +519,451 @@ class _ConsultationItemState extends State<ConsultationItem> {
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  const Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 15),
-                    child: Divider(
-                      color: Color(0xFFB1D7F3),
-                      height: 10,
-                      thickness: 1,
-                      indent: 0,
-                      endIndent: 0,
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.only(left: 15, top: 10, bottom: 10),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 15,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFB1D7F3),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Row(
-                            children: [
-                              const Text(
-                                "Topic: ",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                widget.consultation.topic,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
+                      ),
+                      const Padding(
+                        padding: const EdgeInsets.only(left: 15, right: 15),
+                        child: Divider(
+                          color: Color.fromARGB(255, 222, 222, 222),
+                          height: 10,
+                          thickness: 1,
+                          indent: 0,
+                          endIndent: 0,
                         ),
-                        const SizedBox(width: 5),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 15,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFB1D7F3),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Row(
-                            children: [
-                              const Text(
-                                "At: ",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(
+                            left: 15, top: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .start, // Alinea los botones al centro
+                          children: [
+                            // Botón "Topic"
+                            Container(
+                              width: 150, // Ancho deseado para los botones
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical:
+                                      2, // Ajusta este valor para reducir la altura
+                                  horizontal: 15,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 219, 229, 236),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minHeight: 20, // Altura mínima del botón
+                                  ),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => LocationMap(
+                                                  consultation:
+                                                      widget.consultation,
+                                                )),
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets
+                                          .zero, // Quitar el padding interno del botón
+                                      minimumSize: Size(
+                                          50, 30), // Tamaño mínimo del botón
+                                      tapTargetSize: MaterialTapTargetSize
+                                          .shrinkWrap, // Reducir el área táctil
+                                    ),
+                                    child: Text(
+                                      "See Location",
+                                      style: TextStyle(
+                                        color: AppConfig.primaryColor,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              Text(
-                                widget.consultation.place,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
+                            ),
+                            const SizedBox(width: 10),
+                            // Botón "At"
+                            Container(
+                              width: 150, // Ancho deseado para los botones
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical:
+                                      2, // Ajusta este valor para reducir la altura
+                                  horizontal: 15,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppConfig.primaryColor,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minHeight: 20, // Altura mínima del botón
+                                  ),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      DateTime now = DateTime.now();
+                                      DateTime consultationDate = _dateFormat
+                                          .parse(widget.consultation.date);
+
+                                      if (consultationDate.isBefore(now) ||
+                                          consultationDate
+                                              .isAtSameMomentAs(now)) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            String updatedDiagnosis = "";
+                                            if (widget.consultation.diagnosis !=
+                                                "") {
+                                              String updatedDiagnosis =
+                                                  widget.consultation.diagnosis;
+                                            }
+
+                                            return Dialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16.0),
+                                              ),
+                                              elevation: 0.0,
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16.0),
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: <Widget>[
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(16.0),
+                                                      decoration: BoxDecoration(
+                                                        color: AppConfig
+                                                            .primaryColor,
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  16.0),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  16.0),
+                                                        ),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: <Widget>[
+                                                          Text(
+                                                            'Send Diagnosis',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 20.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          IconButton(
+                                                            icon: Icon(
+                                                                Icons.close,
+                                                                color: Colors
+                                                                    .white),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Cerrar el diálogo
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.all(16.0),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                          Text(
+                                                            'Diagnosis:',
+                                                            style: TextStyle(
+                                                              fontSize: 16.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
+                                                          ),
+                                                          SizedBox(height: 8.0),
+                                                          TextFormField(
+                                                            initialValue: widget
+                                                                .consultation
+                                                                ?.diagnosis,
+                                                            onChanged: (value) {
+                                                              updatedDiagnosis =
+                                                                  value;
+                                                              print(
+                                                                  updatedDiagnosis);
+                                                            },
+                                                            decoration:
+                                                                InputDecoration(
+                                                              hintText:
+                                                                  updatedDiagnosis,
+                                                              border:
+                                                                  OutlineInputBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10.0),
+                                                              ),
+                                                            ),
+                                                            maxLines: 8,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // Cerrar el diálogo
+                                                          },
+                                                          child: Text(
+                                                            'Cancel',
+                                                            style: TextStyle(
+                                                                color: AppConfig
+                                                                    .primaryColor),
+                                                          ),
+                                                        ),
+                                                        ElevatedButton(
+                                                          onPressed: () async {
+                                                            await _httpHelper
+                                                                ?.updateDiagnosisCosultation(
+                                                                    widget
+                                                                        .consultation
+                                                                        .id,
+                                                                    updatedDiagnosis);
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ConsultationsList(),
+                                                              ),
+                                                            );
+                                                          },
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                            primary: Colors
+                                                                .blue, // Cambia el color del botón
+                                                          ),
+                                                          child: Text(
+                                                            'Send',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 10.0),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20.0),
+                                              ),
+                                              titlePadding: EdgeInsets.all(0),
+                                              title: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 20),
+                                                decoration: BoxDecoration(
+                                                  color: AppConfig.primaryColor,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(20.0),
+                                                    topRight:
+                                                        Radius.circular(20.0),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(7),
+                                                      child: Icon(
+                                                        Icons
+                                                            .warning_amber_rounded,
+                                                        color: Colors.white,
+                                                        size:
+                                                            50, // Tamaño grande para el icono
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    const Text(
+                                                      "Unfinished Appointment",
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              contentPadding: EdgeInsets
+                                                  .zero, // Eliminar el padding predeterminado del contenido
+                                              content: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    bottomLeft:
+                                                        Radius.circular(20.0),
+                                                    bottomRight:
+                                                        Radius.circular(20.0),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Padding(
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                              20),
+                                                      child: Text(
+                                                        "You'll be able to send the diagnosis once the appointment date arrives.",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors.black87,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 20),
+                                                      child: Center(
+                                                        child: TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // Cerrar el diálogo
+                                                          },
+                                                          style: TextButton
+                                                              .styleFrom(
+                                                            backgroundColor:
+                                                                AppConfig
+                                                                    .primaryColor, // Color primario de tu aplicación
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        24,
+                                                                    vertical:
+                                                                        12),
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20.0),
+                                                            ),
+                                                          ),
+                                                          child: Text(
+                                                            'Accept',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets
+                                          .zero, // Quitar el padding interno del botón
+                                      minimumSize: Size(
+                                          50, 30), // Tamaño mínimo del botón
+                                      tapTargetSize: MaterialTapTargetSize
+                                          .shrinkWrap, // Reducir el área táctil
+                                    ),
+                                    child: Text(
+                                      "Diagnosis",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Container(
+                      width: 35, // Ancho del contenedor del círculo
+                      height: 35, // Altura del contenedor del círculo
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFB1D7F3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.phone_rounded,
+                          color: Colors.blue,
+                          size: 16, // Tamaño del icono del teléfono
+                        ),
+                        onPressed: () {
+                          _makePhoneCall();
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -736,6 +971,22 @@ class _ConsultationItemState extends State<ConsultationItem> {
             ),
           ),
         ));
+  }
+
+  void _makePhoneCall() async {
+    //IOS VESION
+
+    /*final String phoneUrl = 'tel:$_cellNumber';
+    
+    if (await canLaunchUrl(Uri.parse(phoneUrl))) {
+      await launchUrl(Uri.parse(phoneUrl));
+    } else {
+      throw 'Could not launch $phoneUrl';
+    }*/
+
+    //ANDROID VERSION
+    String number = '955110309';
+    FlutterPhoneDirectCaller.callNumber(number);
   }
 }
 

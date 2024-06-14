@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
 import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:mobile_app_theraphy/data/model/diagnosis.dart';
@@ -17,6 +18,8 @@ import 'package:mobile_app_theraphy/data/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpHelper {
+  //final String urlBase = 'http://ec2-52-90-129-137.compute-1.amazonaws.com:8080/api/v1';
+
   final String urlBase = 'http://192.168.74.60:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
@@ -51,7 +54,7 @@ class HttpHelper {
     }
   }
 
-  Future<void> login(String username, String password) async {
+  Future<int> login(String username, String password) async {
     final credentials = {'username': username, 'password': password};
     const endpoint = '/security/auth/authentication';
     final String url = '$urlBase$endpoint';
@@ -64,7 +67,6 @@ class HttpHelper {
       );
 
       if (response.statusCode == 200) {
-        print("asdadasda");
         final jsonResponse = json.decode(response.body);
 
         if (jsonResponse.containsKey('access_Token')) {
@@ -75,16 +77,19 @@ class HttpHelper {
           await prefs.setString('accessToken', accessToken);
 
           print(accessToken);
+          return 1;
         } else {
-          throw Exception('Access token not found in the response.');
+          //throw Exception('Access token not found in the response.');
+          return 2;
         }
       } else {
-        throw Exception(
-            'Failed to log in. Status code: ${response.statusCode}');
+        //throw Exception('Failed to log in. Status code: ${response.statusCode}');
+        return 3;
       }
     } catch (exception) {
       print('Error: $exception');
       // Manejar el error, por ejemplo, mostrar un mensaje de error al usuario.
+      return 4;
     }
   }
 
@@ -259,7 +264,8 @@ class HttpHelper {
         headers: headers,
       );
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+        final decodedData = utf8.decode(response.bodyBytes);
+        final jsonResponse = json.decode(decodedData);
         print(response.body);
         return Physiotherapist.fromJson(jsonResponse);
       } else {
@@ -291,7 +297,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> consultationsMap = jsonResponse['content'];
       final List<Consultation> consultations =
           consultationsMap.map((map) => Consultation.fromJson(map)).toList();
@@ -332,7 +339,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> consultationsMap = jsonResponse['content'];
       List<Consultation> consultations =
           consultationsMap.map((map) => Consultation.fromJson(map)).toList();
@@ -365,7 +373,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> consultationsMap = jsonResponse['content'];
       List<Consultation> consultations =
           consultationsMap.map((map) => Consultation.fromJson(map)).toList();
@@ -399,7 +408,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> consultationsMap = jsonResponse['content'];
       List<Consultation> consultations =
           consultationsMap.map((map) => Consultation.fromJson(map)).toList();
@@ -433,7 +443,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> therapiesMap = jsonResponse['content'];
       final List<Therapy> therapies =
           therapiesMap.map((map) => Therapy.fromJson(map)).toList();
@@ -449,8 +460,10 @@ class HttpHelper {
 
       // Recorrer las terapias filtradas y extraer los atributos 'patient'
       for (var therapy in filteredTherapies) {
+        print(therapy.patient.user.firstname);
         myPatients.add(therapy.patient);
       }
+
 // Ahora 'myPatients' contendrá la lista de pacientes que cumplan con los requisitos
       return myPatients;
     } else {
@@ -478,7 +491,8 @@ class HttpHelper {
 
     http.Response response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
 
       return Therapy.fromJson(jsonResponse);
     } else {
@@ -530,7 +544,7 @@ class HttpHelper {
       print(jsonResponse);
     } else {
       throw Exception(
-          'Failed to create physiotherapist. Status code: ${response.statusCode}');
+          'Failed to create Therapy. Status code: ${response.statusCode}');
     }
   }
 
@@ -596,7 +610,8 @@ class HttpHelper {
 
     http.Response response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
 
       return Appointment.fromJson(jsonResponse);
     } else {
@@ -669,7 +684,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
     print(response.body);
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
 
       return Treatment.fromJson(jsonResponse);
     } else {
@@ -697,7 +713,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> consultationsMap = jsonResponse['content'];
       final List<Consultation> consultations =
           consultationsMap.map((map) => Consultation.fromJson(map)).toList();
@@ -753,15 +770,27 @@ class HttpHelper {
     }
   }
 
-  ////FALTAAAAAA
   Future<List<Diagnosis>?> getPatientDiagnoses(int patientId) async {
-    final endpoint = '/diagnoses/byPatientId/$patientId';
+    final endpoint = '/health-expertise/diagnoses/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
 
-    http.Response response = await http.get(Uri.parse(url));
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> patientDiagnosesMap = jsonResponse['content'];
       List<Diagnosis> patientDiagnoses =
           patientDiagnosesMap.map((map) => Diagnosis.fromJson(map)).toList();
@@ -794,7 +823,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> patientTherapiesMap = jsonResponse['content'];
       List<Therapy> patientTherapies =
           patientTherapiesMap.map((map) => Therapy.fromJson(map)).toList();
@@ -819,14 +849,10 @@ class HttpHelper {
     return null;
   }
 
-  /////FALTAA
   Future<MedicalHistory?> getMedicalHistoryByPatientId(int patientId) async {
     String endpoint =
         '/health-expertise/medical-histories/byPatientId/$patientId';
     final String url = '$urlBase$endpoint';
-
-    print(url);
-    print("OHHH ME VENGOOOO");
 
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
@@ -842,9 +868,9 @@ class HttpHelper {
 
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
-    print(response.body);
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final MedicalHistory medicalHistory =
           MedicalHistory.fromJson(jsonResponse);
 
@@ -854,16 +880,15 @@ class HttpHelper {
     }
   }
 
-  ///FALTAAAAA
   Future<List<IotResult>?> getIotResultsByTherapyIdandDate(
       int therapyId, String date) async {
-    final endpoint = '/iotResults/byTherapyId/$therapyId/Date/$date';
+    final endpoint = '/iot-data/iotResults/byTherapyId/$therapyId/Date/$date';
     final String url = '$urlBase$endpoint';
 
     http.Response response = await http.get(Uri.parse(url));
-
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> iotResultsMap = jsonResponse['content'];
       List<IotResult> iotresults =
           iotResultsMap.map((map) => IotResult.fromJson(map)).toList();
@@ -945,7 +970,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> appointmentsMap = jsonResponse['content'];
       List<Appointment> appointments =
           appointmentsMap.map((map) => Appointment.fromJson(map)).toList();
@@ -976,7 +1002,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> appointmentsMap = jsonResponse['content'];
       List<Appointment> appointments =
           appointmentsMap.map((map) => Appointment.fromJson(map)).toList();
@@ -1012,7 +1039,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> appointmentsMap = jsonResponse['content'];
       List<Appointment> appointments =
           appointmentsMap.map((map) => Appointment.fromJson(map)).toList();
@@ -1031,12 +1059,9 @@ class HttpHelper {
     }
   }
 
-  /////FALTAAAAAA
   Future<void> updateDiagnosis(int appointmentId, String diagnosis) async {
     String endpoint = '/therapy/appointments/$appointmentId';
     final String url = '$urlBase$endpoint';
-
-    print(url);
 
     final Map<String, dynamic> requestBody = {
       "diagnosis": diagnosis,
@@ -1062,8 +1087,6 @@ class HttpHelper {
         headers: headers,
       );
 
-      print("diagnossis update" + response.body);
-
       if (response.statusCode == 201) {
         final jsonResponse = json.decode(response.body);
         // Puedes manejar la respuesta como desees, dependiendo de tu lógica de la aplicación.
@@ -1085,7 +1108,6 @@ class HttpHelper {
 
     final String requestBody = diagnosis;
 
-    final encodedBody = json.encode(requestBody);
     final prefs = await SharedPreferences.getInstance();
     final jwtToken = prefs.getString('accessToken');
 
@@ -1101,18 +1123,49 @@ class HttpHelper {
     try {
       final response = await http.patch(
         Uri.parse(url),
-        body: encodedBody,
+        body: requestBody,
         headers: headers,
       );
 
       if (response.statusCode == 201) {
         final jsonResponse = json.decode(response.body);
+        DateTime now = DateTime.now();
+        String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+        final Map<String, dynamic> requestBody = {
+          "patientId": jsonResponse['patientId']['id'],
+          "date": formattedDate,
+          "diagnosis": jsonResponse['diagnosis'],
+        };
+
+        final encodedBody = json.encode(requestBody);
+
+        String endpoint2 = '/health-expertise/diagnoses';
+        final String url2 = '$urlBase$endpoint2';
+
+        try {
+          final response2 = await http.post(
+            Uri.parse(url2),
+            body: encodedBody,
+            headers: headers,
+          );
+
+          print("diagonsis" + response2.body);
+
+          if (response2.statusCode == 201) {
+            final jsonResponse = json.decode(response2.body);
+          } else {
+            throw Exception(
+                'Failed to create diagnosis in table. Status code: ${response.statusCode}');
+          }
+        } catch (exception) {
+          print('Error creating diagnosis: $exception');
+        }
       } else {
         throw Exception(
-            'Failed to update diagnosis. Status code: ${response.statusCode}');
+            'Failed to update diagnosis for consultation. Status code: ${response.statusCode}');
       }
     } catch (exception) {
-      print('Error: $exception');
+      print('Error updating consultation: $exception');
     }
   }
 
@@ -1135,7 +1188,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> reviewsMap = jsonResponse['content'];
       final List<Review> reviews =
           reviewsMap.map((map) => Review.fromJson(map)).toList();
@@ -1148,7 +1202,7 @@ class HttpHelper {
 
   Future<List<IotDevice>?> getMyIotDevices(int physiotherapistId) async {
     String endpoint =
-        '/iot-data/iotDevice//byPhysiotherapistId/$physiotherapistId';
+        '/iot-data/iotDevice/byPhysiotherapistId/$physiotherapistId';
     final String url = '$urlBase$endpoint';
 
     final prefs = await SharedPreferences.getInstance();
@@ -1166,7 +1220,8 @@ class HttpHelper {
     http.Response response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == HttpStatus.ok) {
-      final jsonResponse = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final jsonResponse = json.decode(decodedData);
       final List<dynamic> iotdevicesmap = jsonResponse['content'];
       final List<IotDevice> myiotdevices =
           iotdevicesmap.map((map) => IotDevice.fromJson(map)).toList();
@@ -1174,6 +1229,80 @@ class HttpHelper {
       return myiotdevices;
     } else {
       return null;
+    }
+  }
+
+  Future<void> creatIoTDevice(int physioId, int patientId) async {
+    String endpoint = '/iot-data/iotDevice';
+    final String url = '$urlBase$endpoint';
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      if (response.statusCode == 201) {
+        final jsonResponse = json.decode(response.body);
+        final id = jsonResponse['id'];
+
+        assignIotDeviceAgain(id, physioId, patientId);
+      } else {
+        throw Exception(
+            'Failed to create iot. Status code: ${response.statusCode}');
+      }
+    } catch (exception) {
+      print('Error: $exception');
+    }
+  }
+
+  Future<void> assignIotDeviceAgain(
+      int iotdeviceId, int physioId, int patientId) async {
+    Therapy? therapy = await getTherapyByPhysioAndPatient(physioId, patientId);
+
+    String endpoint =
+        '/iot-data/iotDevice/assign/$iotdeviceId/to/${therapy?.id}';
+    final String url = '$urlBase$endpoint';
+
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('accessToken');
+
+    if (jwtToken == null) {
+      throw Exception('JWT Token not found in SharedPreferences.');
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      print(response.body);
+      if (response.statusCode == 201) {
+        final jsonResponse = json.decode(response.body);
+      } else {
+        throw Exception(
+            'Failed to assign iot. Status code: ${response.statusCode}');
+      }
+    } catch (exception) {
+      print('Error: $exception');
     }
   }
 }

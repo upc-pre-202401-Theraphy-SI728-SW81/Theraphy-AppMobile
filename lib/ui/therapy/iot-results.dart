@@ -75,7 +75,7 @@ class _IotResultsState extends State<IotResults> {
     // Obtén las listas
     iotResults = List.empty();
     iotResults = await _httpHelper?.getIotResultsByTherapyIdandDate(
-        widget.therapy.id, widget.date);
+        widget.therapy.id, widget.date) ?? [];
 
     // Filtra los elementos con mapDuration diferente de 0
     iotResultswithMapDuration =
@@ -514,7 +514,7 @@ class _IotResultsState extends State<IotResults> {
                                       TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '$temperatureAverage',
+                                            text: temperatureAverage.toStringAsFixed(2),
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 20,
@@ -757,7 +757,7 @@ class _IotResultsState extends State<IotResults> {
                                     TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: '$humidityAverage',
+                                          text: humidityAverage.toStringAsFixed(2),
                                           style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 20,

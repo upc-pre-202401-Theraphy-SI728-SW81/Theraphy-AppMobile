@@ -336,7 +336,7 @@ class _MyTherapyState extends State<MyTherapy> {
                               Card(
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 16.0, right: 16.0),
+                                      left: 16.0, right: 8.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -345,7 +345,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                       Row(
                                         children: [
                                           SizedBox(
-                                            width: 250,
+                                            width: 248,
                                             child: Text(
                                               "You have scheduled an Appointment Today:  ",
                                               style: TextStyle(
@@ -611,7 +611,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                                                           .pop(); // Cerrar el diálogo
                                                                     },
                                                                     child: Text(
-                                                                      'Cancelar',
+                                                                      'Cancel',
                                                                       style: TextStyle(
                                                                           color:
                                                                               Colors.blue),
@@ -639,7 +639,7 @@ class _MyTherapyState extends State<MyTherapy> {
                                                                               .blue, // Cambia el color del botón
                                                                     ),
                                                                     child: Text(
-                                                                      'Enviar',
+                                                                      'Send',
                                                                       style: TextStyle(
                                                                           color:
                                                                               Colors.white),

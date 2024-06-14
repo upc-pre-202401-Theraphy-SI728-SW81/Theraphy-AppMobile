@@ -13,6 +13,7 @@ import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 import 'package:mobile_app_theraphy/ui/profile/available_hour.dart';
 import 'package:mobile_app_theraphy/ui/profile/edit_profile.dart';
 import 'package:mobile_app_theraphy/ui/security/login-in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -54,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
     // Get Lists
     // ignore: sdk_version_since
     myReviews = List.empty();
-    myReviews = await _httpHelper?.getMyReviews(id!);
+    myReviews = await _httpHelper?.getMyReviews(id!) ?? [];
 
     setState(() {
       myReviews = myReviews;
@@ -229,8 +230,128 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               IconButton(
                                 icon: Icon(Icons.logout, color: Colors.black),
-                                onPressed: () {
-                                  // Acción al presionar el segundo icono
+                                onPressed: () async {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) {
+                                      return Center(
+                                        child: Container(
+                                          padding: EdgeInsets.all(20),
+                                          height: 340,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SizedBox(height: 6),
+                                              Container(
+                                                padding: EdgeInsets.all(
+                                                    20), // Increase padding to make the circle larger
+                                                decoration: BoxDecoration(
+                                                  color: Color(
+                                                      0xFFD0EAFD), // Celeste color
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.exit_to_app,
+                                                  size: 40,
+                                                  color: AppConfig.primaryColor,
+                                                ),
+                                              ),
+                                              SizedBox(height: 16),
+                                              Text(
+                                                'Already leaving?',
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(height: 5),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
+                                                child: Text(
+                                                  'Your patients and their therapies will be waiting for you. We will miss your invaluable work...',
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                              SizedBox(height: 18),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  onPressed: () async {
+                                                    final prefs =
+                                                        await SharedPreferences
+                                                            .getInstance();
+                                                    // Eliminar el token de acceso
+                                                    prefs.remove('accessToken');
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const Login()),
+                                                    );
+                                                  },
+                                                  child: Text(
+                                                    'Yes, Log out',
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary: Color.fromARGB(
+                                                        255, 226, 68, 68),
+                                                    onPrimary: Colors.white,
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 12),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 11),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: OutlinedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                    "No, I'm staying",
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: AppConfig
+                                                          .primaryColor,
+                                                    ),
+                                                  ),
+                                                  style:
+                                                      OutlinedButton.styleFrom(
+                                                    side: BorderSide(
+                                                      color: AppConfig
+                                                          .primaryColor,
+                                                      width: 2,
+                                                    ),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 12),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
                                 },
                               ),
                             ],

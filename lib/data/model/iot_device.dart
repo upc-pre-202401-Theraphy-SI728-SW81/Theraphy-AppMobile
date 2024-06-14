@@ -2,15 +2,15 @@ import 'package:mobile_app_theraphy/data/model/therapy.dart';
 
 class IotDevice {
   int id;
-  Therapy? therapy;
-  String? assignmentDate;
-  int? therapyQuantity;
+  Therapy therapy;
+  String assignmentDate;
+  int therapyQuantity;
 
   IotDevice(
       {required this.id,
-      this.therapy,
-      this.assignmentDate,
-      this.therapyQuantity});
+      required this.therapy,
+      required this.assignmentDate,
+      required this.therapyQuantity});
 
   IotDevice.fromJson(Map<String, dynamic> json)
       : this(

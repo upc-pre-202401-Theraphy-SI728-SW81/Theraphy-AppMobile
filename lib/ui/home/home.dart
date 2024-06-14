@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/config/navBar.dart';
@@ -63,19 +64,21 @@ class _HomePhysiotherapistState extends State<HomePhysiotherapist> {
     _getCurrentLocation();
 
     //Get user logged
-    id = await _httpHelper?.getPhysiotherapistLogged();
+    //id = await _httpHelper?.getPhysiotherapistLogged();
+    physiotherapistLogged = await _httpHelper?.getPhysiotherapist();
+    id = physiotherapistLogged?.id;
 
     // Get Lists
     // ignore: sdk_version_since
     physiotherapists = List.empty();
     myPatients = List.empty();
-    myPatients = await _httpHelper?.getMyPatients(id!);
+    myPatients = await _httpHelper?.getMyPatients(id!) ?? [];
     myAppointments = List.empty();
     myAppointments =
-        await _httpHelper?.getAllAppointmentsByPhysiotherapistIdNoDone(id!);
+        await _httpHelper?.getAllAppointmentsByPhysiotherapistIdNoDone(id!) ??
+            [];
     myConsultations = List.empty();
-    myConsultations = await _httpHelper?.getMyConsultationsNoDone(id!);
-    physiotherapistLogged = await _httpHelper?.getPhysiotherapist();
+    myConsultations = await _httpHelper?.getMyConsultationsNoDone(id!) ?? [];
 
     //Update lists
     setState(() {
@@ -353,6 +356,22 @@ class _ConsultationItemState extends State<ConsultationItem> {
     } else {
       displayName = fullName;
     }
+
+    String formattedDate = '';
+    String formattedTime = '';
+
+    try {
+      // Formatear fecha
+      DateTime parsedDate =
+          DateFormat('dd-MM-yyyy').parse(widget.consultation.date);
+      formattedDate = DateFormat('MMMM dd, yyyy').format(parsedDate);
+
+      // Formatear hora
+      DateTime parsedTime = DateFormat('HH:mm').parse(widget.consultation.hour);
+      formattedTime = DateFormat('h:mm a').format(parsedTime);
+    } catch (e) {
+      print('Error parsing date or time: $e');
+    }
     return FractionallySizedBox(
       widthFactor: 0.9,
       child: Card(
@@ -418,7 +437,7 @@ class _ConsultationItemState extends State<ConsultationItem> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "${widget.consultation.hour} / ${widget.consultation.date} ",
+                                  "$formattedDate  |  $formattedTime",
                                   style: const TextStyle(
                                     color: Color(0xFFB1D7F3),
                                     fontSize: 14,
@@ -530,6 +549,35 @@ class AppointmentItem extends StatefulWidget {
 class _AppointmentItemState extends State<AppointmentItem> {
   @override
   Widget build(BuildContext context) {
+String fullName =
+        "${widget.appointment.therapy.patient.user.firstname} ${widget.appointment.therapy.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.appointment.therapy.patient.user.firstname} ${widget.appointment.therapy.patient.user.lastname[0]}.";
+    } else {
+      displayName = fullName;
+    }
+
+    String formattedDate = '';
+    String formattedTime = '';
+
+    try {
+      // Formatear fecha
+      DateTime parsedDate =
+          DateFormat('yyyy-MM-dd').parse(widget.appointment.date);
+      formattedDate = DateFormat('MMMM dd, yyyy').format(parsedDate);
+
+      // Formatear hora
+      DateTime parsedTime = DateFormat('HH:mm').parse(widget.appointment.hour);
+      formattedTime = DateFormat('h:mm a').format(parsedTime);
+    } catch (e) {
+      print('Error parsing date or time: $e');
+    }
+
     return FractionallySizedBox(
       widthFactor: 0.9,
       child: Card(
@@ -581,7 +629,7 @@ class _AppointmentItemState extends State<AppointmentItem> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${widget.appointment.therapy.patient.user.firstname} ${widget.appointment.therapy.patient.user.lastname}",
+                              displayName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -595,7 +643,7 @@ class _AppointmentItemState extends State<AppointmentItem> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "${widget.appointment.hour} / ${widget.appointment.date} ",
+                                  "$formattedDate  |  $formattedTime",
                                   style: const TextStyle(
                                     color: Color(0xFFC7B6E4),
                                     fontSize: 14,
