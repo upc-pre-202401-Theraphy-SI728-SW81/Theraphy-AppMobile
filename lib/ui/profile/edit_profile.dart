@@ -77,6 +77,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       onTap: () async {
                         ImagePicker picker = ImagePicker();
                         PickedFile? pickedFile =
+                            // ignore: deprecated_member_use
                             await picker.getImage(source: ImageSource.gallery);
 
                         if (pickedFile != null) {

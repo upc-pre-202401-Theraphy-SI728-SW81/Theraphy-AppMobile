@@ -75,7 +75,7 @@ class _IotResultsState extends State<IotResults> {
     // Obtén las listas
     iotResults = List.empty();
     iotResults = await _httpHelper?.getIotResultsByTherapyIdandDate(
-        widget.therapy.id, widget.date);
+        widget.therapy.id, widget.date) ?? [];
 
     // Filtra los elementos con mapDuration diferente de 0
     iotResultswithMapDuration =
@@ -111,10 +111,10 @@ class _IotResultsState extends State<IotResults> {
         title: Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Text(
-            "IoT Results",
+            "Patient's Physical Performance",
             style: TextStyle(
               color: AppConfig.primaryColor,
-              fontSize: 24,
+              fontSize: 21,
             ),
           ),
         ),
@@ -514,7 +514,7 @@ class _IotResultsState extends State<IotResults> {
                                       TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '$temperatureAverage',
+                                            text: temperatureAverage.toStringAsFixed(2),
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 20,
@@ -631,7 +631,7 @@ class _IotResultsState extends State<IotResults> {
                                       ),
                                       primaryYAxis: NumericAxis(
                                         interval:
-                                            20, // Ajusta el valor del intervalo según tus necesidades
+                                            10000, // Ajusta el valor del intervalo según tus necesidades
                                       ),
                                       series: <ChartSeries>[
                                         ColumnSeries<IotResult, int>(
@@ -757,7 +757,7 @@ class _IotResultsState extends State<IotResults> {
                                     TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: '$humidityAverage',
+                                          text: humidityAverage.toStringAsFixed(2),
                                           style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 20,

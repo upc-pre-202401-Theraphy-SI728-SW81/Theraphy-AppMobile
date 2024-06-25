@@ -5,7 +5,7 @@ class Therapy {
   int id;
   String therapyName;
   String description;
-  String appointmentQuantity;
+  int appointmentQuantity;
   String startAt;
   String finishAt;
   bool finished;

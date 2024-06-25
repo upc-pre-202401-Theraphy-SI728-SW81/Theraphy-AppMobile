@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,10 @@ import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_app_theraphy/data/remote/upload_Into_Firebase.dart';
+import 'package:mobile_app_theraphy/ui/therapy/body-selector/body-selector-adapter.dart';
+import 'package:mobile_app_theraphy/ui/therapy/body-selector/src/model/body_parts.dart';
+import 'package:mobile_app_theraphy/ui/therapy/my-therapy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 class NewVideo extends StatefulWidget {
@@ -28,6 +33,8 @@ class NewVideo extends StatefulWidget {
 class _NewVideoState extends State<NewVideo> {
   HttpHelper? _httpHelper;
   Therapy? therapies;
+
+  List<String> selectedParts = [];
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descripcionController = TextEditingController();
@@ -54,12 +61,32 @@ class _NewVideoState extends State<NewVideo> {
   String? _videoUrl;
   File? _videoFile;
 
+  Future<List<String>> _loadSelectedParts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Recupera la cadena JSON de las partes seleccionadas
+    String? partsJson = prefs.getString('selectedParts');
+
+    if (partsJson != null) {
+      // Decodifica la cadena JSON a una lista de partes seleccionadas
+
+      print(List<String>.from(jsonDecode(partsJson)));
+      return List<String>.from(jsonDecode(partsJson));
+    }
+
+    List<String> selectedPartsEmpty = [];
+    return selectedPartsEmpty;
+  }
+
   Future<void> _pickVideo() async {
     final imagePicker = ImagePicker();
-    final pickedVideo = await imagePicker.getVideo(source: ImageSource.gallery);
+    final pickedVideo = await imagePicker.pickVideo(source: ImageSource.gallery);
+    //get-video
+    print("aeaaa");
 
     if (pickedVideo != null) {
       final videoFile = File(pickedVideo.path);
+      print("aea21");
       final videoUrl = await uploadVideo(videoFile);
       print("hola");
       setState(() {
@@ -82,12 +109,14 @@ class _NewVideoState extends State<NewVideo> {
     therapies = null;
     therapies =
         await _httpHelper?.getTherapyByPhysioAndPatient(id!, widget.patientId);
+    selectedParts = await _loadSelectedParts();
 
     setState(() {
       therapies = therapies;
       print(therapies?.id);
       therapyDescription = therapies!.description;
       therapyName = therapies!.therapyName;
+      selectedParts = selectedParts;
 
       dateTime1 = format.parse(therapies!.startAt);
       dateTime2 = format.parse(therapies!.finishAt);
@@ -104,6 +133,7 @@ class _NewVideoState extends State<NewVideo> {
   void initState() {
     _httpHelper = HttpHelper();
     initialize();
+    _loadSelectedParts();
     super.initState();
   }
 
@@ -125,7 +155,14 @@ class _NewVideoState extends State<NewVideo> {
               ),
               onPressed: () {
                 // Agrega lógica para retroceder
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyTherapy(
+                      patientId: widget.patientId,
+                    ),
+                  ),
+                );
               },
             ),
             Text(
@@ -338,9 +375,146 @@ class _NewVideoState extends State<NewVideo> {
                             style: TextStyle(
                                 color: Color.fromARGB(255, 53, 211, 29)),
                           ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Text(
+                                'Selected Body Parts:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            if (selectedParts.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                      height:
+                                          10), // Espacio entre el título y la lista
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Column(
+                                      children: selectedParts
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
+                                        final index = entry.key;
+                                        final part = entry.value;
+
+                                        return Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 8),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    width: 24,
+                                                    height: 24,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blue,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons.check,
+                                                        color: Colors.white,
+                                                        size: 16,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text(
+                                                    part,
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              if (index <
+                                                  selectedParts.length - 1)
+                                                Divider(), // Línea separadora
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (selectedParts.isNotEmpty)
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BodySelectorAdapter(
+                                          initialIndex: _currentIndex,
+                                          patientId: widget.patientId),
+                                    ),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                    AppConfig.primaryColor,
+                                  ),
+                                ),
+                                child: const Text(
+                                  "Edit",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            if (selectedParts.isEmpty)
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BodySelectorAdapter(
+                                          initialIndex: _currentIndex,
+                                          patientId: widget.patientId),
+                                    ),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                    AppConfig.primaryColor,
+                                  ),
+                                ),
+                                child: const Text(
+                                  "Select Body Parts",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                         Center(
                           child: ElevatedButton(
                             onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              // Elimina las partes seleccionadas antiguas
+                              prefs.remove('selectedParts');
                               // Lógica para crear el tratamiento virtual
                               title = titleController.text;
                               descripction = descripcionController.text;
@@ -356,7 +530,14 @@ class _NewVideoState extends State<NewVideo> {
                                     title,
                                     descripction,
                                     dateShowed);
-                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MyTherapy(
+                                      patientId: widget.patientId,
+                                    ),
+                                  ),
+                                );
 
                                 // Muestra un diálogo emergente con el mensaje de éxito
                                 showDialog(

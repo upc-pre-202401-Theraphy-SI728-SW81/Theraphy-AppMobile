@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:location/location.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/config/navBar.dart';
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
@@ -8,6 +10,7 @@ import 'package:mobile_app_theraphy/data/model/physiotherapist.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/patients/patient-profile.dart';
 import 'package:mobile_app_theraphy/ui/security/patient-register.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePhysiotherapist extends StatefulWidget {
   const HomePhysiotherapist({super.key});
@@ -28,21 +31,54 @@ class _HomePhysiotherapistState extends State<HomePhysiotherapist> {
   Physiotherapist? physiotherapistLogged;
   bool _showAppointments = true;
 
+  LocationData? currentLocation;
+  bool isCitizen = false;
+  bool isSerenity = false;
+
+  Future<void> _requestLocationPermission() async {
+    var status = await Permission.locationWhenInUse.status;
+
+    if (status.isDenied) {
+      await Permission.locationWhenInUse.request();
+    }
+
+    if (status.isGranted) {
+      _getCurrentLocation();
+    }
+  }
+
+  void _getCurrentLocation() {
+    Location location = Location();
+    location.getLocation().then((locationData) {
+      setState(() {
+        currentLocation = locationData;
+        print(currentLocation);
+      });
+    }).catchError((error) {
+      print("Error al obtener la ubicación: $error");
+    });
+  }
+
   Future initialize() async {
+    _requestLocationPermission();
+    _getCurrentLocation();
+
     //Get user logged
-    id = await _httpHelper?.getPhysiotherapistLogged();
+    //id = await _httpHelper?.getPhysiotherapistLogged();
+    physiotherapistLogged = await _httpHelper?.getPhysiotherapist();
+    id = physiotherapistLogged?.id;
 
     // Get Lists
     // ignore: sdk_version_since
     physiotherapists = List.empty();
     myPatients = List.empty();
-    myPatients = await _httpHelper?.getMyPatients(id!);
+    myPatients = await _httpHelper?.getMyPatients(id!) ?? [];
     myAppointments = List.empty();
     myAppointments =
-        await _httpHelper?.getAllAppointmentsByPhysiotherapistIdNoDone(id!);
+        await _httpHelper?.getAllAppointmentsByPhysiotherapistIdNoDone(id!) ??
+            [];
     myConsultations = List.empty();
-    myConsultations = await _httpHelper?.getMyConsultationsNoDone(id!);
-    physiotherapistLogged = await _httpHelper?.getPhysiotherapist();
+    myConsultations = await _httpHelper?.getMyConsultationsNoDone(id!) ?? [];
 
     //Update lists
     setState(() {
@@ -69,232 +105,231 @@ class _HomePhysiotherapistState extends State<HomePhysiotherapist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          "Hello, ${physiotherapistLogged?.user.firstname}",
-          style:TextStyle(color: AppConfig.primaryColor),
-        ),
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        elevation: 0,
-      ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const Padding(
-                padding: EdgeInsets.only(left: 15, top: 25, bottom: 15),
-                child: Text(
-                  'Patients',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        appBar: AppBar(
+          title: Text(
+            "Hello, ${physiotherapistLogged?.user.firstname}",
+            style: TextStyle(color: AppConfig.primaryColor),
+          ),
+          backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+          elevation: 0,
+        ),
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const Padding(
+                  padding: EdgeInsets.only(left: 15, top: 25, bottom: 15),
+                  child: Text(
+                    'Patients',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
                 ),
-              ),
-            ]),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              height: 120.0,
-              child: ImageCarousel(myPatients: myPatients),
+              ]),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const Padding(
-                padding: EdgeInsets.only(left: 15, top: 10, bottom: 5),
+            SliverToBoxAdapter(
+              child: Container(
+                height: 120.0,
+                child: ImageCarousel(myPatients: myPatients),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const Padding(
+                  padding: EdgeInsets.only(left: 15, top: 10, bottom: 5),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Categories',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(
+                  height: 15.0,
+                ),
+              ]),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Row(
                   children: [
-                    Text(
-                      'Categories',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            upcomingText = 'appointments';
+                            _showAppointments = true;
+                            colorUpcomingCards = const Color(0xFFC7B6E4);
+                            selectedCategory = 'appointments';
+                          });
+                        },
+                        child: Card(
+                          color: const Color(0xFFC7B6E4), // Color de Card 1
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.only(left: 15.0, top: 10.0),
+                                  child: Text(
+                                    'Appointments',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 15.0, top: 5.0),
+                                  child: Text(
+                                    myAppointments!.length.toString(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(0),
+                                child: Image.asset('assets/appointments3.png'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 15.0,
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showAppointments = false;
+                            upcomingText = 'consultations';
+                            colorUpcomingCards = const Color(0xFFB1D7F3);
+                            selectedCategory = 'consultations';
+                          });
+                        },
+                        child: Card(
+                          color: const Color(0xFFB1D7F3), // Color de Card 2
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.only(left: 15.0, top: 10.0),
+                                  child: Text(
+                                    'Consultations',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 15.0, top: 5.0),
+                                  child: Text(
+                                    myConsultations!.length.toString(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(0),
+                                child: Image.asset('assets/consultation.png'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            ]),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const SizedBox(
-                height: 15.0,
-              ),
-            ]),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          upcomingText = 'appointments';
-                          _showAppointments = true;
-                          colorUpcomingCards = const Color(0xFFC7B6E4);
-                          selectedCategory = 'appointments';
-                        });
-                      },
-                      child: Card(
-                        color: const Color(0xFFC7B6E4), // Color de Card 1
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 15.0, top: 10.0),
-                                child: Text(
-                                  'Appointments',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 15.0, top: 5.0),
-                                child: Text(
-                                  myAppointments!.length.toString(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(0),
-                              child: Image.asset('assets/appointments3.png'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 15.0,
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _showAppointments = false;
-                          upcomingText = 'consultations';
-                          colorUpcomingCards = const Color(0xFFB1D7F3);
-                          selectedCategory = 'consultations';
-                        });
-                      },
-                      child: Card(
-                        color: const Color(0xFFB1D7F3), // Color de Card 2
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 15.0, top: 10.0),
-                                child: Text(
-                                  'Consultations',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 15.0, top: 5.0),
-                                child: Text(
-                                  myConsultations!.length.toString(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(0),
-                              child: Image.asset('assets/consultation.png'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const SizedBox(
-                height: 15.0,
-              ),
-            ]),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              Padding(
-                padding: const EdgeInsets.only(left: 15, top: 10, bottom: 5),
-                child: Text(
-                  'Upcoming $upcomingText',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 20),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(
+                  height: 15.0,
                 ),
-              ),
-            ]),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const SizedBox(
-                height: 15.0,
-              ),
-            ]),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                if (_showAppointments) {
-                  return AppointmentItem(appointment: myAppointments![index]);
-                } else {
-                  return ConsultationItem(
-                      consultation: myConsultations![index]);
-                }
-              },
-              childCount: _showAppointments
-                  ? myAppointments?.length
-                  : myConsultations?.length,
+              ]),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const SizedBox(
-                height: 15.0,
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Padding(
+                  padding: const EdgeInsets.only(left: 15, top: 10, bottom: 5),
+                  child: Text(
+                    'Upcoming $upcomingText',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(
+                  height: 15.0,
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  if (_showAppointments) {
+                    return AppointmentItem(appointment: myAppointments![index]);
+                  } else {
+                    return ConsultationItem(
+                        consultation: myConsultations![index]);
+                  }
+                },
+                childCount: _showAppointments
+                    ? myAppointments?.length
+                    : myConsultations?.length,
               ),
-            ]),
-          ),
-        ],
-      ),
-    
-      bottomNavigationBar: NavBar(currentIndex: 0)
-
-    );
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(
+                  height: 15.0,
+                ),
+              ]),
+            ),
+          ],
+        ),
+        bottomNavigationBar: NavBar(currentIndex: 0));
   }
 }
 
@@ -309,6 +344,34 @@ class ConsultationItem extends StatefulWidget {
 class _ConsultationItemState extends State<ConsultationItem> {
   @override
   Widget build(BuildContext context) {
+    String fullName =
+        "${widget.consultation.patient.user.firstname} ${widget.consultation.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.consultation.patient.user.firstname} ${widget.consultation.patient.user.lastname[0]}.";
+    } else {
+      displayName = fullName;
+    }
+
+    String formattedDate = '';
+    String formattedTime = '';
+
+    try {
+      // Formatear fecha
+      DateTime parsedDate =
+          DateFormat('dd-MM-yyyy').parse(widget.consultation.date);
+      formattedDate = DateFormat('MMMM dd, yyyy').format(parsedDate);
+
+      // Formatear hora
+      DateTime parsedTime = DateFormat('HH:mm').parse(widget.consultation.hour);
+      formattedTime = DateFormat('h:mm a').format(parsedTime);
+    } catch (e) {
+      print('Error parsing date or time: $e');
+    }
     return FractionallySizedBox(
       widthFactor: 0.9,
       child: Card(
@@ -318,7 +381,7 @@ class _ConsultationItemState extends State<ConsultationItem> {
         color: Colors.white,
         elevation: 1,
         child: Container(
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               left: BorderSide(
                 color: AppConfig.primaryColor,
@@ -360,10 +423,10 @@ class _ConsultationItemState extends State<ConsultationItem> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${widget.consultation.patient.user.firstname} ${widget.consultation.patient.user.lastname}",
+                              displayName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style:  TextStyle(
+                              style: TextStyle(
                                 color: AppConfig.primaryColor,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -374,7 +437,7 @@ class _ConsultationItemState extends State<ConsultationItem> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "${widget.consultation.hour} / ${widget.consultation.date} ",
+                                  "$formattedDate  |  $formattedTime",
                                   style: const TextStyle(
                                     color: Color(0xFFB1D7F3),
                                     fontSize: 14,
@@ -411,8 +474,7 @@ class _ConsultationItemState extends State<ConsultationItem> {
                         horizontal: 15,
                       ),
                       decoration: BoxDecoration(
-                        color: const 
-                        Color(0xFFB1D7F3),
+                        color: const Color(0xFFB1D7F3),
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Row(
@@ -487,6 +549,35 @@ class AppointmentItem extends StatefulWidget {
 class _AppointmentItemState extends State<AppointmentItem> {
   @override
   Widget build(BuildContext context) {
+String fullName =
+        "${widget.appointment.therapy.patient.user.firstname} ${widget.appointment.therapy.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.appointment.therapy.patient.user.firstname} ${widget.appointment.therapy.patient.user.lastname[0]}.";
+    } else {
+      displayName = fullName;
+    }
+
+    String formattedDate = '';
+    String formattedTime = '';
+
+    try {
+      // Formatear fecha
+      DateTime parsedDate =
+          DateFormat('yyyy-MM-dd').parse(widget.appointment.date);
+      formattedDate = DateFormat('MMMM dd, yyyy').format(parsedDate);
+
+      // Formatear hora
+      DateTime parsedTime = DateFormat('HH:mm').parse(widget.appointment.hour);
+      formattedTime = DateFormat('h:mm a').format(parsedTime);
+    } catch (e) {
+      print('Error parsing date or time: $e');
+    }
+
     return FractionallySizedBox(
       widthFactor: 0.9,
       child: Card(
@@ -538,7 +629,7 @@ class _AppointmentItemState extends State<AppointmentItem> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${widget.appointment.therapy.patient.user.firstname} ${widget.appointment.therapy.patient.user.lastname}",
+                              displayName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -552,7 +643,7 @@ class _AppointmentItemState extends State<AppointmentItem> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "${widget.appointment.hour} / ${widget.appointment.date} ",
+                                  "$formattedDate  |  $formattedTime",
                                   style: const TextStyle(
                                     color: Color(0xFFC7B6E4),
                                     fontSize: 14,
@@ -683,8 +774,9 @@ class ImageCarousel extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            PatientProfile(patient: patient,), //PatientProfileView(patient: patient),
+                        builder: (context) => PatientProfile(
+                          patient: patient,
+                        ), //PatientProfileView(patient: patient),
                       ),
                     );
                   },

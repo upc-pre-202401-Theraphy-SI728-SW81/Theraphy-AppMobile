@@ -4,6 +4,7 @@ import 'package:mobile_app_theraphy/data/model/medical_history.dart';
 import 'package:mobile_app_theraphy/data/model/patient.dart';
 import 'package:mobile_app_theraphy/data/remote/http_helper.dart';
 import 'package:mobile_app_theraphy/ui/patients/patient-profile.dart';
+import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 
 class RegisterMedicalHistory extends StatefulWidget {
   const RegisterMedicalHistory({Key? key, required this.patient})
@@ -64,6 +65,18 @@ class _RegisterMedicalHistoryState extends State<RegisterMedicalHistory> {
 
   @override
   Widget build(BuildContext context) {
+    String fullName =
+        "${widget.patient.user.firstname} ${widget.patient.user.lastname}";
+    String displayName;
+
+    int maxDisplayNameLength = 20;
+
+    if (fullName.length > maxDisplayNameLength) {
+      displayName =
+          "${widget.patient.user.firstname} \n${widget.patient.user.lastname}";
+    } else {
+      displayName = fullName;
+    }
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -136,7 +149,7 @@ class _RegisterMedicalHistoryState extends State<RegisterMedicalHistory> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${widget.patient.user.firstname} ${widget.patient.user.lastname}",
+                              displayName,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -498,7 +511,7 @@ class _RegisterMedicalHistoryState extends State<RegisterMedicalHistory> {
                                   SizedBox(
                                     height: 42.0,
                                     width:
-                                        350, // Ajusta el valor según sea necesario
+                                        332, // Ajusta el valor según sea necesario
                                     child: TextField(
                                       controller: _birthPlaceController,
                                       cursorColor: AppConfig.primaryColor,
@@ -752,63 +765,81 @@ class _RegisterMedicalHistoryState extends State<RegisterMedicalHistory> {
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
-                                            return Center(
-                                              child: SimpleDialog(
-                                                title: const Column(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.check,
-                                                      color: Colors.green,
-                                                      size: 80,
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    Center(
-                                                      child: Text(
-                                                        "The Medical History has been created successfully",
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                children: <Widget>[
-                                                  Center(
-                                                    child: Column(
+                                            return WillPopScope(
+                                                onWillPop: () async {
+                                                  // Redirige a una pantalla específica
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const PatientsList()),
+                                                  );
+                                                  return false; // Bloquea la navegación hacia atrás
+                                                },
+                                                child: Center(
+                                                  child: SimpleDialog(
+                                                    title: const Column(
                                                       children: [
-                                                        const SizedBox(
-                                                            height: 10),
-                                                        ElevatedButton(
-                                                          onPressed: () {
-                                                            // Cierra el diálogo emergente
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        PatientProfile(
-                                                                  patient: widget
-                                                                      .patient,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                          style: ButtonStyle(
-                                                            backgroundColor:
-                                                                MaterialStateProperty
-                                                                    .all<Color>(
-                                                              const Color(
-                                                                  0xFF014DBF),
-                                                            ),
+                                                        Icon(
+                                                          Icons.check,
+                                                          color: Colors.green,
+                                                          size: 80,
+                                                        ),
+                                                        SizedBox(height: 10),
+                                                        Center(
+                                                          child: Text(
+                                                            "The Medical History has been created successfully",
+                                                            textAlign: TextAlign
+                                                                .center,
                                                           ),
-                                                          child: const Text(
-                                                              "Close"),
                                                         ),
                                                       ],
                                                     ),
+                                                    children: <Widget>[
+                                                      Center(
+                                                        child: Column(
+                                                          children: [
+                                                            const SizedBox(
+                                                                height: 10),
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                // Cierra el diálogo emergente
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            PatientProfile(
+                                                                      patient:
+                                                                          widget
+                                                                              .patient,
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              },
+                                                              style:
+                                                                  ButtonStyle(
+                                                                backgroundColor:
+                                                                    MaterialStateProperty
+                                                                        .all<
+                                                                            Color>(
+                                                                  const Color(
+                                                                      0xFF014DBF),
+                                                                ),
+                                                              ),
+                                                              child: const Text(
+                                                                "Close",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
-                                              ),
-                                            );
+                                                ));
                                           },
                                         );
                                       });
