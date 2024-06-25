@@ -9,21 +9,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/appointment.dart';
+import 'package:mobile_app_theraphy/data/model/consultation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:location/location.dart';
 
-class CitizenMap extends StatefulWidget {
-  final Appointment? appointment;
-  const CitizenMap({Key? key, required this.appointment}) : super(key: key);
+class LocationMap extends StatefulWidget {
+  final Consultation? consultation;
+  const LocationMap({Key? key, required this.consultation}) : super(key: key);
 
   @override
-  _CitizenMapState createState() => _CitizenMapState();
+  _LocationMapState createState() => _LocationMapState();
 }
 
-class _CitizenMapState extends State<CitizenMap> {
+class _LocationMapState extends State<LocationMap> {
   //default
   static const LatLng sourceLocation =
       LatLng(-8.119252368132193, -79.0376629232878);
@@ -154,11 +155,11 @@ class _CitizenMapState extends State<CitizenMap> {
       destination.longitude,
     );
     customMarker = await _createCustomMarker(
-        widget.appointment!.therapy.physiotherapist.photoUrl,
+        widget.consultation!.physiotherapist.photoUrl,
         Colors.green,
         10.0);
     customMarker2 = await _createCustomMarker(
-        widget.appointment!.therapy.patient.photoUrl, Colors.blue, 10.0);
+        widget.consultation!.patient.photoUrl, Colors.blue, 10.0);
 
     getGeo();
     animateMap();
@@ -183,7 +184,7 @@ class _CitizenMapState extends State<CitizenMap> {
         title: Padding(
           padding: const EdgeInsets.only(top: 15, bottom: 5),
           child: Text(
-            "This is the way to ${widget.appointment!.therapy.patient.user.firstname[0]}. ${widget.appointment!.therapy.patient.user.lastname.split(" ")[0]}",
+            "This is the way to ${widget.consultation!.patient.user.firstname[0]}. ${widget.consultation!.patient.user.lastname.split(" ")[0]}",
             style: TextStyle(
               color: AppConfig.primaryColor,
               fontSize: 18,

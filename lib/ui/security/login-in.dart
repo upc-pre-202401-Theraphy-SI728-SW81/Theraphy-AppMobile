@@ -165,6 +165,21 @@ class _LoginState extends State<Login> {
                 ),
               ],
             ),
+            if (_errorState)
+              Padding(
+                padding: EdgeInsets.only(left: 20, top: 10),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline,
+                        color: Color.fromARGB(255, 226, 68, 68)),
+                    SizedBox(width: 5),
+                    Text(
+                      "Your email or password are incorrect.", // Mensaje de error
+                      style: TextStyle(color: Color.fromARGB(255, 226, 68, 68)),
+                    ),
+                  ],
+                ),
+              ),
             Padding(
               padding: EdgeInsets.only(top: 10, right: 20),
               child: Align(
@@ -184,15 +199,29 @@ class _LoginState extends State<Login> {
               margin: EdgeInsets.symmetric(horizontal: 20),
               child: ElevatedButton(
                 onPressed: () async {
+                  setState(() {
+                    _errorState = false; // Restablecer el estado de error
+                  });
+
                   try {
-                    await httpHelper?.login(email, password);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePhysiotherapist(),
-                      ));
+                    int? logstatus = await httpHelper?.login(email, password);
+                    if (logstatus == 1) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePhysiotherapist(),
+                          ));
+                    } else {
+                      print('no se pudoo');
+                      setState(() {
+                        _errorState = true; // Actualizar el estado de error
+                      });
+                    }
                   } catch (error) {
                     print('Error de inicio de sesión: $error');
+                    setState(() {
+                      _errorState = true; // Actualizar el estado de error
+                    });
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -285,10 +314,10 @@ class _LoginState extends State<Login> {
               child: TextButton(
                 onPressed: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignUp(),
-                    ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignUp(),
+                      ));
                 },
                 child: RichText(
                   text: TextSpan(

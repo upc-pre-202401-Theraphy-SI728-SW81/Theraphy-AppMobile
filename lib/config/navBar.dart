@@ -4,6 +4,7 @@ import 'package:mobile_app_theraphy/config/app_config.dart';
 import 'package:mobile_app_theraphy/data/model/therapy.dart';
 import 'package:mobile_app_theraphy/ui/consultations/consultation_list.dart';
 import 'package:mobile_app_theraphy/ui/home/home.dart';
+import 'package:mobile_app_theraphy/ui/iot_devices/iot-devices-list.dart';
 import 'package:mobile_app_theraphy/ui/patients/patients-list.dart';
 import 'package:mobile_app_theraphy/ui/profile/physiotherapist_profile.dart';
 import 'package:mobile_app_theraphy/ui/security/sign-up.dart';
@@ -29,7 +30,7 @@ class _NavBarPageState extends State<NavBar> {
         Icon(Icons.group, color: Colors.white),
         Icon(Icons.account_circle, color: Colors.white),
         Icon(Icons.calendar_month, color: Colors.white),
-        Icon(Icons.video_library, color: Colors.white),
+        Icon(Icons.router_rounded, color: Colors.white),
       ],
       index: widget.currentIndex, // Utiliza el valor proporcionado en el constructor
       onTap: (index) {
@@ -70,7 +71,7 @@ class _NavBarPageState extends State<NavBar> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ProfilePage(),
+                builder: (context) => const IotdevicesList(),
               ),
             );
             break;
