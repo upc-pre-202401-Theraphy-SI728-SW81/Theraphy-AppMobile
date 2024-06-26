@@ -284,30 +284,7 @@ class _PatientsListState extends State<PatientsList> {
                       width: 38,
                       color: Colors.white, //AppConfig.primaryColor
                     ),
-                    RichText(
-                      text: TextSpan(
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: AppConfig.primaryColor,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: '$itemsQuantity',
-                            style: TextStyle(
-                              fontSize: 17, // Tamaño más grande para el valor
-                              fontWeight: FontWeight
-                                  .bold, // Opcional: para hacer el valor en negrita
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' results',
-                            style: TextStyle(
-                              fontSize: 11, // Tamaño del texto
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
+                    
                   ],
                 ),
               ),

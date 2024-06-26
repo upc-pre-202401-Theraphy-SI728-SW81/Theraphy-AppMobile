@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PhysiotherapistService {
   final String baseUrl =
-      'https://api-iotheraphy-production.up.railway.app/api/v1/physiotherapists';
+      'http://ec2-3-87-75-73.compute-1.amazonaws.com:8080/api/v1/physiotherapists';
 
   Future<List<Physiotherapist>?> getAll() async {
     final http.Response response = await http.get(Uri.parse(baseUrl));

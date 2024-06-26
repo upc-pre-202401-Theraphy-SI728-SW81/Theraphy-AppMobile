@@ -20,7 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HttpHelper {
   //final String urlBase = 'http://ec2-52-90-129-137.compute-1.amazonaws.com:8080/api/v1';
 
-  final String urlBase = 'http://192.168.74.60:8080/api/v1';
+  final String urlBase = 'http://ec2-3-87-75-73.compute-1.amazonaws.com:8080/api/v1';
 
   Future<void> register(int id, String firstName, String lastName,
       String username, String password, String _selectedRole) async {
